@@ -3,6 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DrawerComponent } from './components/drawer/drawer.component';
+import { FooterComponent } from './components/footer';
+import { MainMenuComponent } from './components/main-menu/main-menu.component';
 
 @NgModule({
   declarations: [
@@ -10,7 +13,10 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    DrawerComponent,
+    MainMenuComponent,
+    FooterComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

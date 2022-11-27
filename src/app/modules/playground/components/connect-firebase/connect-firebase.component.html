@@ -1,0 +1,60 @@
+<section class="card">
+    <form (ngSubmit)="submit()">
+        <div class="card-content">
+            <div class="field">
+                <label class="label" for="name">Name</label>
+                <div class="control">
+                    <input name="name" class="input" type="text" [(ngModel)]="name"/>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label" for="projectId">Project ID</label>
+                <div class="control">
+                    <input name="projectId" class="input" type="text" [(ngModel)]="options.projectId"/>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="apiKey">Api key</label>
+                <div class="control">
+                    <input name="apiKey" class="input" type="text" [(ngModel)]="options.apiKey"/>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="authDomain">Auth domain</label>
+                <div class="control">
+                    <input name="authDomain" class="input" type="text" [(ngModel)]="options.authDomain"/>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="storageBucket">Storage bucket</label>
+                <div class="control">
+                    <input name="storageBucket" class="input" type="text" [(ngModel)]="options.storageBucket"/>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="messagingSenderId">Messaging Sender ID</label>
+                <div class="control">
+                    <input name="messagingSenderId" class="input" type="text" [(ngModel)]="options.messagingSenderId"/>
+                </div>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="appId">App ID</label>
+                <div class="control">
+                    <input name="appId" class="input" type="text" [(ngModel)]="options.appId"/>
+                </div>
+            </div>
+        
+            
+        </div>
+        <div class="card-footer">
+            <div class="card-footer-item">
+                <button class="button" type="submit">Connect</button>
+            </div>
+        </div>
+    </form>
+</section>

@@ -1,0 +1,20 @@
+<section 
+    class="one-tap-connection card is-clickable"
+    [class.is-connected]="isConnected"
+    [class.is-disabled]="!canTap" 
+    (click)="submit()">
+    <div class="card-header">
+        <div class="card-header-title">
+            {{name}}
+        </div>
+        <div class="card-header-icon">
+            <span class="icon">
+                <i class="fa-solid fa-plug" *ngIf="!isConnected"></i>
+                <i class="fa-solid fa-plug-circle-check" *ngIf="isConnected"></i>
+            </span>
+        </div>
+    </div>
+    <div class="card-content">
+        {{options.projectId}}
+    </div>
+</section>

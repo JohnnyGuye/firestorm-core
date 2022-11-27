@@ -1,0 +1,18 @@
+
+
+.one-tap-connection {
+
+    border: 2px groove orange;
+    transition: all 0.5s;
+
+    filter: contrast(1) opacity(1);
+
+    &.is-disabled {
+        border-color: red;
+        filter: contrast(0.8) opacity(0.9);
+    }
+
+    &.is-connected {
+        border-color: greenyellow;
+    }
+}

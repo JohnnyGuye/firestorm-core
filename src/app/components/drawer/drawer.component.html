@@ -1,0 +1,15 @@
+<section class="drawer is-container-bound is-above"
+[class.is-open]="opened"
+[class.has-drawer-start]="position == 'start'"
+[class.is-closed]="!opened"
+[class]="klass"
+>
+
+  <div class="drawer-content">
+    <ng-content select="[content]"></ng-content>
+  </div>
+  <aside class="drawer-side" [style.width]="width">
+    <ng-content select="[aside]"></ng-content>
+  </aside>
+
+</section>
