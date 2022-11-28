@@ -3,7 +3,7 @@ import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
 import { doc, Firestore, getFirestore, setDoc } from "firebase/firestore"
 import { FirebaseStorage, getStorage } from "firebase/storage"
 import { FirestormModel } from "./core/firestorm-model";
-import { IRepository, Repository } from "./core/repository";
+import { IParentCollection, IRepository, Repository } from "./core/repository";
 
 export class Firestorm {
 
@@ -47,7 +47,7 @@ export class Firestorm {
         return this.app?.options || null
     }
 
-    public getRepositoryInstance<T extends FirestormModel>(type: Type<T>) {
+    public getRepository<T extends FirestormModel>(type: Type<T>) {
         let repository = this.repositories.get(type)
         if (!repository) {
             let firestore = this.firestore
@@ -59,6 +59,23 @@ export class Firestorm {
         }
 
         return repository as Repository<T>
+    }
+
+    public getSubRepository<T extends FirestormModel>(
+        type: Type<T>,
+        ...parentCollections: IParentCollection<any>[]
+        ) {
+        
+        let firestore = this.firestore
+        if (!firestore) {
+            throw new Error("You have to connect Firestorm first")
+        }
+
+        let repository = new Repository(type, firestore)
+        parentCollections.reverse()
+        let elem1 = parentCollections[0]
+        const constructor = elem1.parent.constructor
+        
     }
 
     private get firestore() {

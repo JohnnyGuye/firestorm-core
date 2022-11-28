@@ -4,6 +4,10 @@ export interface FirestormModel {
     
 }
 
+export interface ISubcollection<T> {
+
+}
+
 /**
  * 
  */

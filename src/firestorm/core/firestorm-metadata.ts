@@ -22,6 +22,8 @@ export class FirestormMetadata<T> {
 
   private _toModelConverters?: Map<string, DocumentToModelConverter<any>>
 
+  private _subCollections?: Map<string, any>
+
   /**
    * Marks a key in the model to be read when deserializing a document
    * @param key 
@@ -51,13 +53,32 @@ export class FirestormMetadata<T> {
     this._ignore.add(key)
   }
 
-  public isKeyIgnored(key: string) {
+  public addSubCollection(key: string) {
+    if (!this._subCollections) this._subCollections = new Map<string, any>()
+    this._subCollections.set(key, {})
+  }
+
+  public isKeyIgnored(key: string): boolean {
     if (!this._ignore) return false
     return this._ignore.has(key)
   }
 
   public isAcceptingUndefined(key: string) {
     return false
+  }
+
+  public isMappedTo(key: string): string | null {
+    if (this._mapTo) {
+      const mappedTo = this._mapTo.get(key)
+      if (mappedTo) return mappedTo
+    }
+
+    if (this._keys) {
+      const keyedTo = this._keys.get(key)
+      if (keyedTo) return keyedTo
+    }
+    
+    return null
   }
 
   /**
@@ -89,11 +110,12 @@ export class FirestormMetadata<T> {
 
     if (!document) return null
 
-    const klassInstance: any = new this.type
     
     if (!this._keys) {
       throw new Error("This model has no key assigned. Did you forget a class decorator?")
     }
+    
+    const klassInstance: any = new this.type
 
     for (let [key, defaultMapping] of this._keys) {
 
@@ -104,20 +126,46 @@ export class FirestormMetadata<T> {
         continue
       }
 
-      let mappedTo = defaultMapping
-      if (this._mapTo) {
-        mappedTo = this._mapTo.get(key) || mappedTo
-      }
+      const mappedTo = this.isMappedTo(key)
+      if (!mappedTo) continue
 
       const convert = this.getDocumentToModelConverter(key)
       let val = convert(document[mappedTo])
       
       if (val === undefined && !this.isAcceptingUndefined(key)) continue
-      
+
       klassInstance[key] = val
 
     }
 
     return klassInstance
+  }
+
+  public convertModelToDocument(object: Partial<T>): any {
+
+    if (!object) return null
+
+    if (!this._keys) {
+      throw new Error("This model has no key assigned. Did you forget a class decorator?")
+    }
+
+    const document: any = {}
+
+    for (let [key, defaultMapping] of this._keys) {
+
+      if (this.isKeyIgnored(key)) continue
+      
+      const mappedTo = this.isMappedTo(key)
+      if (!mappedTo) continue
+
+      const convert = this.getModelToDocumentConverter(key)
+      let val = convert(document[mappedTo])
+      
+      if (val === undefined && !this.isAcceptingUndefined(key)) continue
+
+      document[key] = val
+    }
+
+    return document
   }
 }

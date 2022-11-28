@@ -11,6 +11,13 @@ function buildPath(...pathArray: string[]) {
     return pathArray.join("/")
 }
 
+export interface IParentCollection<T extends FirestormModel> {
+
+    parent: T
+    key: string
+    
+}
+
 /**
  * A repository is a typed access to a specific collection
  */
@@ -179,6 +186,6 @@ export class Repository<T extends FirestormModel> {
     }
 
     private classToFirestoreDocument(object: Partial<T>): any {
-        return null
+        return this.typeMetadata.convertModelToDocument(object)
     }
 }

@@ -6,15 +6,9 @@ import { FirestormConnectionEvent } from '../../components/events';
 import { OneTapConnectFirebaseButtonComponent } from '../../components/one-tap-connect-firebase-button/one-tap-connect-firebase-button.component';
 import { PlaygroundService } from '../../services/playground.service';
 
+import { environment } from 'src/app/environment/environment';
 
-const defaultOptions: FirebaseOptions = {
-  apiKey: "AIzaSyCd1yRM3wXFkCxIDBb49fNtfcU81CujaJQ",
-  authDomain: "firestorm-base-1.firebaseapp.com",
-  projectId: "firestorm-base-1",
-  storageBucket: "firestorm-base-1.appspot.com",
-  messagingSenderId: "768540809890",
-  appId: "1:768540809890:web:7857611210fa8fa3fbd5fb"
-}
+const defaultOptions: FirebaseOptions = environment.firestorm
 
 type TapOption = {
 

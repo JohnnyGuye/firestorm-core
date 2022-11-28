@@ -1,6 +1,13 @@
-import { Collection, MapTo } from "src/firestorm/decorators"
-import { DateType } from "src/firestorm/decorators/date-type.decorator"
-import { Ignore } from "src/firestorm/decorators/ingore.decorator"
+import { ISubcollection } from "src/firestorm/core/firestorm-model"
+import { Collection, DateType, Ignore, MapTo, SubCollection } from "src/firestorm/decorators"
+
+export class Street {
+
+  id: string | null = null
+
+  name: string | null = null
+
+}
 
 @Collection()
 export class City {
@@ -19,4 +26,9 @@ export class City {
 
   @Ignore()
   optionalOption: number = 5
+
+  @SubCollection({ type: Street })
+  streets?: ISubcollection<Street>
+
 }
+
