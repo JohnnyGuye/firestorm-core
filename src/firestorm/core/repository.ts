@@ -1,5 +1,6 @@
 import { Type } from "@angular/core";
-import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, getDoc, getDocs, query, QuerySnapshot, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDoc, getDocs, query, QuerySnapshot, setDoc } from "firebase/firestore";
+import { MissingIdentifierError } from "../errors";
 import { FIRESTORM_METADATA_STORAGE } from "../storage";
 import { FirestormModel } from "./firestorm-model";
 
@@ -145,7 +146,7 @@ export class Repository<T extends FirestormModel> {
 
     /**
      * Gets all the items of a collection
-     * @returns 
+     * @returns A promise containing all the items in the collection
      */
     async findAll(): Promise<T[]> {
 
@@ -159,6 +160,37 @@ export class Repository<T extends FirestormModel> {
             return this.firestoreDocumentSnapshotToClass(docSnapshot)
         })
 
+    }
+
+    /**
+     * Deletes a document in the database.
+     * It doesn't delete its subcollection if any.
+     * 
+     * Trying to delete a document that doesn't exist will just silently fail
+     * 
+     * @param id Id of the document to delete
+     */
+    async delete(id: string): Promise<void>;
+    /**
+     * Deletes a document in the database.
+     * It doesn't delete its subcollection if any.
+     * 
+     * Trying to delete a document that doesn't exist will just silently fail
+     * 
+     * @warning This doesn't typecheck the model. It only types check that you provided an id
+     * @param model Model of the document to delete.
+     */
+    async delete(model: FirestormModel): Promise<void>;
+    async delete(modelOrId: FirestormModel | string): Promise<void> {
+
+        const id: string | null | undefined = (typeof modelOrId !== "string" ? modelOrId.id : modelOrId)
+        
+        if (!id) throw new MissingIdentifierError()
+
+        const path = buildPath(this.collectionPath, id)
+        const docRef: DocumentReference = doc(this.firestore, path)
+        await deleteDoc(docRef)
+        
     }
 
     //#endregion

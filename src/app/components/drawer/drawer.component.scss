@@ -51,7 +51,7 @@
   &.is-open {
     & > .drawer-side {
       width: 400px;
-      max-width: 100%;
+      max-width: 100vw;
     }
   }
 

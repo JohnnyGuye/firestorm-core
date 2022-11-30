@@ -49,4 +49,9 @@ export class DevTestComponent {
     this.playgroundService.register(event.firestorm)
     console.log(this.playgroundService.instances)
   }
+
+  public showConnectForm: boolean = false
+  toggleFullConnect() {
+    this.showConnectForm = !this.showConnectForm
+  }
 }

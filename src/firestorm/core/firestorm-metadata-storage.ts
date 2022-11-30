@@ -1,5 +1,5 @@
 import { Type } from "@angular/core";
-import { AlreadyExistingMetadatasError, NoFoundMetadataError } from "../errors";
+import { AlreadyExistingMetadatasError, NotFoundMetadataError } from "../errors";
 import { FirestormMetadata } from "./firestorm-metadata";
 import { pascalToSnakeCase } from "./helpers";
 
@@ -41,7 +41,7 @@ export class FirestormMetadataStorage {
 
   public getMetadatas(type: any) {
     const md = this.tryGetMetadatas(type)
-    if (!md) throw new NoFoundMetadataError(type)
+    if (!md) throw new NotFoundMetadataError(type)
     return md
   }
 

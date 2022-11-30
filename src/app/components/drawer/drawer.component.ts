@@ -20,7 +20,7 @@ export class DrawerComponent implements OnInit {
   height: 'container' | 'content' = 'content'
 
   @Input()
-  drawerWidth: number | string = '30vw'
+  drawerWidth: number | string = 'min(80vw,300px)'
 
   @Output()
   openedChange = new EventEmitter<boolean>()

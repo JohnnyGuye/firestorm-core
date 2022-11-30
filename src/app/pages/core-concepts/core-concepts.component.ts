@@ -22,14 +22,29 @@ export class CoreConceptsComponent {
 
   constructor() {
 
+    
+    this.doTheThings()
+    
+  }
+  
+  async doTheThings() {
+    
     const firestorm = new Firestorm('doc-base')
     firestorm.connect(defaultOptions)
     
     let repository: Repository<City> = firestorm.getRepository(City)
-    repository.findAll().then(res => console.log(res))
-
+    
+    await repository.create(new City())
+    const cities = await repository.findAll()
+    for (let city of cities) {
+      console.log(city)
+      await repository.delete(city)
+    }
+    await repository.delete("fezfezouihferah")
+    console.log(await repository.findAll())
+  
     let subRepo = firestorm.getSubRepository(City, { parent: new City(), key: 'streets' })
     console.log(repository.typeMetadata)
-
+    
   }
 }

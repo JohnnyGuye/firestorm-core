@@ -1,22 +1,19 @@
-<div class="columns">
-    <!-- <div class="column is-4">
-        <fo-one-tap-connect-firebase-button
-        [name]="tap.name"
-        [options]="tap.options"
-        (onConnection)="onConnection($event)">
-        </fo-one-tap-connect-firebase-button>
-    </div> -->
-
-    <div class="column is-4" *ngFor="let connector of this.connectors">
-        <fo-one-tap-connect-firebase-button
-        [name]="connector.name"
-        [options]="connector.options"
-        (onConnection)="onConnection($event)">
-        </fo-one-tap-connect-firebase-button>
+<div class="container is-fluid">
+    <div class="columns">
+        <div class="column is-4" *ngFor="let connector of this.connectors">
+            <fo-one-tap-connect-firebase-button
+            [name]="connector.name"
+            [options]="connector.options"
+            (onConnection)="onConnection($event)">
+            </fo-one-tap-connect-firebase-button>
+        </div>
     </div>
+    
+    <button class="button" (click)="toggleFullConnect()">
+        <span>Toggle connection form</span>
+    </button>
+    <fo-connect-firebase
+    *ngIf="showConnectForm"
+    [defaultOptions]="defaultOptions"
+    (onConnection)="onConnection($event)"></fo-connect-firebase>
 </div>
-
-
-<fo-connect-firebase
-[defaultOptions]="defaultOptions"
-(onConnection)="onConnection($event)"></fo-connect-firebase>

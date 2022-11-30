@@ -35,9 +35,10 @@ export class PlaygroundService {
   private static readonly STORAGE_LOCATION: string = "playground/firestorm-connectors"
 
   private firestormInstances: Firestorm[] = []
+  private _lastInstance: Firestorm | null = null
   private _connectors: IFirestormConnector[] = []
 
-  constructor() { 
+  constructor() {
     this.load()
   }
 
@@ -79,6 +80,10 @@ export class PlaygroundService {
 
   get instances() {
     return [...this.firestormInstances]
+  }
+
+  get lastInstance() {
+    return this._lastInstance
   }
 
   getInstanceByName(name: string | Firestorm | IFirestormConnector) {
