@@ -21,7 +21,7 @@ export interface IExplicitSerializerOptions<T> {
 export type IComplexeTypeOptions<T> = IAutoSerializerOptions | IExplicitSerializerOptions<T>
 
 
-export function ComplexeType<T>(options: IComplexeTypeOptions<T>) {
+export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
 
   if ("toDocument" in options && "toModel" in options) {
     return (object: any, key: any) => {

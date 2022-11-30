@@ -1,7 +1,7 @@
-import { ComplexeType } from "./complexe-type.decorator";
+import { ComplexType } from "./complex-type.decorator";
 
 export function DateType() {
-  return ComplexeType({
+  return ComplexType({
     toDocument: (object: any) => {
       if (object === null || object === undefined) return null
 
