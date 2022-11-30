@@ -12,6 +12,7 @@ export class Street {
 @Collection()
 export class City {
 
+  // @Ignore()
   id: string | null = null
 
   country: string | null = null
@@ -24,7 +25,7 @@ export class City {
   @DateType()
   creationDate: Date | null = null
 
-  @Ignore()
+  // @Ignore()
   optionalOption: number = 5
 
   @SubCollection({ type: Street })

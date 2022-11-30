@@ -36,11 +36,19 @@ export class CoreConceptsComponent {
     
     await repository.create(new City())
     const cities = await repository.findAll()
-    for (let city of cities) {
-      console.log(city)
-      await repository.delete(city)
-    }
-    await repository.delete("fezfezouihferah")
+    const city = new City()
+    city.name = "Los Angeles"
+    city.state = "CA"
+    city.country = "USA"
+    await repository.create(city)
+    city.country = "Spain"
+    await repository.update(city)
+
+    // for (let city of cities) {
+    //   console.log(city)
+    //   await repository.delete(city)
+    // }
+    // await repository.delete("fezfezouihferah")
     console.log(await repository.findAll())
   
     let subRepo = firestorm.getSubRepository(City, { parent: new City(), key: 'streets' })

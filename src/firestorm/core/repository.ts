@@ -104,6 +104,7 @@ export class Repository<T extends FirestormModel> {
      * @returns 
      */
     async create(model: T): Promise<void> {
+        
         let id = model.id
         let documentRef: DocumentReference
         if (!id) {
@@ -112,7 +113,7 @@ export class Repository<T extends FirestormModel> {
         } else {
             documentRef = doc(this.firestore, this.collectionPath, id)
         }
-
+        
         const data = this.classToFirestoreDocument(model)
 
         await setDoc(documentRef, data)

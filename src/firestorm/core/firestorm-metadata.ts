@@ -155,15 +155,17 @@ export class FirestormMetadata<T> {
 
       if (this.isKeyIgnored(key)) continue
       
+      if (!(key in object)) continue
+
       const mappedTo = this.isMappedTo(key)
       if (!mappedTo) continue
 
       const convert = this.getModelToDocumentConverter(key)
-      let val = convert(document[mappedTo])
+      let val = convert((object as any)[key])
       
       if (val === undefined && !this.isAcceptingUndefined(key)) continue
 
-      document[key] = val
+      document[mappedTo] = val
     }
 
     return document

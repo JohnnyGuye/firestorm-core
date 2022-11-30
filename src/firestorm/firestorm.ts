@@ -30,13 +30,6 @@ export class Firestorm {
      */
     async connect(options: FirebaseOptions) {
         this.app = initializeApp(options, this.name)
-        let db = this.firestore
-        if (!db) return
-        await setDoc(doc(db, "cities", "LA"), {
-            name: "Los Angeles",
-            state: "CA",
-            country: "USA"
-        })
     }
 
     get isConnected() {
