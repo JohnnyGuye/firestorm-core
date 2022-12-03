@@ -6,10 +6,14 @@ import { AppComponent } from './app.component';
 import { DrawerComponent } from './components/drawer/drawer.component';
 import { FooterComponent } from './components/footer';
 import { MainMenuComponent } from './components/main-menu/main-menu.component';
+import { HighlightCodeDirective } from './directives/highlight-code/highlight-code.directive';
+
+
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HighlightCodeDirective
   ],
   imports: [
     BrowserModule,

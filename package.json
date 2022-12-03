@@ -23,6 +23,7 @@
     "@types/prismjs": "^1.9.0",
     "bulma": "^0.9.4",
     "firebase": "^9.14.0",
+    "highlight.js": "^11.7.0",
     "prismjs": "^1.9.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",

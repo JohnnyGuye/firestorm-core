@@ -1,15 +1,17 @@
 
 <section class="application-container">
-    <fo-drawer 
-    [opened]="true" 
-    [position]="'start'" 
-    [height]="'container'">
-        <section aside>
-            <fo-main-menu [menu]="menu"></fo-main-menu>
-        </section>
-        <section content>
-            <router-outlet></router-outlet>
-        </section>
-    </fo-drawer>
+  <div foHighlightCode></div>
+  <fo-drawer
+  [opened]="true"
+  [position]="'start'"
+  [height]="'container'">
+    <div foHighlightCode=""></div>
+    <section aside>
+      <fo-main-menu [menu]="menu"></fo-main-menu>
+    </section>
+    <section content>
+      <router-outlet></router-outlet>
+    </section>
+  </fo-drawer>
 </section>
 <fo-footer></fo-footer>
