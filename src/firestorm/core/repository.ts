@@ -13,10 +13,41 @@ function buildPath(...pathArray: string[]) {
 }
 
 export interface IParentCollection<T extends FirestormModel> {
-
-    parent: T
+    
+    type: Type<T>
+    instance: T
     key: string
     
+}
+
+class ParentCollection<T extends FirestormModel> 
+    implements IParentCollection<T> {
+
+    readonly type: Type<T>
+    readonly instance: T
+    readonly key: string
+    
+    constructor(type: Type<T>, parent: T, key: string) {
+        this.type = type
+        this.instance = parent
+        this.key = key
+    }
+
+    protected get storage() {
+        return FIRESTORM_METADATA_STORAGE
+    }
+
+    public get typeMetadata() {
+        return this.storage.getMetadatas(this.type)
+    }
+
+    public get collection() {
+        return this.typeMetadata.collection
+    }
+
+    public get id() {
+        return this.instance.id
+    }
 }
 
 /**
@@ -26,14 +57,21 @@ export class Repository<T extends FirestormModel> {
     
     private _type: Type<T>
     protected readonly firestore: Firestore
+    private parents?: ParentCollection<any>[] = []
     
     constructor(
         type: Type<T>,
-        firestore: Firestore
+        firestore: Firestore,
+        parents?: IParentCollection<any>[]
         ) {
         
         this._type = type
         this.firestore = firestore
+        if (parents) {
+            this.parents = parents.map(
+                value => new ParentCollection(value.type, value.instance, value.key)
+            )
+        }
     }
 
     /**
@@ -58,8 +96,29 @@ export class Repository<T extends FirestormModel> {
         return this.storage.getMetadatas(this._type)
     }
 
+    public get hasParents() {
+        return this.parents && this.parents.length > 1
+    }
+
     public get collectionPath() {
-        return "cities"
+        const col = this.typeMetadata.collection
+        if (!col) throw new Error("No collection provided")
+
+        const pathBlocks: string[] = []
+        if (this.parents) {
+            for (let p of this.parents) {
+                const c = p.collection
+                const id = p.id
+
+                if (!c) throw new Error("No collection provided for this parent")
+                if (!id) throw new Error("No id for this element")
+
+                pathBlocks.push(c)
+                pathBlocks.push(id)
+            }
+        }
+        pathBlocks.push(col)
+        return buildPath(...pathBlocks)
     }
 
     //#region Basic CRUD

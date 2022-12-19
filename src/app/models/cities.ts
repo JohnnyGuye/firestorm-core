@@ -12,7 +12,7 @@ export class Street {
 @Collection()
 export class City {
 
-  // @Ignore()
+  @Ignore()
   id: string | null = null
 
   country: string | null = null

@@ -64,11 +64,12 @@ export class Firestorm {
             throw new Error("You have to connect Firestorm first")
         }
 
-        let repository = new Repository(type, firestore)
-        parentCollections.reverse()
-        let elem1 = parentCollections[0]
-        const constructor = elem1.parent.constructor
+        let repository = new Repository(type, firestore, parentCollections)
+        // parentCollections.reverse()
+        // let elem1 = parentCollections[0]
+        // const constructor = elem1.instance.constructor
         
+        return repository
     }
 
     private get firestore() {
