@@ -5,6 +5,7 @@ import { Firestorm } from 'src/firestorm';
 import { City, Street } from 'src/app/models/cities';
 import { Repository } from 'src/firestorm/core/repository';
 import { environment } from 'src/app/environment/environment';
+import { Query } from 'src/firestorm/core/query';
 
 const defaultOptions: FirebaseOptions = environment.firestorm
 
@@ -58,6 +59,10 @@ export class CoreConceptsComponent {
       { type: City, instance: c, key: 'streets' }
       )
     console.log(subRepo.collectionPath)
+    const repo = firestorm.getRepository(City)
+    // where("country", "in", ["Spain", "France"])
+    const res = await repo.query(new Query().where("country", 'in', ["Spain", "France"]))
+    console.log(res)
     // console.log(repository.typeMetadata)
     
   }

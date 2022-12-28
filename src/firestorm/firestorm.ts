@@ -65,10 +65,6 @@ export class Firestorm {
         }
 
         let repository = new Repository(type, firestore, parentCollections)
-        // parentCollections.reverse()
-        // let elem1 = parentCollections[0]
-        // const constructor = elem1.instance.constructor
-        
         return repository
     }
 
