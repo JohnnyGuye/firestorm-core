@@ -61,7 +61,12 @@ export class CoreConceptsComponent {
     console.log(subRepo.collectionPath)
     const repo = firestorm.getRepository(City)
     // where("country", "in", ["Spain", "France"])
-    const res = await repo.query(new Query().where("country", 'in', ["Spain", "France"]))
+    const query = new Query()
+    query.where("country", 'in', ["Spain", "France"])
+      
+    query.validityCheck(City)
+
+    const res = await repo.query(query)
     console.log(res)
     // console.log(repository.typeMetadata)
     

@@ -17,16 +17,15 @@ export type OrderClauseDirection = 'ascending' | 'descending'
 export type LimitClauseLimit = number
 export type LimitClauseDirection = 'start' | 'end'
 
+const inequalityOperators: WhereClauseOperator[] = ['<', '<=', '!=', 'not-in', '>', '>=']
+export function isInequalityOperator(operator: WhereClauseOperator) {
+  return inequalityOperators.includes(operator)
+}
+
 export interface IQueryBuildBlock {
 
   readonly previous: IQueryBuildBlock | null
   readonly next: IQueryBuildBlock | null
-
-  // readonly root: IQueryBuildBlock;
-
-  // readonly hasNext: boolean
-
-  // toConstraint(): QueryConstraint | null
 
   toConstraints(): QueryConstraint[]
 }
@@ -74,20 +73,24 @@ abstract class QueryBuildBlock implements IQueryBuildBlock {
 
   protected abstract toConstraint(): QueryConstraint | null;
 
-  toConstraints(): QueryConstraint[] {
+  public get flattenedChain() {
 
+    let blocks = []
     let currentBlock: QueryBuildBlock | null = this.root
-    let constraints = []
 
-    while(currentBlock) {
-      let constraint = currentBlock.toConstraint()
-      if (constraint) {
-        constraints.push(constraint)
-      }
+    while (currentBlock) {
+      blocks.push(currentBlock)
       currentBlock = currentBlock.next
     }
 
-    return constraints
+    return blocks
+  }
+
+  toConstraints(): QueryConstraint[] {
+
+    return this.flattenedChain
+      .map(block => block.toConstraint())
+      .filter(constraint => !!constraint) as QueryConstraint[]
   }
 
 }
@@ -98,22 +101,19 @@ export class StartBlock extends QueryBuildBlock {
     field: QueryClauseField,
     operator: WhereClauseOperator, 
     value: WhereClauseValue
-  ) {
-    this.next = new WhereBlock(field, operator, value)
-    return this.next
+  ): WhereBlock {
+    return this.next = new WhereBlock(field, operator, value)
   }
 
   orderBy(
     field: QueryClauseField,
     direction: OrderClauseDirection
   ) {
-    this.next = new OrderyByBlock(field, direction)
-    return this.next
+    return this.next = new OrderyByBlock(field, direction)
   }
 
   limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start') {
-    this.next = new LimitBlock(limit, from)
-    return this.next
+    return this.next = new LimitBlock(limit, from)
   }
 
   protected toConstraint() { return null }
@@ -134,22 +134,19 @@ class WhereBlock extends QueryBuildBlock {
     field: QueryClauseField,
     operator: WhereClauseOperator, 
     value: WhereClauseValue
-  ) {
-    this.next = new WhereBlock(field, operator, value)
-    return this.next
+  ): WhereBlock {
+    return this.next = new WhereBlock(field, operator, value)
   }
 
   orderBy(
     field: QueryClauseField,
     direction: OrderClauseDirection
   ) {
-    this.next = new OrderyByBlock(field, direction)
-    return this.next
+    return this.next = new OrderyByBlock(field, direction)
   }
 
   limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start') {
-    this.next = new LimitBlock(limit, from)
-    return this.next
+    return this.next = new LimitBlock(limit, from)
   }
 
   protected toConstraint() {
@@ -171,13 +168,11 @@ class OrderyByBlock extends QueryBuildBlock {
     field: QueryClauseField,
     direction: OrderClauseDirection
   ) {
-    this.next = new OrderyByBlock(field, direction)
-    return this.next
+    return this.next = new OrderyByBlock(field, direction)
   }
 
   limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start') {
-    this.next = new LimitBlock(limit, from)
-    return this.next
+    return this.next = new LimitBlock(limit, from)
   }
 
   protected toConstraint() {
