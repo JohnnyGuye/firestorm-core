@@ -1,6 +1,7 @@
 import { Type } from "@angular/core"
 import { DocumentToModelConverter, ModelToDocumentConverter } from "./firestorm-model"
 import { pascalToSnakeCase } from "./helpers"
+import { logWarn } from "./logging"
 
 /**
  * Metadatas linked to a type that holds information:
@@ -114,6 +115,9 @@ export class FirestormMetadata<T> {
    */
   public addModelToDocumentConverter<T>(key: string, converter: ModelToDocumentConverter<T>) {
     if (!this._toDocumentConverters) this._toDocumentConverters = new Map<string, ModelToDocumentConverter<any>>
+    if (this._toDocumentConverters.has(key)) {
+      logWarn(`There is already a model to doc conversion for the ${key} of the object ${this.type.name}. The new conversion will replace it.`)
+    }
     this._toDocumentConverters.set(key, converter)
   }
 
@@ -124,6 +128,9 @@ export class FirestormMetadata<T> {
    */
   public addDocumentToModelConverter<T>(key: string, converter: DocumentToModelConverter<T>) {
     if (!this._toModelConverters) this._toModelConverters = new Map<string, DocumentToModelConverter<any>>()
+    if (this._toModelConverters.has(key)) {
+      logWarn(`There is already a doc to model conversion for the ${key} of the object ${this.type.name}. The new conversion will replace it.`)
+    }
     this._toModelConverters.set(key, converter)
   }
 

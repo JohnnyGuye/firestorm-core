@@ -4,21 +4,33 @@ import { DocumentToModelConverter, ModelToDocumentConverter } from "../core/fire
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 
 /**
+ * Interface stipulating the container if any for complexe type decorator
+ */
+interface IContainerOptions {
+
+  /** The container in which the model is. Only supports array so far */
+  container?: 'array'
+
+}
+
+/**
  * Auto serializer set of options.
  * 
+ * You provide a type that may have fields decorators aswell and it will handle it's serialization
+ * the same way a model decoratored with Collection does.
+ * 
  */
-export interface IAutoSerializerOptions {
+export interface IAutoSerializerOptions extends IContainerOptions {
 
+  /** Type to serialize/deserialize */
   type: Type<any>
-  
-  container?: 'array'
 
 }
 
 /**
  * Explicit serialization set of options
  */
-export interface IExplicitSerializerOptions<T> {
+export interface IExplicitSerializerOptions<T> extends IContainerOptions {
 
   /** The model field to firestore document conversion function */
   toDocument: ModelToDocumentConverter<T>
@@ -41,14 +53,46 @@ export type IComplexeTypeOptions<T> = IAutoSerializerOptions | IExplicitSerializ
  */
 export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
 
+  const wrapInContainer = (modelOrDocumentConverter: (item: any) => any) => {
+    switch (options.container) {
+      case 'array':
+        return (modelOrDocumentAsArray: Array<any>) => {
+          return modelOrDocumentAsArray.map(modelOrDocumentConverter)
+        }
+      default:
+        return modelOrDocumentConverter
+    }
+  }
+
+
+  if ("type" in options) {
+    return (object: any, key: any) => {
+
+      let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+      const md = storage.createOrGetMetadatas(object.constructor)
+
+      const typeMd = storage.createOrGetMetadatas(options.type)
+
+      const docToMod = typeMd.convertDocumentToModel
+      const modToDoc = typeMd.convertModelToDocument
+
+      md.addDocumentToModelConverter(key, wrapInContainer(docToMod))
+      md.addModelToDocumentConverter(key, wrapInContainer(modToDoc))
+
+    }
+  }
+
   if ("toDocument" in options && "toModel" in options) {
     return (object: any, key: any) => {
       
       let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
       const md = storage.createOrGetMetadatas(object.constructor)
 
-      md.addDocumentToModelConverter(key, options.toModel)
-      md.addModelToDocumentConverter(key, options.toDocument)
+      const docToMod = options.toModel
+      const modToDoc = options.toDocument
+
+      md.addDocumentToModelConverter(key, wrapInContainer(docToMod))
+      md.addModelToDocumentConverter(key, wrapInContainer(modToDoc))
 
     }
   }

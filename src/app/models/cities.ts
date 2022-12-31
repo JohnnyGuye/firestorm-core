@@ -1,6 +1,6 @@
 import { 
   Collection, Ignore, MapTo, DateType, 
-  SubCollection, ISubCollection
+  SubCollection, ISubCollection, ComplexType
 } from "@firestorm/decorators"
 
 export class Street {
@@ -27,7 +27,7 @@ export class City {
   @DateType()
   creationDate: Date | null = null
 
-  // @Ignore()
+  @Ignore()
   optionalOption: number = 5
 
   @SubCollection({ type: Street })
