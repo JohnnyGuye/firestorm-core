@@ -1,5 +1,9 @@
 import { ComplexType } from "./complex-type.decorator";
 
+/**
+ * Decorator for Date fields.
+ * @returns 
+ */
 export function DateType() {
   return ComplexType({
     toDocument: (object: any) => {

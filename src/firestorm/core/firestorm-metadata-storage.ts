@@ -1,7 +1,5 @@
-import { Type } from "@angular/core";
 import { AlreadyExistingMetadatasError, NotFoundMetadataError } from "../errors";
 import { FirestormMetadata } from "./firestorm-metadata";
-import { pascalToSnakeCase } from "./helpers";
 
 export class FirestormMetadataStorage {
 

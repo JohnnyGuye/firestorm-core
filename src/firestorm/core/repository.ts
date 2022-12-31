@@ -1,5 +1,5 @@
 import { Type } from "@angular/core";
-import { collection, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDoc, getDocs, query, QuerySnapshot, setDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDoc, getDocs, query, QuerySnapshot, setDoc, updateDoc, where } from "firebase/firestore";
 import { MissingIdentifierError } from "../errors";
 import { FIRESTORM_METADATA_STORAGE } from "../storage";
 import { FirestormModel } from "./firestorm-model";
@@ -90,18 +90,30 @@ export class Repository<T extends FirestormModel> {
         return this.type.name
     }
 
+    /**
+     * The storage of metadatas of this repository
+     */
     protected get storage() {
         return FIRESTORM_METADATA_STORAGE
     }
 
+    /**
+     * The metadatas corresponding to the type of this repository
+     */
     public get typeMetadata() {
         return this.storage.getMetadatas(this._type)
     }
 
+    /**
+     * Whether or not this repository is a subcollection or not
+     */
     public get hasParents() {
         return this.parents && this.parents.length > 1
     }
 
+    /**
+     * Gets the path to the collection of this repository
+     */
     public get collectionPath() {
         const col = this.typeMetadata.collection
         if (!col) throw new Error("No collection provided")
@@ -134,7 +146,7 @@ export class Repository<T extends FirestormModel> {
      * (the entire document will be replaced in database)
      * 
      * @param model 
-     * @returns 
+     * @returns A promise that resolved when the item has been created.
      */
     async create(model: T): Promise<void> {
         
@@ -158,7 +170,7 @@ export class Repository<T extends FirestormModel> {
      * Modifies an item in the database.
      * If the id is not provided, it will create a new object.
      * @param model Partial or full model to update. 
-     * @returns 
+     * @returns A Promise that resolved when the item has been updated (or created)
      */
     async update(model: Partial<T>) {
 
@@ -173,15 +185,15 @@ export class Repository<T extends FirestormModel> {
 
         const data = this.classToFirestoreDocument(model)
 
-        await setDoc(documentRef, data)
+        await updateDoc(documentRef, data)
 
         return
     }
 
-        /**
+    /**
      * Tries to find an item by its id in the database
      * @param id Id of the item to find
-     * @returns 
+     * @returns A promise containing either the item retrieved or null if not found
      */
     async findById(id: string): Promise<T | null> {
 
@@ -192,20 +204,14 @@ export class Repository<T extends FirestormModel> {
 
         if (!documentSnapshot.exists()) return null
         
-        // const retrievedId: string = documentSnapshot.id
-        // const data = documentSnapshot.data
-
-        // const klass = this.firestoreDocumentToClass(data)
-        // if (!klass) {
-        //     console.error("Failed to convert the document to a typed object:", id, data)
-        //     return null
-        // }
-
-        // klass.id = id
-
         return this.firestoreDocumentSnapshotToClass(documentSnapshot)
     }
 
+    /**
+     * Queries a collection of items
+     * @param firestoryQuery Query
+     * @returns A promise on the items that are results of the query
+     */
     async query(firestoryQuery: Query | IQueryBuildBlock): Promise<T[]>{
         const path = buildPath(this.collectionPath)
         const col = collection(this.firestore, path)
@@ -244,6 +250,7 @@ export class Repository<T extends FirestormModel> {
      * Trying to delete a document that doesn't exist will just silently fail
      * 
      * @param id Id of the document to delete
+     * @returns A promise that returns when the document has been deleted
      */
     async delete(id: string): Promise<void>;
     /**
@@ -254,6 +261,7 @@ export class Repository<T extends FirestormModel> {
      * 
      * @warning This doesn't typecheck the model. It only types check that you provided an id
      * @param model Model of the document to delete.
+     * @returns A promise that returns when the document has been deleted
      */
     async delete(model: FirestormModel): Promise<void>;
     async delete(modelOrId: FirestormModel | string): Promise<void> {
@@ -288,7 +296,7 @@ export class Repository<T extends FirestormModel> {
         return klass
     }
 
-    public firestoreDocumentToClass(document: any): T | null {
+    private firestoreDocumentToClass(document: any): T | null {
         return this.typeMetadata.convertDocumentToModel(document)
     }
 

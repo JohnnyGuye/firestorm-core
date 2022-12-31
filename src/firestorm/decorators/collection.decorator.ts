@@ -3,12 +3,20 @@ import { pascalToSnakeCase } from "../core/helpers"
 import { logWarn } from "../core/logging"
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 
+/**
+ * Options for the collection decorator
+ */
 export interface ICollectionOptions {
   
+  /** Path to this collection in firestore */
   collection?: string
 
 }
 
+/**
+ * Class decorator for a model.
+ * @param options Options of the collection
+ */
 export function Collection(options?: ICollectionOptions) {
   return (constructor: any) => {
     
@@ -36,8 +44,6 @@ export function Collection(options?: ICollectionOptions) {
     let md = storage.createOrGetMetadatas(constructor)
 
     md.collection = collectionName
-
-    console.log(FIRESTORM_METADATA_STORAGE)
   }
 
 }

@@ -1,10 +1,13 @@
 import { Type } from "@angular/core";
 import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
-import { doc, Firestore, getFirestore, setDoc } from "firebase/firestore"
+import { Firestore, getFirestore } from "firebase/firestore"
 import { FirebaseStorage, getStorage } from "firebase/storage"
 import { FirestormModel } from "./core/firestorm-model";
 import { IParentCollection, IRepository, Repository } from "./core/repository";
 
+/**
+ * This class is the hub that enables you to connect to queries
+ */
 export class Firestorm {
 
     public readonly name: string = ""
@@ -12,7 +15,7 @@ export class Firestorm {
     private _firestore: Firestore | null = null
     private _firebase: FirebaseStorage | null = null
 
-    private repositories = new Map<Type<any>, IRepository>() 
+    // private repositories = new Map<Type<any>, IRepository>() 
 
     /**
      * Create an instance of Firestorm.
@@ -32,28 +35,39 @@ export class Firestorm {
         this.app = initializeApp(options, this.name)
     }
 
+    /**
+     * True if this instance if connected to a firestore
+     */
     get isConnected() {
         return !!this.app
     } 
 
+    /**
+     * Gets the (read-only) options of this firestorm instance.
+     */
     get options() {
         return this.app?.options || null
     }
 
+    /**
+     * Gets the repository for a model
+     */
     public getRepository<T extends FirestormModel>(type: Type<T>) {
-        let repository = this.repositories.get(type)
-        if (!repository) {
-            let firestore = this.firestore
-            if (!firestore) {
-                throw new Error("You have to connect Firestorm first")
-            }
-
-            repository = new Repository(type, firestore)
+        
+        let firestore = this.firestore
+        if (!firestore) {
+            throw new Error("You have to connect Firestorm first")
         }
 
-        return repository as Repository<T>
+        return new Repository(type, firestore)
     }
 
+    /**
+     * Gets the repository for a submodel
+     * @param type Type of the submodel
+     * @param parentCollections The parent collections
+     * @returns 
+     */
     public getSubRepository<T extends FirestormModel>(
         type: Type<T>,
         ...parentCollections: IParentCollection<any>[]
