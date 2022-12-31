@@ -15,6 +15,8 @@ export class Firestorm {
     private _firestore: Firestore | null = null
     private _firebase: FirebaseStorage | null = null
 
+    private customRepositoriesProviders = new Map<Type<any>, Type<Repository<any>>>()
+
     // private repositories = new Map<Type<any>, IRepository>() 
 
     /**
@@ -50,25 +52,35 @@ export class Firestorm {
     }
 
     /**
-     * Gets the repository for a model
+     * Registers custom repositories
+     * @param type 
+     * @param repository 
      */
-    public getRepository<T extends FirestormModel>(type: Type<T>) {
-        
-        let firestore = this.firestore
-        if (!firestore) {
-            throw new Error("You have to connect Firestorm first")
-        }
-
-        return new Repository(type, firestore)
+    public registerCustomRepository<
+        T extends FirestormModel, 
+        U extends Repository<T>
+        >(
+            type: Type<T>, 
+            repository: Type<U>
+        ) {
+            
+        this.customRepositoriesProviders.set(type, repository)
     }
 
+    /**
+     * Gets the repository for a model
+     * @param type Type of the submodel
+     * @returns 
+     */
+    public getRepository<T extends FirestormModel>(type: Type<T>): Repository<T>;
     /**
      * Gets the repository for a submodel
      * @param type Type of the submodel
      * @param parentCollections The parent collections
      * @returns 
      */
-    public getSubRepository<T extends FirestormModel>(
+    public getRepository<T extends FirestormModel>(type: Type<T>,...parentCollections: IParentCollection<any>[]): Repository<T>;
+    public getRepository<T extends FirestormModel>(
         type: Type<T>,
         ...parentCollections: IParentCollection<any>[]
         ) {
@@ -77,6 +89,9 @@ export class Firestorm {
         if (!firestore) {
             throw new Error("You have to connect Firestorm first")
         }
+
+        let CustomRepo = this.customRepositoriesProviders.get(type)
+        if (CustomRepo) return new CustomRepo(type, firestore, parentCollections)
 
         let repository = new Repository(type, firestore, parentCollections)
         return repository

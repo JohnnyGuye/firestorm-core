@@ -9,6 +9,15 @@ import { Query } from 'src/firestorm/core/query';
 
 const defaultOptions: FirebaseOptions = environment.firestorm
 
+class CityRepository extends Repository<City> {
+
+  public async findByName(name: string) {
+    const cities = await this.query(new Query().where("name", "==", name))
+    return cities
+  }
+
+}
+
 @Component({
   selector: 'fo-core-concepts',
   standalone: true,
@@ -52,19 +61,28 @@ export class CoreConceptsComponent {
     // // await repository.delete("fezfezouihferah")
     // console.log(await repository.findAll())
   
+    firestorm.registerCustomRepository(City, CityRepository)
+    firestorm.registerCustomRepository(Street, CityRepository)
     const c = new City()
     c.id = "COj04ISsVRkXsgIoElK0"
-    let subRepo = firestorm.getSubRepository(
+
+    const repo = firestorm.getRepository(City) as CityRepository
+    const losAngeless = await repo.findByName("Los Angeles")
+    console.log(repo, losAngeless)
+    
+    let subRepo = firestorm.getRepository(
       Street, 
       { type: City, instance: c, key: 'streets' }
       )
 
     subRepo.create(new Street())
-    // console.log(subRepo.collectionPath)
+    console.log(City)
+    
+    console.log(subRepo.collectionPath)
     // const repo = firestorm.getRepository(City)
-    // // where("country", "in", ["Spain", "France"])
-    // const query = new Query()
-    // query.where("country", 'in', ["Spain", "France"])
+    // where("country", "in", ["Spain", "France"])
+    const query = new Query()
+    query.where("country", 'in', ["Spain", "France"])
       
     // query.validityCheck(City)
 

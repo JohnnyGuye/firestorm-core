@@ -14,6 +14,31 @@ function buildPath(...pathArray: string[]) {
     return pathArray.join("/")
 }
 
+// Technically I could infer the type from the instance T. There is probably a way aswell to not use the key though it may be complicated
+
+/*
+### Should be possible if T only has one matching subcollection matching this model
+
+interface IParentCollectionSetOne<T extends FirestormModel> {
+    instance: T
+}
+
+### Should be always possible
+
+interface IParentCollectionSetTwo<T extends FirestormModel> {
+    instance: T
+    key: string
+}
+
+### Should also be viable you don't need an actual instance if you give the type, you just need the id
+
+interface IParentCollectionSetThree<T extends FirestormModel> {
+    type: Type<T>
+    partialInstanceOrId: FirestormModel | string
+    key: string
+}
+*/
+
 export interface IParentCollection<T extends FirestormModel> {
     
     type: Type<T>
@@ -61,6 +86,12 @@ export class Repository<T extends FirestormModel> {
     protected readonly firestore: Firestore
     private parents?: ParentCollection<any>[] = []
     
+    /**
+     * Creates a new repository on a model
+     * @param type Type on which the repository operates
+     * @param firestore The instance of firestore this repository connects to
+     * @param parents The optional parent collections for repositories of subcollections
+     */
     constructor(
         type: Type<T>,
         firestore: Firestore,
