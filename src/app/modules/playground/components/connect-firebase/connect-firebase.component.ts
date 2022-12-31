@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Firestorm } from 'src/firestorm';
 import { FirebaseOptions } from 'firebase/app';
 import { FormsModule } from '@angular/forms';
 import { FirestormConnectionEvent } from '../events';
+import { Firestorm } from '@firestorm/firestorm';
 
 @Component({
   selector: 'fo-connect-firebase',

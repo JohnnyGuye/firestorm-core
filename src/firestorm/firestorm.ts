@@ -3,7 +3,7 @@ import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
 import { Firestore, getFirestore } from "firebase/firestore"
 import { FirebaseStorage, getStorage } from "firebase/storage"
 import { FirestormModel } from "./core/firestorm-model";
-import { IParentCollection, IRepository, Repository } from "./core/repository";
+import { IParentCollection, IRepository, Repository } from "./repository/repository";
 
 /**
  * This class is the hub that enables you to connect to queries

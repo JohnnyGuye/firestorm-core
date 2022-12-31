@@ -12,7 +12,7 @@ export interface FirestormModel {
  * 
  * It currently is an empty interface and it may stay like that but use it anyway, at the very least to self document your code.
  */
-export interface ISubcollection<T> {
+export interface ISubCollection<T> {
 
 }
 

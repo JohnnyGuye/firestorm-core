@@ -2,9 +2,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": "src",
     "paths": {
-      "@firestorm/*": ["src/firestorm"]
+      "@firestorm": ["firestorm/index"],
+      "@firestorm/*": ["firestorm/*"]
     },
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,

@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirebaseOptions } from 'firebase/app';
-import { Firestorm } from 'src/firestorm';
-import { City, Street } from 'src/app/models/cities';
-import { Repository } from 'src/firestorm/core/repository';
-import { environment } from 'src/app/environment/environment';
-import { Query } from 'src/firestorm/core/query';
+import { environment } from 'app/environment/environment';
+import { City, Street } from 'app/models/cities';
+import { Repository } from '@firestorm/repository';
+import { Query } from '@firestorm/query';
+import { Firestorm } from '@firestorm';
+
 
 const defaultOptions: FirebaseOptions = environment.firestorm
 

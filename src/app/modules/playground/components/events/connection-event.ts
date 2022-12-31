@@ -1,5 +1,5 @@
 import { FirebaseOptions } from "firebase/app";
-import { Firestorm } from "src/firestorm";
+import { Firestorm } from "@firestorm";
 
 export class FirestormConnectionEvent {
 

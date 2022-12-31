@@ -6,7 +6,7 @@ import { FirestormConnectionEvent } from '../../components/events';
 import { OneTapConnectFirebaseButtonComponent } from '../../components/one-tap-connect-firebase-button/one-tap-connect-firebase-button.component';
 import { PlaygroundService } from '../../services/playground.service';
 
-import { environment } from 'src/app/environment/environment';
+import { environment } from 'app/environment/environment';
 
 const defaultOptions: FirebaseOptions = environment.firestorm
 

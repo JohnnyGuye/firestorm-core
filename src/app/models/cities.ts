@@ -1,5 +1,7 @@
-import { ISubcollection } from "src/firestorm/core/firestorm-model"
-import { Collection, DateType, Ignore, MapTo, SubCollection } from "src/firestorm/decorators"
+import { 
+  Collection, Ignore, MapTo, DateType, 
+  SubCollection, ISubCollection
+} from "@firestorm/decorators"
 
 export class Street {
 
@@ -29,7 +31,7 @@ export class City {
   optionalOption: number = 5
 
   @SubCollection({ type: Street })
-  streets?: ISubcollection<Street>
+  streets?: ISubCollection<Street>
 
 }
 

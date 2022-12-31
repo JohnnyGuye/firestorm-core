@@ -2,6 +2,7 @@ import { Type } from "@angular/core"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 
+export { ISubCollection } from "../core/firestorm-model"
 /**
  * Options for the decorator SubCollection
  */

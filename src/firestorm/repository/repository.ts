@@ -1,10 +1,9 @@
 import { Type } from "@angular/core";
+import { IQueryBuildBlock, Query } from "../query";
 import { collection, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDoc, getDocs, query, QuerySnapshot, setDoc, updateDoc, where } from "firebase/firestore";
 import { MissingIdentifierError } from "../errors";
 import { FIRESTORM_METADATA_STORAGE } from "../storage";
-import { FirestormModel } from "./firestorm-model";
-import { Query } from "./query";
-import { IQueryBuildBlock } from "./query-builder";
+import { FirestormModel } from "../core/firestorm-model";
 
 export interface IRepository {
 

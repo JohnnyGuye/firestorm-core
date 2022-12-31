@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FirebaseOptions } from 'firebase/app';
-import { Firestorm } from 'src/firestorm';
+import { Firestorm } from '@firestorm';
 import { FirestormConnectionEvent } from '../events';
 
 

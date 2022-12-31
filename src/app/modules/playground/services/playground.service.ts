@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseOptions } from 'firebase/app';
-import { Firestorm } from 'src/firestorm';
+import { Firestorm } from '@firestorm';
 
 interface IFirestormConnector {
   name: string

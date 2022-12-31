@@ -1,14 +1,4 @@
-// export class QueryBuilder {
-
 import { limit, limitToLast, orderBy, OrderByDirection, QueryConstraint, where, WhereFilterOp } from "firebase/firestore"
-
-//   private _start: StartBlock = new StartBlock()
-
-//   get start() {
-//     return this._start
-//   }
-
-// }
 
 export type QueryClauseField = string
 export type WhereClauseOperator = WhereFilterOp
