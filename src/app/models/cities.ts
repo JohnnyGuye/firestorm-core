@@ -9,7 +9,7 @@ export class Street {
 
 }
 
-@Collection()
+@Collection({ collection: "cities" })
 export class City {
 
   @Ignore()
