@@ -6,7 +6,7 @@ import { ComplexType } from "./complex-type.decorator";
  */
 export function DateType() {
   return ComplexType({
-    toDocument: (object: any) => {
+    toModel: (object: any) => {
       if (object === null || object === undefined) return null
 
       if ("seconds" in object) {
@@ -15,7 +15,7 @@ export function DateType() {
 
       return null
     },
-    toModel: (model: Date) => {
+    toDocument: (model: Date | null) => {
       return model
     }
   })
