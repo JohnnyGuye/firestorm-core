@@ -73,8 +73,8 @@ export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
 
       const typeMd = storage.createOrGetMetadatas(options.type)
 
-      const docToMod = typeMd.convertDocumentToModel
-      const modToDoc = typeMd.convertModelToDocument
+      const docToMod = (document:any) => typeMd.convertDocumentToModel(document)
+      const modToDoc = (model: any) => typeMd.convertModelToDocument(model)
 
       md.addDocumentToModelConverter(key, wrapInContainer(docToMod))
       md.addModelToDocumentConverter(key, wrapInContainer(modToDoc))
@@ -88,8 +88,8 @@ export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
       let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
       const md = storage.createOrGetMetadatas(object.constructor)
 
-      const docToMod = options.toModel
-      const modToDoc = options.toDocument
+      const docToMod = (document:any) =>options.toModel(document)
+      const modToDoc = (model: any) => options.toDocument(model)
 
       md.addDocumentToModelConverter(key, wrapInContainer(docToMod))
       md.addModelToDocumentConverter(key, wrapInContainer(modToDoc))
