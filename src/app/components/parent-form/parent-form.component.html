@@ -1,0 +1,31 @@
+<form [formGroup]="form" style="padding: 20px;" (ngSubmit)="onSubmit()">
+
+  <label>Parent Title</label>
+  <input class="input" type="text" formControlName="parentTitle" />
+  <fo-child-form-a></fo-child-form-a>
+  
+  <fo-child-form-b formGroupName="childBStandalone"></fo-child-form-b>
+
+  <fo-child-form-c formControlName="childCStandalone"></fo-child-form-c>
+  
+  <!-- <section formGroupName="nestedChildBStandalone">
+    <fieldset formGroupName="nest">
+      <label>Direct access</label>
+      <input class="input" type="text" formControlName="title" />
+    </fieldset>
+  </section>
+  
+  <section formGroupName="nestedChildBStandalone">
+    <fo-child-form-b formGroupName="nest"></fo-child-form-b>
+  </section> -->
+
+  <!-- <section formArrayName="childBArray" style="padding: 10px;">
+    <fo-child-form-b 
+      *ngFor="let child of childrenB.controls; let i = index" 
+      [formGroupName]="i">
+    </fo-child-form-b>
+  </section> -->
+
+  <pre>{{ formValue }}</pre>
+
+</form>

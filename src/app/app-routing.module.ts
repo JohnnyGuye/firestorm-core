@@ -4,6 +4,7 @@ import { MenuSection } from './components/main-menu/main-menu.component';
 import { DevTestComponent } from './modules/playground/pages/dev-test/dev-test.component';
 import { PlaygroundModule } from './modules/playground/playground.module';
 import { CoreConceptsComponent } from './pages/core-concepts/core-concepts.component';
+import { FormTestComponent } from './pages/form-test/form-test.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'form-test',
+    component: FormTestComponent
+  },
+  {
     path: 'dev-test',
     component: DevTestComponent
   }
@@ -34,6 +39,15 @@ export const MENU: MenuSection[] = [
       {
         title: "Core concepts",
         path: "comprehensive-documentation/core-concepts"
+      }
+    ]
+  },
+  {
+    title: "Tests",
+    children: [
+      {
+        title: "Form test",
+        path: 'form-test'
       }
     ]
   }
