@@ -1,3 +1,4 @@
+import { FirestormModel } from "@firestorm/core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 
@@ -7,7 +8,7 @@ import { FIRESTORM_METADATA_STORAGE } from "../storage"
  */
 export function Ignore() {
 
-  return (object: any, propertyKey: any) => {
+  return (object: FirestormModel, propertyKey: string) => {
 
     let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
     const md = storage.createOrGetMetadatas(object.constructor)

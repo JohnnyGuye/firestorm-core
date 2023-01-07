@@ -45,7 +45,7 @@ export class FirestormMetadataStorage {
 
   
   /**
-   * Create or
+   * Create if needed and then returns the metadatas of a type
    * @param type 
    * @returns 
    */

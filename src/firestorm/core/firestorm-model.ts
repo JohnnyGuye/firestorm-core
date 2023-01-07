@@ -7,14 +7,14 @@ export interface FirestormModel {
     
 }
 
+export type IdDictionary<T extends FirestormModel> = Map<string, T>
+
 /**
  * Explicit interface for subcollections.
  * 
- * It currently is an empty interface and it may stay like that but use it anyway, at the very least to self document your code.
+ * Use it in conjonctions with the decorator SubCollection for clean type checking.
  */
-export interface ISubCollection<T> {
-
-}
+export type ISubCollection<T extends FirestormModel | IdDictionary<FirestormModel> | FirestormModel[]> = T
 
 /**
  * Type of a conversion function from a FirestormModel to a firestore document data object

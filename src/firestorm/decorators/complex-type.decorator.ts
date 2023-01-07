@@ -1,6 +1,6 @@
 import { Type } from "@angular/core"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
-import { DocumentToModelConverter, ModelToDocumentConverter } from "../core/firestorm-model"
+import { DocumentToModelConverter, FirestormModel, ModelToDocumentConverter } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 
 /**
@@ -20,10 +20,10 @@ interface IContainerOptions {
  * the same way a model decoratored with Collection does.
  * 
  */
-export interface IAutoSerializerOptions extends IContainerOptions {
+export interface IAutoSerializerOptions<T> extends IContainerOptions {
 
   /** Type to serialize/deserialize */
-  type: Type<any>
+  type: Type<T>
 
 }
 
@@ -43,7 +43,7 @@ export interface IExplicitSerializerOptions<T> extends IContainerOptions {
 /**
  * Options for the ComplexType decorator
  */
-export type IComplexeTypeOptions<T> = IAutoSerializerOptions | IExplicitSerializerOptions<T>
+export type IComplexeTypeOptions<T> = IAutoSerializerOptions<T> | IExplicitSerializerOptions<T>
 
 /**
  * Decorator for complex types.
@@ -51,12 +51,13 @@ export type IComplexeTypeOptions<T> = IAutoSerializerOptions | IExplicitSerializ
  * @param options Options of the complex type
  * @returns 
  */
-export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
+export function ComplexType<T, M extends FirestormModel, K extends string>(options: IComplexeTypeOptions<T>) {
 
   const wrapInContainer = (modelOrDocumentConverter: (item: any) => any) => {
     switch (options.container) {
       case 'array':
         return (modelOrDocumentAsArray: Array<any>) => {
+          if (!modelOrDocumentAsArray) return []
           return modelOrDocumentAsArray.map(modelOrDocumentConverter)
         }
       default:
@@ -66,7 +67,7 @@ export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
 
 
   if ("type" in options) {
-    return (object: any, key: any) => {
+    return (object: M, key: K) => {
 
       let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
       const md = storage.createOrGetMetadatas(object.constructor)
@@ -83,12 +84,12 @@ export function ComplexType<T>(options: IComplexeTypeOptions<T>) {
   }
 
   if ("toDocument" in options && "toModel" in options) {
-    return (object: any, key: any) => {
+    return (object: M, key: K) => {
       
       let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
       const md = storage.createOrGetMetadatas(object.constructor)
 
-      const docToMod = (document:any) =>options.toModel(document)
+      const docToMod = (document:any) => options.toModel(document)
       const modToDoc = (model: any) => options.toDocument(model)
 
       md.addDocumentToModelConverter(key, wrapInContainer(docToMod))

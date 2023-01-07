@@ -1,3 +1,5 @@
+import { Type } from "@angular/core"
+import { FirestormModel } from "@firestorm/core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { pascalToSnakeCase } from "../core/helpers"
 import { logWarn } from "../core/logging"
@@ -17,8 +19,8 @@ export interface ICollectionOptions {
  * Class decorator for a model.
  * @param options Options of the collection
  */
-export function Collection(options?: ICollectionOptions) {
-  return (constructor: any) => {
+export function Collection<T extends FirestormModel>(options?: ICollectionOptions) {
+  return (constructor: Type<T>) => {
     
     // Storage
     let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
