@@ -198,7 +198,9 @@ export class Repository<T extends FirestormModel> {
 
     /**
      * Modifies an item in the database.
-     * If the id is not provided, it will create a new object.
+     * 
+     * If the id is not provided or the document doesn't exist, it will fail.
+     * 
      * @param model Partial or full model to update. 
      * @returns A Promise that resolved when the item has been updated (or created)
      */
