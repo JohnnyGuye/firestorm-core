@@ -240,6 +240,17 @@ export class Repository<T extends FirestormModel> {
     }
 
     /**
+     * Check if a document with this id already exists in the database
+     * @warning It's doing findById under the hood so it's almost always preferable to use the other. It's just a convenience
+     * @param id Id of the item to check the existency
+     * @returns A promise returning true if an item with this id exists in the collection
+     */
+    async exists(id: string): Promise<boolean> {
+        return await this.findById(id) != null
+    }
+
+
+    /**
      * Queries a collection of items
      * @param firestoryQuery Query
      * @returns A promise on the items that are results of the query
