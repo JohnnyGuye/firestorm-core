@@ -51,7 +51,9 @@ export type IComplexeTypeOptions<T> = IAutoSerializerOptions<T> | IExplicitSeria
  * @param options Options of the complex type
  * @returns 
  */
-export function ComplexType<T, M extends FirestormModel, K extends string>(options: IComplexeTypeOptions<T>) {
+export function ComplexType<T, M extends FirestormModel, K extends string>(
+  options: IComplexeTypeOptions<T>
+  ) {
 
   const wrapInContainer = (modelOrDocumentConverter: (item: any) => any) => {
     switch (options.container) {

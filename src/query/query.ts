@@ -63,7 +63,7 @@ export class Query {
 
   private get start() { return this._startBlock }
 
-  public where(
+  where(
     field: QueryClauseField,
     operator: WhereClauseOperator, 
     value: WhereClauseValue

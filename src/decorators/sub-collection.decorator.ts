@@ -44,7 +44,7 @@ export function SubCollection<
     md.addSubCollection(propertyKey)
 
     let submd = storage.createOrGetMetadatas(type)
-    submd.collection = propertyKey
+    submd.collection = options.collection || propertyKey
 
   }
 

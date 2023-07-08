@@ -176,9 +176,9 @@ export class Repository<T extends FirestormModel> {
      * (the entire document will be replaced in database)
      * 
      * @param model 
-     * @returns A promise that resolved when the item has been created.
+     * @returns A promise that resolved when and on the item that has been created.
      */
-    async create(model: T): Promise<void> {
+    async create(model: T): Promise<T> {
         
         let id = model.id
         let documentRef: DocumentReference
@@ -193,14 +193,12 @@ export class Repository<T extends FirestormModel> {
 
         await setDoc(documentRef, data)
 
-        return
+        return model
     }
 
     /**
      * Modifies an item in the database.
-     * 
-     * If the id is not provided or the document doesn't exist, it will fail.
-     * 
+     * If the id is not provided, it will create a new object.
      * @param model Partial or full model to update. 
      * @returns A Promise that resolved when the item has been updated (or created)
      */
@@ -249,7 +247,6 @@ export class Repository<T extends FirestormModel> {
         return await this.findById(id) != null
     }
 
-
     /**
      * Queries a collection of items
      * @param firestoryQuery Query
@@ -266,6 +263,25 @@ export class Repository<T extends FirestormModel> {
         return querySnapshot.docs.map(docSnapshot => {
             return this.firestoreDocumentSnapshotToClass(docSnapshot)
         })
+    }
+
+    /**
+     * @warning Experimental
+     * Gets a random item in the whole collection
+     * @returns 
+     */
+    async getRandom(): Promise<T | null> {
+        
+        const documentRef = doc(collection(this.firestore, this.collectionPath))
+        const baseId = documentRef.id
+        let res = await this.query(new Query().where("id", ">=", baseId).orderBy("id", 'ascending').limit(1))
+        if (res.length == 1) return res[0]
+
+        res = await this.query(new Query().where("id", "<", baseId).orderBy("id", 'descending').limit(1))
+
+        if (res.length == 1) return res[0]
+
+        return null
     }
 
     /**
