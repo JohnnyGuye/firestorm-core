@@ -41,6 +41,11 @@ export class FirestormMetadata<T> {
     this._keys.set(key, documentKey)
   }
 
+  protected get modelProperties() {
+    if (!this._keys) return []
+    return [...this._keys.keys()]
+  }
+
   /**
    * Overrides the key in a document mapping to a the key in the model
    * @param key Key in the model
@@ -153,6 +158,18 @@ export class FirestormMetadata<T> {
         || ((value: any) => value)
   }
 
+  public hasDocumentToModelConversion(key: string) {
+    return this._toModelConverters && this._toModelConverters.has(key) || false
+  }
+
+  public hasModelToDocumentConversion(key: string) {
+    return this._toDocumentConverters && this._toDocumentConverters.has(key) || false
+  }
+
+  public hasConversion(key: string) {
+    return this.hasDocumentToModelConversion(key) || this.hasModelToDocumentConversion(key)
+  }
+
   /**
    * Converts a document to a model
    * @param document Document to convert
@@ -226,5 +243,22 @@ export class FirestormMetadata<T> {
     }
 
     return document
+  }
+
+  
+  public get documentBlueprint() {
+
+    const bp: any = { properties: [] }
+    for (let prop of this.modelProperties) {
+      const kbp = {
+        modelProperty: prop,
+        defaultMapping: pascalToSnakeCase(prop),
+        ignored: this.isKeyIgnored(prop),
+        documentKey: this.isMappedTo(prop),
+        complexType: this.hasConversion(prop)
+      }
+      bp.properties.push(kbp)
+    }
+    return bp
   }
 }

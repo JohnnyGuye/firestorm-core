@@ -3,6 +3,7 @@
  */
 export interface FirestormModel {
 
+    /** Unique if of the document in this collection */
     id: string | null
     
 }

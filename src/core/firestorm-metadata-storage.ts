@@ -43,6 +43,10 @@ export class FirestormMetadataStorage {
     return md
   }
 
+  public get registeredTypes() {
+    return [...this.typeMetadatas.keys()]
+  }
+
   
   /**
    * Create if needed and then returns the metadatas of a type

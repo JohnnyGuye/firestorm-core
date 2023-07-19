@@ -2,10 +2,15 @@
   "name": "@firestorm/core",
   "version": "0.1.0",
   "description": "FirestORM is an ORM around built to manipulate Firestore.",
-  "main": "index.js",
   "directories": {
+    "dist": "dist",
     "test": "test"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist/**/*"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
