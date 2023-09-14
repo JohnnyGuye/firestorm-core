@@ -8,6 +8,9 @@ export interface FirestormModel {
     
 }
 
+/**
+ * Dictionary of id and model corresponding to this id
+ */
 export type IdDictionary<T extends FirestormModel> = Map<string, T>
 
 /**

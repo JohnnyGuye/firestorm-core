@@ -1,6 +1,6 @@
 {
   "name": "@jiway/firestorm-core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "FirestORM is an ORM around built to manipulate Firestore.",
   "directories": {
     "doc": "docs",
@@ -12,9 +12,10 @@
     "/dist/**/*"
   ],
   "scripts": {
-    "build-doc": "npx typedoc src/index.ts",
+    "build-doc": "npx typedoc --options typedoc.json",
     "serve-doc": "npx http-server ./docs",
     "build": "tsc",
+    "build-and-publish": "npm run build && npm publish",
     "test": "jest",
     "watch": "npm-watch build",
     "watch-test": "npm-watch tests",

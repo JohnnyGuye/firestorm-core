@@ -13,7 +13,8 @@ export interface IMapToOptions {
 }
 
 /**
- * Decorator that changes the field in the document that is mapped to this instance
+ * Decorator that changes the field in the document that is mapped to this instance.
+ * 
  * @param options Options of the decorator or just the name of the document's field to map
  * @returns 
  */

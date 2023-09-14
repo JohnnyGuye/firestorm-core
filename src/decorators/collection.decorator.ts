@@ -1,4 +1,4 @@
-import { Type, pascalToSnakeCase } from "../core/helpers"
+import { Type, pascalToSnakeCase, stringSingularToPlural } from "../core/helpers"
 import { FirestormModel } from "../core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { logWarn } from "../core/logging"
@@ -16,6 +16,10 @@ export interface ICollectionOptions {
 
 /**
  * Class decorator for a model.
+ * 
+ * This model's default local collection path can be specified through the options.
+ * If not provided, it will take the classe's name and make it a plural. (/!\ doesn't work if the names are mangled at compilation)
+ * 
  * @param options Options of the collection
  */
 export function Collection<T extends FirestormModel>(options?: ICollectionOptions) {
@@ -27,15 +31,12 @@ export function Collection<T extends FirestormModel>(options?: ICollectionOption
     // Name of the collection
     let collectionName: string
     if (options && options.collection) { // Explicit naming
+
       collectionName = options.collection
+      
     } else { // Not explicit naming
-      let snakeCaseName = pascalToSnakeCase(constructor.name)
-      if (snakeCaseName.endsWith("y")) {
-        snakeCaseName = snakeCaseName.substring(0, snakeCaseName.length - 1) + "ies"
-      } else {
-        snakeCaseName += "s"
-      }
-      collectionName = snakeCaseName
+
+      collectionName = stringSingularToPlural(pascalToSnakeCase(constructor.name))
       logWarn(
         `Auto collection path: ${collectionName}.\n`
         + ` It may be messed up by the uglification.\n` 

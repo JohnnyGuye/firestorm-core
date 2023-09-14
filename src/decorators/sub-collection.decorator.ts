@@ -4,6 +4,7 @@ import { FirestormModel, ISubCollection } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 
 export { ISubCollection } from "../core/firestorm-model"
+
 /**
  * Options for the decorator SubCollection
  */

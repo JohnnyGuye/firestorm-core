@@ -16,7 +16,7 @@ interface IContainerOptions {
 /**
  * Auto serializer set of options.
  * 
- * You provide a type that may have fields decorators aswell and it will handle it's serialization
+ * You provide a type that may have fields decorators aswell and it will handle its serialization
  * the same way a model decoratored with Collection does.
  * 
  */
@@ -47,7 +47,9 @@ export type IComplexeTypeOptions<T> = IAutoSerializerOptions<T> | IExplicitSeria
 
 /**
  * Decorator for complex types.
- * A complex type is pretty much any type that returns "object" when passed to "typeof"
+ * 
+ * A complex type is pretty much any type that returns "object" when passed to "typeof".
+ * 
  * @param options Options of the complex type
  * @returns 
  */

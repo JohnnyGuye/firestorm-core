@@ -10,6 +10,32 @@ export function pascalToSnakeCase(pascalCaseString: string) {
     .replace(/^_/, "")
 }
 
+/**
+ * Transforms a singular string in a plural string
+ * @param word 
+ * @returns 
+ */
+export function stringSingularToPlural(word: string) {
+
+  let endingReplacementRegexp = /$/
+  let ending = "s"
+
+  if ((word.length >= 1) && word.toLocaleLowerCase().endsWith("y")) {
+    endingReplacementRegexp = /[yY]$/
+    ending = "ies"
+  }
+
+  const lastChar = word.charAt(word.length - 1)
+  const endsLowerCase = lastChar.toLocaleLowerCase() === lastChar
+
+  return word.replace(
+      endingReplacementRegexp, 
+      endsLowerCase 
+      ? ending.toLocaleLowerCase()
+      : ending.toLocaleUpperCase()
+    )
+}
+
 export declare const Type: FunctionConstructor;
 
 export declare interface Type<T> extends Function {
