@@ -248,17 +248,26 @@ export class FirestormMetadata<T> {
   
   public get documentBlueprint() {
 
-    const bp: any = { properties: [] }
+    const bp: any = { }
+    
     for (let prop of this.modelProperties) {
+      const mapping = this.isMappedTo(prop)
+
+      if (!mapping) {
+        console.warn(prop)
+        continue
+      }
+
       const kbp = {
         modelProperty: prop,
         defaultMapping: pascalToSnakeCase(prop),
         ignored: this.isKeyIgnored(prop),
-        documentKey: this.isMappedTo(prop),
+        documentKey: mapping,
         complexType: this.hasConversion(prop)
       }
-      bp.properties.push(kbp)
+      bp[mapping] = kbp
     }
+
     return bp
   }
 }
