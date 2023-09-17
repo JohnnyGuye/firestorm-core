@@ -8,7 +8,6 @@ export const FIRESTORM_METADATA_STORAGE = new FirestormMetadataStorage()
 
 export function firestormMetadatasToJson() {
 
-  console.log(FIRESTORM_METADATA_STORAGE)
   const types = FIRESTORM_METADATA_STORAGE.registeredTypes
   const res = {
     metadas: types.map(type => {
