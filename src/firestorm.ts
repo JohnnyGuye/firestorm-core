@@ -1,9 +1,9 @@
 import { Type } from "./core/helpers"
 import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
 import { Firestore, getFirestore } from "firebase/firestore"
-import { FirebaseStorage, getStorage } from "firebase/storage"
+import { FirebaseStorage } from "firebase/storage"
 import { FirestormModel } from "./core/firestorm-model";
-import { IParentCollection, Repository } from "./repository/repository";
+import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
 
 /**
  * This class is the hub that enables you to connect to queries
@@ -13,15 +13,12 @@ export class Firestorm {
     public readonly name: string = ""
     private app: FirebaseApp | null = null
     private _firestore: Firestore | null = null
-    private _firebase: FirebaseStorage | null = null
-
-    private customRepositoriesProviders = new Map<Type<any>, Type<Repository<any>>>()
-
-    // private repositories = new Map<Type<any>, IRepository>() 
+    // private _firebase: FirebaseStorage | null = null
 
     /**
      * Create an instance of Firestorm.
-     * It's not yet connected @see connect
+     * 
+     * It doesn't instantly connect. You have to make a call to @see connect for that
      * @param name Name of the instance
      */
     constructor(name: string) {
@@ -52,48 +49,47 @@ export class Firestorm {
     }
 
     /**
-     * Registers custom repositories
-     * @param type 
-     * @param repository 
+     * Gets the basic CRUD repository for a model
+     * @param type Type of the model
+     * @param parentCollections 
+     * @returns 
      */
-    public registerCustomRepository<
-        T extends FirestormModel, 
-        U extends Repository<T>
-        >(
-            type: Type<T>, 
-            repository: Type<U>
-        ) {
-            
-        this.customRepositoriesProviders.set(type, repository)
+    public getCrudRepository<T extends FirestormModel>(type: Type<T>, ...parentCollections: IParentCollection<any>[]) {
+        return this.getRepository(CrudRepository<T>, type, ...parentCollections)
     }
 
     /**
      * Gets the repository for a model
-     * @param type Type of the submodel
+     * @param type Type of the model
      * @returns 
      */
-    public getRepository<T extends FirestormModel>(type: Type<T>): Repository<T>;
+    public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
+        repositoryType: Type<R>,
+        type: Type<T>
+        ): R;
     /**
      * Gets the repository for a submodel
      * @param type Type of the submodel
      * @param parentCollections The parent collections
      * @returns 
      */
-    public getRepository<T extends FirestormModel>(type: Type<T>,...parentCollections: IParentCollection<any>[]): Repository<T>;
-    public getRepository<T extends FirestormModel>(
+    public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
+        repositoryType: Type<R>,
         type: Type<T>,
         ...parentCollections: IParentCollection<any>[]
-        ) {
+        ): R;
+    public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
+        repositoryType: Type<R>,
+        type: Type<T>,
+        ...parentCollections: IParentCollection<any>[]
+        ): R {
         
         let firestore = this.firestore
         if (!firestore) {
             throw new Error("You have to connect Firestorm first")
         }
 
-        let CustomRepo = this.customRepositoriesProviders.get(type)
-        if (CustomRepo) return new CustomRepo(type, firestore, parentCollections)
-
-        let repository = new Repository(type, firestore, parentCollections)
+        let repository = new repositoryType(type, firestore, parentCollections)
         return repository
     }
 
@@ -106,10 +102,12 @@ export class Firestorm {
     }
 
     private get firebase() {
-        if (!this.app) return null
-        if (!this._firebase)
-            this._firebase = getStorage(this.app)
-        return this._firebase
+        throw new Error("Not implemented")
+
+        // if (!this.app) return null
+        // if (!this._firebase)
+        //     this._firebase = getStorage(this.app)
+        // return this._firebase
     }
 
 }

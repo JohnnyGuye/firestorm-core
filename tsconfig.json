@@ -21,7 +21,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2015",
-    "module": "CommonJS",
+    "module": "ES6",
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",

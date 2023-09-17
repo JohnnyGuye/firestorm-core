@@ -36,6 +36,15 @@ export function stringSingularToPlural(word: string) {
     )
 }
 
+/**
+ * Builds a path object by agregating a collection of chunk of path
+ * @param pathArray 
+ * @returns 
+ */
+export function buildPath(...pathArray: string[]) {
+    return pathArray.join("/")
+}
+
 export declare const Type: FunctionConstructor;
 
 export declare interface Type<T> extends Function {
