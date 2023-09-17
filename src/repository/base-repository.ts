@@ -14,123 +14,123 @@ function resolveId(modelOrId: FirestormModel | string) {
  * A repository is a typed access to a specific collection
  */
 export class BaseRepository<T extends FirestormModel> {
+        
+    private _type: Type<T>
+    protected readonly firestore: Firestore
+    private parents?: ParentCollection<any>[] = []
     
-  private _type: Type<T>
-  protected readonly firestore: Firestore
-  private parents?: ParentCollection<any>[] = []
-  
-  /**
-   * Creates a new repository on a model
-   * @param type Type on which the repository operates
-   * @param firestore The instance of firestore this repository connects to
-   * @param parents The optional parent collections for repositories of subcollections
-   */
-  constructor(
-      type: Type<T>,
-      firestore: Firestore,
-      parents?: IParentCollection<any>[]
-      ) {
-      
-      this._type = type
-      this.firestore = firestore
-      if (parents) {
-          this.parents = parents.map(
-              value => new ParentCollection(value.type, value.instance, value.key)
-          )
-      }
-  }
+    /**
+     * Creates a new repository on a model
+     * @param type Type on which the repository operates
+     * @param firestore The instance of firestore this repository connects to
+     * @param parents The optional parent collections for repositories of subcollections
+     */
+    constructor(
+        type: Type<T>,
+        firestore: Firestore,
+        parents?: IParentCollection<any>[]
+        ) {
+        
+        this._type = type
+        this.firestore = firestore
+        if (parents) {
+            this.parents = parents.map(
+                value => new ParentCollection(value.type, value.instance, value.key)
+            )
+        }
+    }
 
-  /**
-   * Gets the type this repository work on
-   */
-  public get type() {
-      return this._type
-  }
+    /**
+     * Gets the type this repository work on
+     */
+    public get type() {
+        return this._type
+    }
 
-  /**
-   * Gets the name of the type.
-   * 
-   * Warning: don't rely on its result to do stuff, the name will get mangled after compilation.
-   */
-  public get typeName() {
-      return this.type.name
-  }
+    /**
+     * Gets the name of the type.
+     * 
+     * Warning: don't rely on its result to do stuff, the name will get mangled after compilation.
+     */
+    protected get typeName() {
+        return this.type.name
+    }
 
-  /**
-   * The storage of metadatas of this repository
-   */
-  protected get storage() {
-      return FIRESTORM_METADATA_STORAGE
-  }
+    /**
+     * The storage of metadatas of this repository
+     */
+    protected get storage() {
+        return FIRESTORM_METADATA_STORAGE
+    }
 
-  /**
-   * The metadatas corresponding to the type of this repository
-   */
-  public get typeMetadata() {
-      return this.storage.getMetadatas(this._type)
-  }
+    /**
+     * The metadatas corresponding to the type of this repository
+     */
+    protected get typeMetadata() {
+        return this.storage.getMetadatas(this._type)
+    }
 
-  /**
-   * Whether or not this repository is a subcollection or not
-   */
-  public get hasParents() {
-      return this.parents && this.parents.length > 1
-  }
+    /**
+     * Whether or not this repository is a subcollection or not
+     */
+    public get hasParents() {
+        return this.parents && this.parents.length > 1
+    }
 
-  /**
-   * Gets the path to the collection of this repository
-   */
-  public get collectionPath() {
-      const col = this.typeMetadata.collection
-      if (!col) throw new Error("No collection provided")
+    /**
+     * Gets the path to the collection of this repository
+     */
+    public get collectionPath() {
+        const col = this.typeMetadata.collection
+        if (!col) throw new Error("No collection provided")
 
-      const pathBlocks: string[] = []
-      if (this.parents) {
-          for (let p of this.parents) {
-              const c = p.collection
-              const id = p.id
+        const pathBlocks: string[] = []
+        if (this.parents) {
+            for (let p of this.parents) {
+                const c = p.collection
+                const id = p.id
 
-              if (!c) throw new Error("No collection provided for this parent")
-              if (!id) throw new Error("No id for this element")
+                if (!c) throw new Error("No collection provided for this parent")
+                if (!id) throw new Error("No id for this element")
 
-              pathBlocks.push(c)
-              pathBlocks.push(id)
-          }
-      }
-      pathBlocks.push(col)
-      return buildPath(...pathBlocks)
-  }
+                pathBlocks.push(c)
+                pathBlocks.push(id)
+            }
+        }
+        pathBlocks.push(col)
+        return buildPath(...pathBlocks)
+    }
 
-  public pathToDocument(modelOrId: FirestormModel | string): string {
-    const id = resolveId(modelOrId)
-    if (!id) throw new MissingIdentifierError()
+    public pathToDocument(modelOrId: FirestormModel | string): string {
+        const id = resolveId(modelOrId)
+        if (!id) throw new MissingIdentifierError()
 
-    return buildPath(this.collectionPath, id)
-  }
+        return buildPath(this.collectionPath, id)
+    }
 
-  protected firestoreDocumentSnapshotToClass(
-      documentSnapshot: DocumentSnapshot
-      ): T {
-      
-      const retrievedId: string = documentSnapshot.id
-      const data = documentSnapshot.data()
+    protected firestoreDocumentSnapshotToClass(
+        documentSnapshot: DocumentSnapshot
+        ): T {
+        
+        const retrievedId: string = documentSnapshot.id
+        const data = documentSnapshot.data()
 
-      const klass = this.firestoreDocumentToClass(data)
-      if (!klass) {
-          console.error("Failed to convert the document to a typed object:", retrievedId, data)
-          throw Error(`Failed to convert the document of id '${retrievedId}' in colleciton ${this.collectionPath}`)
-      }
+        const klass = this.firestoreDocumentToClass(data)
+        if (!klass) {
+            console.error("Failed to convert the document to a typed object:", retrievedId, data)
+            throw Error(`Failed to convert the document of id '${retrievedId}' in colleciton ${this.collectionPath}`)
+        }
 
-      klass.id = retrievedId
+        klass.id = retrievedId
 
-      return klass
-  }
+        return klass
+    }
 
-  protected firestoreDocumentToClass(document: any): T | null {
-      return this.typeMetadata.convertDocumentToModel(document)
-  }
+    protected firestoreDocumentToClass(document: any): T | null {
+        return this.typeMetadata.convertDocumentToModel(document)
+    }
 
-  protected classToFirestoreDocument(object: Partial<T>): any {
-      return this.typeMetadata.convertModelToDocument(object)
-  }
+    protected classToFirestoreDocument(object: Partial<T>): any {
+        return this.typeMetadata.convertModelToDocument(object)
+    }
 }

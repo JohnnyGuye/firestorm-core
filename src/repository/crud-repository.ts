@@ -29,7 +29,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param model 
      * @returns A promise that resolved when and on the item that has been created.
      */
-    async create(model: T): Promise<T> {
+    async createAsync(model: T): Promise<T> {
         
         let id = model.id
         let documentRef: DocumentReference
@@ -53,7 +53,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param model Partial or full model to update. 
      * @returns A Promise that resolved when the item has been updated (or created)
      */
-    async update(model: Partial<T>) {
+    async updateAsync(model: Partial<T>) {
 
         let id = model.id
         let documentRef: DocumentReference
@@ -76,7 +76,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param id Id of the item to find
      * @returns A promise containing either the item retrieved or null if not found
      */
-    async findById(id: string): Promise<T | null> {
+    async findByIdAsync(id: string): Promise<T | null> {
 
         let path = this.pathToDocument(id)
 
@@ -94,8 +94,8 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param id Id of the item to check the existency
      * @returns A promise returning true if an item with this id exists in the collection
      */
-    async exists(id: string): Promise<boolean> {
-        return await this.findById(id) != null
+    async existsAsync(id: string): Promise<boolean> {
+        return await this.findByIdAsync(id) != null
     }
 
     /**
@@ -103,7 +103,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param firestoryQuery Query
      * @returns A promise on the items that are results of the query
      */
-    async query(firestoryQuery: Query | IQueryBuildBlock): Promise<T[]>{
+    async queryAsync(firestoryQuery: Query | IQueryBuildBlock): Promise<T[]>{
 
         const col = collection(this.firestore, this.collectionPath)
 
@@ -118,17 +118,19 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
 
     /**
      * @warning Experimental
-     * Gets a random item in the whole collection
+     * Gets a random item in the whole collection.
+     * 
+     * It relies on the presence of the field "id" in the document so it won't work if that is not the case.
      * @returns 
      */
-    async getRandom(): Promise<T | null> {
+    async getRandomAsync(): Promise<T | null> {
         
         const documentRef = doc(collection(this.firestore, this.collectionPath))
         const baseId = documentRef.id
-        let res = await this.query(new Query().where("id", ">=", baseId).orderBy("id", 'ascending').limit(1))
+        let res = await this.queryAsync(new Query().where("id", ">=", baseId).orderBy("id", 'ascending').limit(1))
         if (res.length == 1) return res[0]
 
-        res = await this.query(new Query().where("id", "<", baseId).orderBy("id", 'descending').limit(1))
+        res = await this.queryAsync(new Query().where("id", "<", baseId).orderBy("id", 'descending').limit(1))
 
         if (res.length == 1) return res[0]
 
@@ -139,7 +141,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * Gets all the items of a collection
      * @returns A promise containing all the items in the collection
      */
-    async findAll(): Promise<T[]> {
+    async findAllAsync(): Promise<T[]> {
 
         const querySnapshot: QuerySnapshot = await getDocs(collection(this.firestore, this.collectionPath))
 
@@ -160,7 +162,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param id Id of the document to delete
      * @returns A promise that returns when the document has been deleted
      */
-    async delete(id: string): Promise<void>;
+    async deleteAsync(id: string): Promise<void>;
     /**
      * Deletes a document in the database.
      * It doesn't delete its subcollection if any.
@@ -171,8 +173,8 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param model Model of the document to delete.
      * @returns A promise that returns when the document has been deleted
      */
-    async delete(model: FirestormModel): Promise<void>;
-    async delete(modelOrId: FirestormModel | string): Promise<void> {
+    async deleteAsync(model: FirestormModel): Promise<void>;
+    async deleteAsync(modelOrId: FirestormModel | string): Promise<void> {
 
         const path = this.pathToDocument(modelOrId)
         const docRef: DocumentReference = doc(this.firestore, path)
