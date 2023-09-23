@@ -20,11 +20,11 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2015",
-    "module": "ES6",
+    "target": "ES5",
+    "module": "CommonJS",
     "useDefineForClassFields": false,
     "lib": [
-      "ES2022",
+      "es6",
       "dom"
     ]
   },
