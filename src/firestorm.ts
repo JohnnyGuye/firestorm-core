@@ -115,6 +115,9 @@ export class Firestorm {
         return repository
     }
 
+    /**
+     * The instance of firestorm
+     */
     public get firestore() {
         if (!this._app) return null
         if (!this._firestore)

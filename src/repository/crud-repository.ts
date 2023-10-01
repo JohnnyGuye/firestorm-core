@@ -1,18 +1,33 @@
+import { 
+    Firestore, 
+    collection, 
+    doc, 
+    getDoc, 
+    getDocs, 
+    setDoc, 
+    updateDoc,
+    deleteDoc, 
+    query, 
+    QuerySnapshot, 
+    DocumentReference, 
+    DocumentSnapshot
+} from "firebase/firestore";
 import { Type } from "../core/helpers";
 import { IQueryBuildBlock, Query } from "../query";
-import { collection, deleteDoc, doc, DocumentReference, DocumentSnapshot, Firestore, getDoc, getDocs, query, QuerySnapshot, setDoc, updateDoc, where } from "firebase/firestore";
 import { FirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
 import { IParentCollection } from "./parent-collection.interface";
 
-export interface IRepository {
-
-}
-
-
+/**
+ * Repository with a basic CRUD implementation.
+ */
 export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> {
 
-    constructor(type: Type<T>, firestore: Firestore, parents?: IParentCollection<any>[]) {
+    constructor(
+        type: Type<T>, 
+        firestore: Firestore, 
+        parents?: IParentCollection<any>[]
+        ) {
         super(type, firestore, parents)
     }
     
