@@ -1,9 +1,10 @@
 import { Type } from "./core/helpers"
-import { FirebaseApp, FirebaseOptions, initializeApp } from "firebase/app";
+import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { Firestore, getFirestore } from "firebase/firestore"
-import { FirebaseStorage } from "firebase/storage"
 import { FirestormModel } from "./core/firestorm-model";
 import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
+
+export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 
 /**
  * This class is the hub that enables you to connect to queries
@@ -11,8 +12,9 @@ import { IParentCollection, BaseRepository, CrudRepository } from "./repository"
 export class Firestorm {
 
     public readonly name: string = ""
-    private app: FirebaseApp | null = null
+    private _app: FirebaseApp | null = null
     private _firestore: Firestore | null = null
+
     // private _firebase: FirebaseStorage | null = null
 
     /**
@@ -21,31 +23,51 @@ export class Firestorm {
      * It doesn't instantly connect. You have to make a call to @see connect for that
      * @param name Name of the instance
      */
-    constructor(name: string) {
-        this.name = name
+    constructor(name?: string) {
+        this.name = name || DEFAULT_FIREBASE_APP_NAME
     }
 
     /**
-     * Connect to the DB
-     * @param options 
+     * Connect to the DB.
+     * 
+     * If an app with the same name already exists, it will use that.
+     * Otherwise it will create a new instance using the options.
+     * @throws if no previous app of the same name and no options provided
+     * @param options Options to create the app
      * @returns 
      */
-    async connect(options: FirebaseOptions) {
-        this.app = initializeApp(options, this.name)
+    connect(options?: FirebaseOptions) {
+        let app = getApps().find(app => app.name == this.name) 
+        if (app) {
+            this._app = app
+            return
+        }
+
+        if (!options) {
+            throw new Error("Tried to create the firebase app but no options where provided.")
+        }
+        app = initializeApp(options, this.name)
     }
 
     /**
      * True if this instance if connected to a firestore
      */
     get isConnected() {
-        return !!this.app
+        return !!this._app
     } 
 
     /**
      * Gets the (read-only) options of this firestorm instance.
      */
     get options() {
-        return this.app?.options || null
+        return this._app?.options || null
+    }
+
+    /**
+     * The underlying firebase app
+     */
+    get app() {
+        return this._app
     }
 
     /**
@@ -93,21 +115,12 @@ export class Firestorm {
         return repository
     }
 
-    private get firestore() {
-        if (!this.app) return null
+    public get firestore() {
+        if (!this._app) return null
         if (!this._firestore)
-            this._firestore = getFirestore(this.app)
+            this._firestore = getFirestore(this._app)
 
         return this._firestore
-    }
-
-    private get firebase() {
-        throw new Error("Not implemented")
-
-        // if (!this.app) return null
-        // if (!this._firebase)
-        //     this._firebase = getStorage(this.app)
-        // return this._firebase
     }
 
 }
