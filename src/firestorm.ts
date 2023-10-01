@@ -46,7 +46,7 @@ export class Firestorm {
         if (!options) {
             throw new Error("Tried to create the firebase app but no options where provided.")
         }
-        app = initializeApp(options, this.name)
+        this._app = initializeApp(options, this.name)
     }
 
     /**
