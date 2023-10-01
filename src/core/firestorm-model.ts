@@ -9,6 +9,15 @@ export interface FirestormModel {
 }
 
 /**
+ * 
+ * @param modelOrId 
+ * @returns 
+ */
+export function resolveId(modelOrId: FirestormModel | string) {
+    return (typeof modelOrId !== "string" ? modelOrId.id : modelOrId)
+}
+
+/**
  * Dictionary of id and model corresponding to this id
  */
 export type IdDictionary<T extends FirestormModel> = Map<string, T>

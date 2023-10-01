@@ -1,14 +1,14 @@
 import { DocumentSnapshot, Firestore } from "firebase/firestore"
+
 import { Type, buildPath } from "../core/helpers"
-import { ParentCollection } from "./parent-collection"
-import { IParentCollection } from "./parent-collection.interface"
-import { FirestormModel } from "../core/firestorm-model"
+import { FirestormModel, resolveId } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../storage"
 import { MissingIdentifierError } from "../errors"
 
-function resolveId(modelOrId: FirestormModel | string) {
-  return (typeof modelOrId !== "string" ? modelOrId.id : modelOrId)
-}
+import { ParentCollection } from "./parent-collection"
+import { IParentCollection } from "./parent-collection.interface"
+
+
 
 /**
  * A repository is a typed access to a specific collection
@@ -108,7 +108,12 @@ export class BaseRepository<T extends FirestormModel> {
         return buildPath(this.collectionPath, id)
     }
 
-    protected firestoreDocumentSnapshotToClass(
+    /**
+     * Converts a snapshot to a model
+     * @param documentSnapshot 
+     * @returns 
+     */
+    public firestoreDocumentSnapshotToClass(
         documentSnapshot: DocumentSnapshot
         ): T {
         
@@ -126,11 +131,21 @@ export class BaseRepository<T extends FirestormModel> {
         return klass
     }
 
-    protected firestoreDocumentToClass(document: any): T | null {
+    /**
+     * Converts a document to a model (if the id is not in the document, it is lost in the process)
+     * @param document 
+     * @returns 
+     */
+    public firestoreDocumentToClass(document: any): T | null {
         return this.typeMetadata.convertDocumentToModel(document)
     }
 
-    protected classToFirestoreDocument(object: Partial<T>): any {
+    /**
+     * Converts a partial model to a document
+     * @param object 
+     * @returns 
+     */
+    public classToFirestoreDocument(object: Partial<T>): any {
         return this.typeMetadata.convertModelToDocument(object)
     }
 }
