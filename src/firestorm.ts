@@ -1,10 +1,16 @@
 import { Type } from "./core/helpers"
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { Firestore, getFirestore } from "firebase/firestore"
+import { Auth, getAuth } from "firebase/auth"
 import { FirestormModel } from "./core/firestorm-model";
 import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
+
+class MissingAppError extends Error {
+
+    constructor() { super("[Firestorm] You must connect firestorm first.") }
+}
 
 /**
  * This class is the hub that enables you to connect to queries
@@ -14,6 +20,7 @@ export class Firestorm {
     public readonly name: string = ""
     private _app: FirebaseApp | null = null
     private _firestore: Firestore | null = null
+    private _auth: Auth | null = null
 
     // private _firebase: FirebaseStorage | null = null
 
@@ -119,11 +126,23 @@ export class Firestorm {
      * The instance of firestorm
      */
     public get firestore() {
-        if (!this._app) return null
+        if (!this._app) throw new MissingAppError()
+
         if (!this._firestore)
             this._firestore = getFirestore(this._app)
 
         return this._firestore
+    }
+
+    /**
+     * The instance of auth
+     */
+    public get auth() {
+        if (!this._app) throw new MissingAppError()
+
+        if (!this._auth)
+            this._auth = getAuth(this._app)
+        return this._auth
     }
 
 }
