@@ -1,6 +1,6 @@
 {
   "name": "@jiway/firestorm-core",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "FirestORM is an ORM around built to manipulate Firestore.",
   "directories": {
     "doc": "docs",

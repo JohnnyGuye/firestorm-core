@@ -1,6 +1,6 @@
 import { Type } from "./core/helpers"
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
-import { Firestore, getFirestore } from "firebase/firestore"
+import { EmulatorMockTokenOptions, Firestore, connectFirestoreEmulator, getFirestore } from "firebase/firestore"
 import { Auth, getAuth } from "firebase/auth"
 import { FirestormModel } from "./core/firestorm-model";
 import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
@@ -12,6 +12,17 @@ class MissingAppError extends Error {
     constructor() { super("[Firestorm] You must connect firestorm first.") }
 }
 
+type ConnectToEmulatorOptions = {
+    host: string
+    port: number
+    mockUserToken: EmulatorMockTokenOptions | string | undefined
+}
+
+const DEFAULT_EMULATOR_OPTIONS: Readonly<Pick<ConnectToEmulatorOptions, 'host' | 'port'>> = {
+    host: "127.0.0.1",
+    port: 8080
+}
+
 /**
  * This class is the hub that enables you to connect to queries
  */
@@ -21,8 +32,6 @@ export class Firestorm {
     private _app: FirebaseApp | null = null
     private _firestore: Firestore | null = null
     private _auth: Auth | null = null
-
-    // private _firebase: FirebaseStorage | null = null
 
     /**
      * Create an instance of Firestorm.
@@ -54,6 +63,15 @@ export class Firestorm {
             throw new Error("Tried to create the firebase app but no options where provided.")
         }
         this._app = initializeApp(options, this.name)
+    }
+
+    /**
+     * Call this after connecting to use the emulator instead of the database.
+     * @param options Connection options. Defaults to @see DEFAULT_EMULATOR_OPTIONS
+     */
+    useEmulator(options?: Partial<ConnectToEmulatorOptions>) {
+        let compoundedOptions = Object.assign({}, DEFAULT_EMULATOR_OPTIONS, options)
+        connectFirestoreEmulator(this.firestore, compoundedOptions.host, compoundedOptions.port)
     }
 
     /**
