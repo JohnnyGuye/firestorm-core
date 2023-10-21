@@ -1,9 +1,11 @@
 import { Type } from "./core/helpers"
-import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
-import { EmulatorMockTokenOptions, Firestore, connectFirestoreEmulator, getFirestore } from "firebase/firestore"
-import { Auth, getAuth } from "firebase/auth"
 import { FirestormModel } from "./core/firestorm-model";
 import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
+
+import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
+import { Firestore, getFirestore, EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, connectFirestoreEmulator } from "firebase/firestore"
+import { FirebaseStorage, connectStorageEmulator, EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions, getStorage } from "firebase/storage"
+import { Auth, getAuth } from "firebase/auth"
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 
@@ -12,15 +14,48 @@ class MissingAppError extends Error {
     constructor() { super("[Firestorm] You must connect firestorm first.") }
 }
 
-type ConnectToEmulatorOptions = {
-    host: string
-    port: number
-    mockUserToken: EmulatorMockTokenOptions | string | undefined
+interface BaseEmulatorConnectionOptions {
+    readonly host: string
+    readonly port: number
 }
 
-const DEFAULT_EMULATOR_OPTIONS: Readonly<Pick<ConnectToEmulatorOptions, 'host' | 'port'>> = {
-    host: "127.0.0.1",
-    port: 8080
+interface FirestoreEmulatorConnectionOptions extends BaseEmulatorConnectionOptions {
+    readonly mockUserToken?: FirestoreEmulatorMockTokenOptions | string | undefined
+}
+
+interface StoreEmulatorConnectionOptions extends BaseEmulatorConnectionOptions {
+    readonly mockUserToken?: StorageEmulatorMockTokenOptions | string | undefined
+}
+
+// const DEFAULT_EMULATOR_OPTIONS: Readonly<Pick<FirestoreEmulatorConnectionOptions, 'host' | 'port'>> = {
+//     host: "127.0.0.1",
+//     port: 8080
+// }
+
+interface EmulatorConnectionOptions {
+    readonly firestore?: FirestoreEmulatorConnectionOptions
+    readonly storage?: StoreEmulatorConnectionOptions
+}
+
+interface FullEmulatorConnectionOptions extends EmulatorConnectionOptions {
+    firestore: Readonly<FirestoreEmulatorConnectionOptions>
+    storage: Readonly<StoreEmulatorConnectionOptions>
+}
+
+const DEFAULT_EMULATOR_OPTIONS: FullEmulatorConnectionOptions = {
+    firestore: {
+        host: "127.0.0.1",
+        port: 8080
+    },
+    storage: {
+        host: "127.0.0.1",
+        port: 9199
+    }
+}
+
+function mergeOptionsToDefault(options?: EmulatorConnectionOptions) : FullEmulatorConnectionOptions {
+    let compoundedOptions = Object.assign({}, DEFAULT_EMULATOR_OPTIONS, options)
+    return compoundedOptions
 }
 
 /**
@@ -32,6 +67,7 @@ export class Firestorm {
     private _app: FirebaseApp | null = null
     private _firestore: Firestore | null = null
     private _auth: Auth | null = null
+    private _storage: FirebaseStorage | null = null
 
     /**
      * Create an instance of Firestorm.
@@ -69,9 +105,14 @@ export class Firestorm {
      * Call this after connecting to use the emulator instead of the database.
      * @param options Connection options. Defaults to @see DEFAULT_EMULATOR_OPTIONS
      */
-    useEmulator(options?: Partial<ConnectToEmulatorOptions>) {
-        let compoundedOptions = Object.assign({}, DEFAULT_EMULATOR_OPTIONS, options)
-        connectFirestoreEmulator(this.firestore, compoundedOptions.host, compoundedOptions.port)
+    useEmulator(options?: EmulatorConnectionOptions) {
+
+        const opt = mergeOptionsToDefault(options)
+        const firestoreOpt = opt.firestore
+        connectFirestoreEmulator(this.firestore, firestoreOpt.host, firestoreOpt.port)
+
+        const storageOpt = opt.storage
+        connectStorageEmulator(this.storage, storageOpt.host, storageOpt.port)
     }
 
     /**
@@ -161,6 +202,18 @@ export class Firestorm {
         if (!this._auth)
             this._auth = getAuth(this._app)
         return this._auth
+    }
+
+    /**
+     * The instance of storage
+     */
+    public get storage() {
+        if (!this._app) throw new MissingAppError()
+
+        if (!this._storage)
+            this._storage = getStorage(this._app)
+        
+        return this._storage
     }
 
 }
