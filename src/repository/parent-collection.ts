@@ -1,7 +1,7 @@
-import { FirestormModel } from "../core/firestorm-model"
+import { FirestormModel, resolveInstance } from "../core/firestorm-model"
 import { Type } from "../core/helpers"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
-import { IParentCollection } from "./parent-collection.interface"
+import { IParentCollectionOption } from "./parent-collection.interface"
 
 // Technically I could infer the type from the instance T. There is probably a way aswell to not use the key though it may be complicated
 
@@ -28,8 +28,7 @@ interface IParentCollectionSetThree<T extends FirestormModel> {
 }
 */
 
-export class ParentCollection<T extends FirestormModel> 
-    implements IParentCollection<T> {
+export class ParentCollection<T extends FirestormModel> {
 
     readonly type: Type<T>
     readonly instance: T
@@ -55,5 +54,21 @@ export class ParentCollection<T extends FirestormModel>
 
     public get id() {
         return this.instance.id
+    }
+
+    public static createFromOptions<T extends FirestormModel>(options: IParentCollectionOption<T>) {
+        if ("type" in options && "instance" in options && "key" in options) {
+            return new ParentCollection(options.type, options.instance, options.key)
+        }
+
+        if ("type" in options && "id" in options && "key" in options) {
+            new ParentCollection(options.type, resolveInstance(options.id, options.type), options.key)
+        }
+
+        if ("type" in options && "instanceOrId" in options && "key" in options) {
+            new ParentCollection(options.type, resolveInstance(options.instanceOrId, options.type), options.key)
+        }
+
+        throw new Error("Not supported options")
     }
 }

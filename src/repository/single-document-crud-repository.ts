@@ -1,7 +1,7 @@
 import { DocumentReference, DocumentSnapshot, Firestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { FirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
-import { IParentCollection } from "./parent-collection.interface";
+import { IParentCollectionOption } from "./parent-collection.interface";
 import { Type } from "../core/helpers";
 
 /**
@@ -17,7 +17,7 @@ export class SingleDocumentRepository<T extends FirestormModel> extends BaseRepo
   constructor(
     type: Type<T>,
     firestore: Firestore,
-    parents?: IParentCollection<any>[]
+    parents?: IParentCollectionOption<any>[]
     ) {
     
     super(type, firestore, parents)

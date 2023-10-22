@@ -6,7 +6,7 @@ import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 
 import { ParentCollection } from "./parent-collection"
-import { IParentCollection } from "./parent-collection.interface"
+import { IParentCollectionOption } from "./parent-collection.interface"
 
 
 
@@ -28,15 +28,13 @@ export class BaseRepository<T extends FirestormModel> {
     constructor(
         type: Type<T>,
         firestore: Firestore,
-        parents?: IParentCollection<any>[]
+        parents?: IParentCollectionOption<any>[]
         ) {
         
         this._type = type
         this.firestore = firestore
         if (parents) {
-            this.parents = parents.map(
-                value => new ParentCollection(value.type, value.instance, value.key)
-            )
+            this.parents = parents.map(ParentCollection.createFromOptions)
         }
     }
 

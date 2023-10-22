@@ -22,6 +22,8 @@ export interface ISubCollectionOptions<T extends FirestormModel> {
  * Decorator for subcollection.
  * Fields marked as subcollection are ignored in the model but they can be requested in sub repositories.
  * 
+ * @warning the collection option is currently not used because it's not implemented correctly.
+ * 
  * It behaves similarly to a combination of the decorator Ignore on the field and Collection of the given type.
  * 
  * @param options 

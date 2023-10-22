@@ -1,6 +1,6 @@
 import { Type } from "./core/helpers"
 import { FirestormModel } from "./core/firestorm-model";
-import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
+import { IParentCollectionOption, BaseRepository, CrudRepository } from "./repository";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { Firestore, getFirestore, EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, connectFirestoreEmulator, documentId } from "firebase/firestore"
@@ -144,7 +144,10 @@ export class Firestorm {
      * @param parentCollections 
      * @returns 
      */
-    public getCrudRepository<T extends FirestormModel>(type: Type<T>, ...parentCollections: IParentCollection<any>[]) {
+    public getCrudRepository<T extends FirestormModel>(
+        type: Type<T>, 
+        ...parentCollections: IParentCollectionOption<any>[]
+        ) {
         return this.getRepository(CrudRepository<T>, type, ...parentCollections)
     }
 
@@ -158,7 +161,7 @@ export class Firestorm {
     public getSingleDocumentCrudRepository<T extends FirestormModel>(
         type: Type<T>, 
         documentId: string,
-        ...parentCollections: IParentCollection<any>[],
+        ...parentCollections: IParentCollectionOption<any>[]
         ) {
         const repo = this.getRepository(SingleDocumentRepository<T>, type, ...parentCollections)
         repo.documentId = documentId
@@ -183,12 +186,12 @@ export class Firestorm {
     public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>,
-        ...parentCollections: IParentCollection<any>[]
+        ...parentCollections: IParentCollectionOption<any>[]
         ): R;
     public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>,
-        ...parentCollections: IParentCollection<any>[]
+        ...parentCollections: IParentCollectionOption<any>[]
         ): R {
         
         return new repositoryType(type, this.firestore, parentCollections)

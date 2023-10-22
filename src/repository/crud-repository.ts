@@ -16,7 +16,7 @@ import { Type } from "../core/helpers";
 import { IQueryBuildBlock, Query } from "../query";
 import { FirestormModel, MandatoryFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
-import { IParentCollection } from "./parent-collection.interface";
+import { IParentCollectionOption } from "./parent-collection.interface";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -26,7 +26,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
     constructor(
         type: Type<T>, 
         firestore: Firestore, 
-        parents?: IParentCollection<any>[]
+        parents?: IParentCollectionOption<any>[]
         ) {
         super(type, firestore, parents)
     }
