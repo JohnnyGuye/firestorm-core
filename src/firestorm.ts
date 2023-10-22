@@ -3,10 +3,11 @@ import { FirestormModel } from "./core/firestorm-model";
 import { IParentCollection, BaseRepository, CrudRepository } from "./repository";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
-import { Firestore, getFirestore, EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, connectFirestoreEmulator } from "firebase/firestore"
+import { Firestore, getFirestore, EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, connectFirestoreEmulator, documentId } from "firebase/firestore"
 import { FirebaseStorage, connectStorageEmulator, EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions, getStorage } from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
 import { StorageRepository } from "./storage";
+import { SingleDocumentRepository } from "./repository/single-document-crud-repository";
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 
@@ -145,6 +146,23 @@ export class Firestorm {
      */
     public getCrudRepository<T extends FirestormModel>(type: Type<T>, ...parentCollections: IParentCollection<any>[]) {
         return this.getRepository(CrudRepository<T>, type, ...parentCollections)
+    }
+
+    /**
+     * Gets the mono document CRUD repository for a model
+     * @param type Type of the document model
+     * @param parentCollections The parent collections
+     * @param documentId Id of the document
+     * @returns 
+     */
+    public getSingleDocumentCrudRepository<T extends FirestormModel>(
+        type: Type<T>, 
+        documentId: string,
+        ...parentCollections: IParentCollection<any>[],
+        ) {
+        const repo = this.getRepository(SingleDocumentRepository<T>, type, ...parentCollections)
+        repo.documentId = documentId
+        return repo
     }
 
     /**
