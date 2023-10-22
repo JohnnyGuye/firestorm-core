@@ -2,7 +2,7 @@ import { Type, pascalToSnakeCase, stringSingularToPlural } from "../core/helpers
 import { FirestormModel } from "../core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { logWarn } from "../core/logging"
-import { FIRESTORM_METADATA_STORAGE } from "../storage"
+import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 
 /**
  * Options for the collection decorator

@@ -1,7 +1,7 @@
 import { Type } from "../core/helpers"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { DocumentToModelConverter, FirestormModel, ModelToDocumentConverter } from "../core/firestorm-model"
-import { FIRESTORM_METADATA_STORAGE } from "../storage"
+import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 
 /**
  * Interface stipulating the container if any for complexe type decorator

@@ -6,6 +6,7 @@ import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/a
 import { Firestore, getFirestore, EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, connectFirestoreEmulator } from "firebase/firestore"
 import { FirebaseStorage, connectStorageEmulator, EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions, getStorage } from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
+import { StorageRepository } from "./storage";
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 
@@ -172,13 +173,15 @@ export class Firestorm {
         ...parentCollections: IParentCollection<any>[]
         ): R {
         
-        let firestore = this.firestore
-        if (!firestore) {
-            throw new Error("You have to connect Firestorm first")
-        }
+        return new repositoryType(type, this.firestore, parentCollections)
+    }
 
-        let repository = new repositoryType(type, firestore, parentCollections)
-        return repository
+    /**
+     * Gets a storage repository
+     * @returns 
+     */
+    public getStorageRepository() {
+        return new StorageRepository(this.storage)
     }
 
     /**

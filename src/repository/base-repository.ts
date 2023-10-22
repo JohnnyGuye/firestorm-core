@@ -2,7 +2,7 @@ import { DocumentSnapshot, Firestore } from "firebase/firestore"
 
 import { Type, buildPath } from "../core/helpers"
 import { FirestormModel, resolveId } from "../core/firestorm-model"
-import { FIRESTORM_METADATA_STORAGE } from "../storage"
+import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 
 import { ParentCollection } from "./parent-collection"

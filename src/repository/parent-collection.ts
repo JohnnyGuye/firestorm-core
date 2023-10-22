@@ -1,6 +1,6 @@
 import { FirestormModel } from "../core/firestorm-model"
 import { Type } from "../core/helpers"
-import { FIRESTORM_METADATA_STORAGE } from "../storage"
+import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { IParentCollection } from "./parent-collection.interface"
 
 // Technically I could infer the type from the instance T. There is probably a way aswell to not use the key though it may be complicated

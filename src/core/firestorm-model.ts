@@ -1,3 +1,5 @@
+import { Type } from "./helpers"
+
 /**
  * Minimal requirements for a firestorm model
  */
@@ -9,13 +11,32 @@ export interface FirestormModel {
 }
 
 /**
- * 
- * @param modelOrId 
- * @returns 
+ * Take a firestorm model or an id and gets the id
+ * @param modelOrId Model or id 
+ * @returns An id
  */
 export function resolveId(modelOrId: FirestormModel | string) {
     return (typeof modelOrId !== "string" ? modelOrId.id : modelOrId)
 }
+
+/**
+ * Take an instance of a model or an id and gets an instance
+ * @param idOrModel Model or id
+ * @param type Type of the model
+ * @returns An instance of the model (same as given if it was already an instance)
+ */
+export function resolveInstance<T extends FirestormModel>(
+    idOrModel: T | string, 
+    type: Type<T>
+    ): T {
+  
+    if (typeof idOrModel !== 'string') return idOrModel
+  
+    let instance: T = new type()
+    instance.id = idOrModel
+    
+    return instance
+  }
 
 /**
  * Dictionary of id and model corresponding to this id

@@ -1,6 +1,6 @@
 import { FirestormModel } from "../core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
-import { FIRESTORM_METADATA_STORAGE } from "../storage"
+import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 
 /**
  * Options for the decorator MapTo

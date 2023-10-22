@@ -4,4 +4,4 @@ export * from "./query"
 export * from "./decorators"
 export * from "./core/firestorm-model"
 
-export { firestormMetadatasToJson } from "./storage"
+export { firestormMetadatasToJson } from "./metadata-storage"

@@ -1,7 +1,7 @@
 import { Type } from "../core/helpers"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { FirestormModel, ISubCollection } from "../core/firestorm-model"
-import { FIRESTORM_METADATA_STORAGE } from "../storage"
+import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 
 export { ISubCollection } from "../core/firestorm-model"
 
