@@ -11,6 +11,15 @@ export interface FirestormModel {
 }
 
 /**
+ * Requirements for a firestorm model that is referenced
+ */
+export interface MandatoryFirestormModel extends FirestormModel {
+    
+    id: string
+
+}
+
+/**
  * Take a firestorm model or an id and gets the id
  * @param modelOrId Model or id 
  * @returns An id

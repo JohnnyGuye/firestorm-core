@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { Type } from "../core/helpers";
 import { IQueryBuildBlock, Query } from "../query";
-import { FirestormModel } from "../core/firestorm-model";
+import { FirestormModel, MandatoryFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
 import { IParentCollection } from "./parent-collection.interface";
 
@@ -64,20 +64,15 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
 
     /**
      * Modifies an item in the database.
-     * If the id is not provided, it will create a new object.
-     * @param model Partial or full model to update. 
-     * @returns A Promise that resolved when the item has been updated (or created)
+     * @param model Partial or full model to update. It must have an id.
+     * @returns A Promise that resolved when the item has been updated
      */
-    async updateAsync(model: Partial<T>) {
+    async updateAsync(model: Partial<T> & MandatoryFirestormModel) {
 
         let id = model.id
         let documentRef: DocumentReference
-        if (!id) {
-            documentRef = doc(collection(this.firestore, this.collectionPath))
-            model.id = id = documentRef.id
-        } else {
-            documentRef = doc(this.firestore, this.collectionPath, id)
-        }
+        
+        documentRef = doc(this.firestore, this.collectionPath, id)
 
         const data = this.classToFirestoreDocument(model)
 
