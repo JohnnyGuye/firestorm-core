@@ -62,11 +62,11 @@ export class ParentCollection<T extends FirestormModel> {
         }
 
         if ("type" in options && "id" in options && "key" in options) {
-            new ParentCollection(options.type, resolveInstance(options.id, options.type), options.key)
+            return new ParentCollection(options.type, resolveInstance(options.id, options.type), options.key)
         }
 
         if ("type" in options && "instanceOrId" in options && "key" in options) {
-            new ParentCollection(options.type, resolveInstance(options.instanceOrId, options.type), options.key)
+            return new ParentCollection(options.type, resolveInstance(options.instanceOrId, options.type), options.key)
         }
 
         throw new Error("Not supported options")
