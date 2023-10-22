@@ -177,7 +177,7 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
       return mergedCompleteTask
     }
 
-    return MergedUploadTaskCompleteEvent
+    return mergedTask
   }
 
 }
@@ -214,3 +214,4 @@ export class MergedUploadTaskCompleteEvent extends AbstractMergedUploadTaskEvent
 
 }
 
+export const mergeUploadTaskEvents = AbstractMergedUploadTaskEvent.mergeUploadTaskEvents
