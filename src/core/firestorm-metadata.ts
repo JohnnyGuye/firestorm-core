@@ -1,6 +1,11 @@
+import { FirestoreDocument } from "./firestore-document"
 import { DocumentToModelConverter, ModelToDocumentConverter } from "./firestorm-model"
 import { Type, pascalToSnakeCase } from "./helpers"
 import { logWarn } from "./logging"
+
+interface SubCollectionMetadas {
+  key: string
+}
 
 /**
  * Metadatas linked to a type that holds information:
@@ -25,11 +30,15 @@ export class FirestormMetadata<T> {
 
   private _ignore?: Set<string>
 
-  private _toDocumentConverters?: Map<string, ModelToDocumentConverter<any>>
+  private _acceptUndefined?: Set<string>
 
-  private _toModelConverters?: Map<string, DocumentToModelConverter<any>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _toDocumentConverters = new Map<string, ModelToDocumentConverter<any>>()
 
-  private _subCollections?: Map<string, any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private _toModelConverters = new Map<string, DocumentToModelConverter<any>>()
+
+  private _subCollections?: Map<string, SubCollectionMetadas>
 
   /**
    * Marks a key in the model to be read when deserializing a document
@@ -58,7 +67,7 @@ export class FirestormMetadata<T> {
 
   /**
    * Marks a key as ignored when deserializing a document
-   * @param key 
+   * @param key The key to ignore
    */
   public addIgnoredKey(key: string) {
     if (!this._ignore) this._ignore = new Set<string>()
@@ -67,11 +76,11 @@ export class FirestormMetadata<T> {
 
   /**
    * Marks a field as being a subcollection
-   * @param key 
+   * @param key The key of the subcollection
    */
-  public addSubCollection(key: string) {
-    if (!this._subCollections) this._subCollections = new Map<string, any>()
-    this._subCollections.set(key, {})
+  public addSubCollection(key: string): void {
+    if (!this._subCollections) this._subCollections = new Map<string, SubCollectionMetadas>()
+    this._subCollections.set(key, { key: key })
   }
 
   /**
@@ -85,12 +94,13 @@ export class FirestormMetadata<T> {
   }
 
   /**
-   * I DON'T KNOW
+   * Whether or not the field can receive undefined values
    * @param key 
    * @returns 
    */
   public isAcceptingUndefined(key: string) {
-    return false
+    if (!this._acceptUndefined) return false
+    return this._acceptUndefined.has(key)
   }
 
   /**
@@ -118,7 +128,6 @@ export class FirestormMetadata<T> {
    * @param converter Conversion function
    */
   public addModelToDocumentConverter<T>(key: string, converter: ModelToDocumentConverter<T>) {
-    if (!this._toDocumentConverters) this._toDocumentConverters = new Map<string, ModelToDocumentConverter<any>>
     if (this._toDocumentConverters.has(key)) {
       logWarn(`There is already a model to doc conversion for the ${key} of the object ${this.type.name}. The new conversion will replace it.`)
     }
@@ -131,7 +140,6 @@ export class FirestormMetadata<T> {
    * @param converter Conversion function
    */
   public addDocumentToModelConverter<T>(key: string, converter: DocumentToModelConverter<T>) {
-    if (!this._toModelConverters) this._toModelConverters = new Map<string, DocumentToModelConverter<any>>()
     if (this._toModelConverters.has(key)) {
       logWarn(`There is already a doc to model conversion for the ${key} of the object ${this.type.name}. The new conversion will replace it.`)
     }
@@ -143,9 +151,9 @@ export class FirestormMetadata<T> {
    * @param key Field in the model
    * @returns The conversion function
    */
-  public getDocumentToModelConverter(key: string) {
+  public getDocumentToModelConverter(key: string): DocumentToModelConverter<T> {
     return (this._toModelConverters && this._toModelConverters.get(key)) 
-        || ((value: any) => value)
+        || ((value: FirestoreDocument) => value as T)
   }
 
   /**
@@ -153,19 +161,34 @@ export class FirestormMetadata<T> {
    * @param key Field in the model
    * @returns The conversion function
    */
-  public getModelToDocumentConverter(key: string) {
+  public getModelToDocumentConverter(key: string): ModelToDocumentConverter<T> {
     return (this._toDocumentConverters && this._toDocumentConverters.get(key)) 
-        || ((value: any) => value)
+        || ((value: T) => value as FirestoreDocument)
   }
 
+  /**
+   * Checks the existency of a document to model conversion for this property key
+   * @param key 
+   * @returns 
+   */
   public hasDocumentToModelConversion(key: string) {
     return this._toModelConverters && this._toModelConverters.has(key) || false
   }
 
+  /**
+   * Checks the existency of a model to document conversion for this property key
+   * @param key 
+   * @returns 
+   */
   public hasModelToDocumentConversion(key: string) {
     return this._toDocumentConverters && this._toDocumentConverters.has(key) || false
   }
 
+  /**
+   * 
+   * @param key 
+   * @returns 
+   */
   public hasConversion(key: string) {
     return this.hasDocumentToModelConversion(key) || this.hasModelToDocumentConversion(key)
   }
@@ -175,22 +198,20 @@ export class FirestormMetadata<T> {
    * @param document Document to convert
    * @returns The model created from the document
    */
-  public convertDocumentToModel(document: any): T | null {
+  public convertDocumentToModel(document: FirestoreDocument): T {
 
-    if (!document) return null
-
-    
     if (!this._keys) {
       throw new Error("This model has no key assigned. Did you forget a class decorator?")
     }
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const klassInstance: any = new this.type
 
-    for (const [key, defaultMapping] of this._keys) {
+    for (const [key] of this._keys) {
 
       if (this.isKeyIgnored(key)) continue
 
-      if (!(key in klassInstance)) { 
+      if (!(key in klassInstance)) {
         console.warn("???", key, klassInstance)
         continue
       }
@@ -215,17 +236,15 @@ export class FirestormMetadata<T> {
    * @param object Model to convert
    * @returns The document created from the model
    */
-  public convertModelToDocument(object: Partial<T>): any {
-
-    if (!object) return null
+  public convertModelToDocument(object: Partial<T>): FirestoreDocument {
 
     if (!this._keys) {
       throw new Error("This model has no key assigned. Did you forget a class decorator?")
     }
 
-    const document: any = {}
+    const document: FirestoreDocument = {}
 
-    for (const [key, defaultMapping] of this._keys) {
+    for (const [key] of this._keys) {
 
       if (this.isKeyIgnored(key)) continue
       
@@ -235,6 +254,7 @@ export class FirestormMetadata<T> {
       if (!mappedTo) continue
 
       const convert = this.getModelToDocumentConverter(key)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const val = convert((object as any)[key])
       
       if (val === undefined && !this.isAcceptingUndefined(key)) continue
@@ -245,10 +265,12 @@ export class FirestormMetadata<T> {
     return document
   }
 
-  
+  /**
+   * Creates a blueprint of the document created by the model
+   */
   public get documentBlueprint() {
 
-    const bp: any = { }
+    const bp: Record<string, PropertyBluePrint> = { }
     
     for (const prop of this.modelProperties) {
       const mapping = this.isMappedTo(prop)
@@ -258,7 +280,7 @@ export class FirestormMetadata<T> {
         continue
       }
 
-      const kbp = {
+      const kbp: PropertyBluePrint = {
         modelProperty: prop,
         defaultMapping: pascalToSnakeCase(prop),
         ignored: this.isKeyIgnored(prop),
@@ -270,4 +292,14 @@ export class FirestormMetadata<T> {
 
     return bp
   }
+}
+
+export interface PropertyBluePrint {
+
+  modelProperty: string
+  defaultMapping: string
+  ignored: boolean,
+  documentKey: string,
+  complexType: boolean
+
 }

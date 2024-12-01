@@ -1,4 +1,4 @@
-import { FirestormModel, resolveInstance } from "../core/firestorm-model"
+import { IFirestormModel, resolveInstance } from "../core/firestorm-model"
 import { Type } from "../core/helpers"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { IParentCollectionOption } from "./parent-collection.interface"
@@ -28,7 +28,7 @@ interface IParentCollectionSetThree<T extends FirestormModel> {
 }
 */
 
-export class ParentCollection<T extends FirestormModel> {
+export class ParentCollection<T extends IFirestormModel> {
 
     readonly type: Type<T>
     readonly instance: T
@@ -56,7 +56,7 @@ export class ParentCollection<T extends FirestormModel> {
         return this.instance.id
     }
 
-    public static createFromOptions<T extends FirestormModel>(options: IParentCollectionOption<T>) {
+    public static createFromOptions<T extends IFirestormModel>(options: IParentCollectionOption<T>) {
         if ("type" in options && "instance" in options && "key" in options) {
             return new ParentCollection(options.type, options.instance, options.key)
         }

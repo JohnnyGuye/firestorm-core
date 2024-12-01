@@ -1,6 +1,7 @@
 import { FirestormModel } from "../core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
+import { Type } from "../core/helpers"
 
 /**
  * Options for the decorator MapTo
@@ -18,15 +19,15 @@ export interface IMapToOptions {
  * @param options Options of the decorator or just the name of the document's field to map
  * @returns 
  */
-export function MapTo(options: IMapToOptions | string) {
+export function MapTo<M extends FirestormModel>(options: IMapToOptions | string) {
 
   if (typeof options === "string") options = { target: options }
   const localOptions = options
 
-  return (object: FirestormModel, propertyKey: string) => {
+  return (object: M, propertyKey: string) => {
 
     const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
-    const md = storage.createOrGetMetadatas(object.constructor)
+    const md = storage.getOrCreateMetadatas(object.constructor as Type<M>)
     md.addKeyRemapping(propertyKey, localOptions.target)
 
   }

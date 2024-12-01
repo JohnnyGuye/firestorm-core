@@ -1,23 +1,24 @@
 import { DocumentSnapshot, Firestore } from "firebase/firestore"
 
 import { Type, buildPath } from "../core/helpers"
-import { FirestormModel, resolveId } from "../core/firestorm-model"
+import { IFirestormModel, resolveId } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 
 import { ParentCollection } from "./parent-collection"
 import { IParentCollectionOption } from "./parent-collection.interface"
+import { FirestoreDocument } from "../core/firestore-document"
 
 
 
 /**
  * A repository is a typed access to a specific collection
  */
-export class BaseRepository<T extends FirestormModel> {
+export class BaseRepository<T extends IFirestormModel> {
         
     private _type: Type<T>
     protected readonly firestore: Firestore
-    private parents?: ParentCollection<any>[] = []
+    private parents?: ParentCollection<IFirestormModel>[] = []
     
     /**
      * Creates a new repository on a model
@@ -28,7 +29,7 @@ export class BaseRepository<T extends FirestormModel> {
     constructor(
         type: Type<T>,
         firestore: Firestore,
-        parents?: IParentCollectionOption<any>[]
+        parents?: IParentCollectionOption<IFirestormModel>[]
         ) {
         
         this._type = type
@@ -65,7 +66,7 @@ export class BaseRepository<T extends FirestormModel> {
      * The metadatas corresponding to the type of this repository
      */
     protected get typeMetadata() {
-        return this.storage.getMetadatas(this._type)
+        return this.storage.getMetadatas<T>(this._type)
     }
 
     /**
@@ -99,7 +100,12 @@ export class BaseRepository<T extends FirestormModel> {
         return buildPath(...pathBlocks)
     }
 
-    public pathToDocument(modelOrId: FirestormModel | string): string {
+    /**
+     * Builds the path to a document
+     * @param modelOrId 
+     * @returns 
+     */
+    public pathToDocument(modelOrId: IFirestormModel | string): string {
         const id = resolveId(modelOrId)
         if (!id) throw new MissingIdentifierError()
 
@@ -117,11 +123,14 @@ export class BaseRepository<T extends FirestormModel> {
         
         const retrievedId: string = documentSnapshot.id
         const data = documentSnapshot.data()
+        
+        if (!data) {
+            throw Error(`There is no data in the snapshot of ${retrievedId} in collection ${this.collectionPath}`)
+        }
 
         const klass = this.firestoreDocumentToClass(data)
         if (!klass) {
-            console.error("Failed to convert the document to a typed object:", retrievedId, data)
-            throw Error(`Failed to convert the document of id '${retrievedId}' in colleciton ${this.collectionPath}`)
+            throw Error(`Failed to convert the document of id '${retrievedId}' in collection ${this.collectionPath}`)
         }
 
         klass.id = retrievedId
@@ -134,7 +143,7 @@ export class BaseRepository<T extends FirestormModel> {
      * @param document 
      * @returns 
      */
-    public firestoreDocumentToClass(document: any): T | null {
+    public firestoreDocumentToClass(document: FirestoreDocument): T | null {
         return this.typeMetadata.convertDocumentToModel(document)
     }
 
@@ -143,7 +152,7 @@ export class BaseRepository<T extends FirestormModel> {
      * @param object 
      * @returns 
      */
-    public classToFirestoreDocument(object: Partial<T>): any {
+    public classToFirestoreDocument(object: Partial<T>): FirestoreDocument {
         return this.typeMetadata.convertModelToDocument(object)
     }
 }

@@ -1,10 +1,20 @@
 import { Type } from "./core/helpers"
-import { FirestormModel } from "./core/firestorm-model";
+import { IFirestormModel } from "./core/firestorm-model";
 import { IParentCollectionOption, BaseRepository, CrudRepository } from "./repository";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
-import { Firestore, getFirestore, EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, connectFirestoreEmulator, documentId } from "firebase/firestore"
-import { FirebaseStorage, connectStorageEmulator, EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions, getStorage } from "firebase/storage"
+import { 
+    Firestore, 
+    getFirestore, 
+    EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, 
+    connectFirestoreEmulator 
+} from "firebase/firestore"
+import { 
+    FirebaseStorage, 
+    connectStorageEmulator, 
+    EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions, 
+    getStorage 
+} from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
 import { StorageRepository } from "./storage";
 import { SingleDocumentRepository } from "./repository/single-document-crud-repository";
@@ -140,13 +150,14 @@ export class Firestorm {
 
     /**
      * Gets the basic CRUD repository for a model
+     * @template T Type of the model
      * @param type Type of the model
      * @param parentCollections 
      * @returns 
      */
-    public getCrudRepository<T extends FirestormModel>(
+    public getCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
-        ...parentCollections: IParentCollectionOption<any>[]
+        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
         ) {
         return this.getRepository(CrudRepository<T>, type, ...parentCollections)
     }
@@ -158,10 +169,10 @@ export class Firestorm {
      * @param documentId Id of the document
      * @returns 
      */
-    public getSingleDocumentCrudRepository<T extends FirestormModel>(
+    public getSingleDocumentCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
         documentId: string,
-        ...parentCollections: IParentCollectionOption<any>[]
+        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
         ) {
         const repo = this.getRepository(SingleDocumentRepository<T>, type, ...parentCollections)
         repo.documentId = documentId
@@ -173,7 +184,7 @@ export class Firestorm {
      * @param type Type of the model
      * @returns 
      */
-    public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
+    public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>
         ): R;
@@ -183,15 +194,15 @@ export class Firestorm {
      * @param parentCollections The parent collections
      * @returns 
      */
-    public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
+    public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>,
-        ...parentCollections: IParentCollectionOption<any>[]
+        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
         ): R;
-    public getRepository<R extends BaseRepository<T>, T extends FirestormModel>(
+    public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>,
-        ...parentCollections: IParentCollectionOption<any>[]
+        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
         ): R {
         
         return new repositoryType(type, this.firestore, parentCollections)

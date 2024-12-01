@@ -1,18 +1,31 @@
-export class AlreadyExistingMetadatasError extends Error {
+import { Type } from "../core/helpers"
 
-  constructor(public readonly type: any) {
+/**
+ * Error to throw when attempting to recreate metadatas 
+ * for a type that already has metadatas
+ */
+export class AlreadyExistingMetadatasError<T> extends Error {
+
+  constructor(public readonly type: Type<T>) {
     super(`The metadatas for the type ${type} already exist`)
   }
 
 }
 
-export class NotFoundMetadataError extends Error {
+/**
+ * Error to throw when attempting to retrieve metadatas for a type
+ * that isn't registered
+ */
+export class NotFoundMetadataError<T> extends Error {
   
-  constructor(public readonly  type: any) {
+  constructor(public readonly  type: Type<T>) {
     super(`The metadatas for the type ${type} do not exist.`)
   }
 }
 
+/**
+ * Error to throw when a firestore model has an empty id when expected one.
+ */
 export class MissingIdentifierError extends Error {
 
   constructor() {

@@ -13,7 +13,7 @@ export type WhereClauseOperator = WhereFilterOp
 /**
  * Values for where clauses
  */
-export type WhereClauseValue = any
+export type WhereClauseValue = unknown
 
 /**
  * Direction of the order for order clauses

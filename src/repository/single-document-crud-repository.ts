@@ -1,5 +1,5 @@
 import { DocumentReference, DocumentSnapshot, Firestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { FirestormModel } from "../core/firestorm-model";
+import { IFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
 import { IParentCollectionOption } from "./parent-collection.interface";
 import { Type } from "../core/helpers";
@@ -7,7 +7,7 @@ import { Type } from "../core/helpers";
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
  */
-export class SingleDocumentRepository<T extends FirestormModel> extends BaseRepository<T> {
+export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRepository<T> {
   
   /**
    * Id of the document
@@ -17,7 +17,7 @@ export class SingleDocumentRepository<T extends FirestormModel> extends BaseRepo
   constructor(
     type: Type<T>,
     firestore: Firestore,
-    parents?: IParentCollectionOption<any>[]
+    parents?: IParentCollectionOption<IFirestormModel>[]
     ) {
     
     super(type, firestore, parents)

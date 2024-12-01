@@ -1,3 +1,4 @@
+import { FirestoreDocument } from "../core/firestore-document";
 import { ComplexType } from "./complex-type.decorator";
 
 /**
@@ -9,7 +10,7 @@ import { ComplexType } from "./complex-type.decorator";
  */
 export function DateType() {
   return ComplexType({
-    toModel: (object: any) => {
+    toModel: (object: FirestoreDocument) => {
       if (object === null || object === undefined) return null
 
       if ("seconds" in object) {
@@ -19,7 +20,7 @@ export function DateType() {
       return null
     },
     toDocument: (model: Date | null) => {
-      return model
+      return model as unknown as FirestoreDocument
     }
   })
 }

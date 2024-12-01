@@ -2,6 +2,8 @@ import { Type } from "../core/helpers"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { DocumentToModelConverter, FirestormModel, ModelToDocumentConverter } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
+import { FirestoreDocument } from "../core/firestore-document"
+import { logError } from "../core/logging"
 
 /**
  * Interface stipulating the container if any for complexe type decorator
@@ -45,11 +47,32 @@ export interface IExplicitSerializerOptions<T> extends IContainerOptions {
  */
 export type IComplexeTypeOptions<T> = IAutoSerializerOptions<T> | IExplicitSerializerOptions<T>
 
+function wrapInContainer<T>(documentToModelConverter: (item: FirestoreDocument) => T,  options: IComplexeTypeOptions<T>): DocumentToModelConverter<T>;
+function wrapInContainer<T>(modelToDocumentConverter: (item: T) => FirestoreDocument,  options: IComplexeTypeOptions<T>): ModelToDocumentConverter<T>;
+function wrapInContainer<T>(
+  modelOrDocumentConverter: (item: FirestoreDocument | T) => FirestoreDocument | T, 
+  options: IComplexeTypeOptions<T>
+) {
+
+  switch (options.container) {
+    case 'array':
+      return (modelOrDocumentAsArray: Array<T>) => {
+        if (!modelOrDocumentAsArray) return []
+        return modelOrDocumentAsArray.map(modelOrDocumentConverter)
+      }
+    default:
+      return modelOrDocumentConverter
+  }
+
+}
+
 /**
  * Decorator for complex types.
  * 
  * A complex type is pretty much any type that returns "object" when passed to "typeof".
- * 
+ * @template T The type of object to parse
+ * @template M The firestorm model that holds the the complex type to parse.
+ * @template K The name of the property on which the model is attached
  * @param options Options of the complex type
  * @returns 
  */
@@ -57,52 +80,42 @@ export function ComplexType<T, M extends FirestormModel, K extends string>(
   options: IComplexeTypeOptions<T>
   ) {
 
-  const wrapInContainer = (modelOrDocumentConverter: (item: any) => any) => {
-    switch (options.container) {
-      case 'array':
-        return (modelOrDocumentAsArray: Array<any>) => {
-          if (!modelOrDocumentAsArray) return []
-          return modelOrDocumentAsArray.map(modelOrDocumentConverter)
-        }
-      default:
-        return modelOrDocumentConverter
-    }
-  }
-
-
+  // For the auto serializer
   if ("type" in options) {
     return (object: M, key: K) => {
 
       const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
-      const md = storage.createOrGetMetadatas(object.constructor)
+      const md = storage.getOrCreateMetadatas(object.constructor as Type<M>)
 
-      const typeMd = storage.createOrGetMetadatas(options.type)
+      const typeMd = storage.getOrCreateMetadatas(options.type)
 
-      const docToMod = (document:any) => typeMd.convertDocumentToModel(document)
-      const modToDoc = (model: any) => typeMd.convertModelToDocument(model)
+      const docToMod = (document:FirestoreDocument) => typeMd.convertDocumentToModel(document)
+      const modToDoc = (model: Partial<T>) => typeMd.convertModelToDocument(model)
 
-      md.addDocumentToModelConverter(key, wrapInContainer(docToMod))
-      md.addModelToDocumentConverter(key, wrapInContainer(modToDoc))
+      md.addDocumentToModelConverter(key, wrapInContainer(docToMod, options))
+      md.addModelToDocumentConverter(key, wrapInContainer(modToDoc, options))
 
     }
   }
 
+  // For the explicit serializer
   if ("toDocument" in options && "toModel" in options) {
     return (object: M, key: K) => {
       
       const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
-      const md = storage.createOrGetMetadatas(object.constructor)
+      const md = storage.getOrCreateMetadatas(object.constructor as Type<M>)
 
-      const docToMod = (document:any) => options.toModel(document)
-      const modToDoc = (model: any) => options.toDocument(model)
+      const docToMod = (document: FirestoreDocument) => options.toModel(document)
+      const modToDoc = (model: T) => options.toDocument(model)
 
-      md.addDocumentToModelConverter(key, wrapInContainer(docToMod))
-      md.addModelToDocumentConverter(key, wrapInContainer(modToDoc))
+      md.addDocumentToModelConverter(key, wrapInContainer(docToMod, options))
+      md.addModelToDocumentConverter(key, wrapInContainer(modToDoc, options))
 
     }
   }
 
-  return (...args: any) => {
-    console.warn("You gave a set of options that isn't supported yet.", options)
+  return () => {
+    logError("Impossible options", options)
+    throw new Error("You gave a set of options that isn't supported yet.")
   }
 }

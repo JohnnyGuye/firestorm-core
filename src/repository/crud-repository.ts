@@ -14,19 +14,19 @@ import {
 } from "firebase/firestore";
 import { Type } from "../core/helpers";
 import { IQueryBuildBlock, Query } from "../query";
-import { FirestormModel, MandatoryFirestormModel } from "../core/firestorm-model";
+import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
 import { IParentCollectionOption } from "./parent-collection.interface";
 
 /**
  * Repository with a basic CRUD implementation.
  */
-export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> {
+export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T> {
 
     constructor(
         type: Type<T>, 
         firestore: Firestore, 
-        parents?: IParentCollectionOption<any>[]
+        parents?: IParentCollectionOption<IFirestormModel>[]
         ) {
         super(type, firestore, parents)
     }
@@ -67,12 +67,10 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param model Partial or full model to update. It must have an id.
      * @returns A Promise that resolved when the item has been updated
      */
-    async updateAsync(model: Partial<T> & MandatoryFirestormModel) {
+    async updateAsync(model: Partial<T> & IMandatoryFirestormModel) {
 
         const id = model.id
-        let documentRef: DocumentReference
-        
-        documentRef = doc(this.firestore, this.collectionPath, id)
+        const documentRef: DocumentReference = doc(this.firestore, this.collectionPath, id)
 
         const data = this.classToFirestoreDocument(model)
 
@@ -183,8 +181,8 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      * @param model Model of the document to delete.
      * @returns A promise that returns when the document has been deleted
      */
-    async deleteAsync(model: FirestormModel): Promise<void>;
-    async deleteAsync(modelOrId: FirestormModel | string): Promise<void> {
+    async deleteAsync(model: IFirestormModel): Promise<void>;
+    async deleteAsync(modelOrId: IFirestormModel | string): Promise<void> {
 
         const path = this.pathToDocument(modelOrId)
         const docRef: DocumentReference = doc(this.firestore, path)

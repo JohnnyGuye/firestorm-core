@@ -1,4 +1,3 @@
-import { Type } from "../core/helpers";
 import { QueryConstraint } from "firebase/firestore";
 import { LimitClauseDirection, LimitClauseLimit, OrderClauseDirection, QueryClauseField, StartBlock, WhereClauseOperator, WhereClauseValue } from "./query-builder";
 
@@ -48,15 +47,6 @@ You can't order your query by a field included in an equality (==) or in clause.
 The sum of filters, sort orders, and parent document path (1 for a subcollection, 0 for a root collection) in a query cannot exceed 100.
 */
 
-interface QueryValidityCheckResult {
-
-  warnings: QueryCheckEntry[]
-  errors: QueryCheckEntry[]
-
-  valid: boolean
-
-}
-
 export class Query {
 
   private _startBlock: StartBlock = new StartBlock()
@@ -99,30 +89,6 @@ export class Query {
    */
   limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start') {
     return this.start.limit(limit, from)
-  }
-
-  /**
-   * Check if the query is a valid query
-   * @param type 
-   * @returns 
-   */
-  validityCheck<T>(type: Type<T>): QueryValidityCheckResult {
-    const chain = this.start.flattenedChain
-    const constraints = this.start.toConstraints()
-
-    const validityCheck: QueryValidityCheckResult = {
-      warnings: [],
-      errors: [],
-      valid: true
-    }
-
-    {
-      if (constraints.length > 100) {
-        validityCheck.errors.push(new TooManyConstraintsQueryError())
-      }
-    }
-    
-    return validityCheck
   }
   
   toConstraints(): QueryConstraint[] {

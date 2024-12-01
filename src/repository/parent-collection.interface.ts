@@ -1,7 +1,7 @@
-import { FirestormModel } from "../core/firestorm-model"
+import { IFirestormModel } from "../core/firestorm-model"
 import { Type } from "../core/helpers"
 
-export type IParentCollectionOption<T extends FirestormModel> = 
+export type IParentCollectionOption<T extends IFirestormModel> = 
 {
   type: Type<T>
   instance: T

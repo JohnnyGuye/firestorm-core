@@ -43,7 +43,7 @@ export function Collection<T extends FirestormModel>(options?: ICollectionOption
         + `You'll have to drop the name mangling for your model or state explicitely the collection.`)
     }
 
-    const md = storage.createOrGetMetadatas(constructor)
+    const md = storage.getOrCreateMetadatas(constructor)
 
     md.collection = collectionName
   }
