@@ -73,7 +73,7 @@ export function ComplexType<T, M extends FirestormModel, K extends string>(
   if ("type" in options) {
     return (object: M, key: K) => {
 
-      let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+      const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
       const md = storage.createOrGetMetadatas(object.constructor)
 
       const typeMd = storage.createOrGetMetadatas(options.type)
@@ -90,7 +90,7 @@ export function ComplexType<T, M extends FirestormModel, K extends string>(
   if ("toDocument" in options && "toModel" in options) {
     return (object: M, key: K) => {
       
-      let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+      const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
       const md = storage.createOrGetMetadatas(object.constructor)
 
       const docToMod = (document:any) => options.toModel(document)

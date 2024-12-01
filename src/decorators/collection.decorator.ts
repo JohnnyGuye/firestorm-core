@@ -26,7 +26,7 @@ export function Collection<T extends FirestormModel>(options?: ICollectionOption
   return (constructor: Type<T>) => {
     
     // Storage
-    let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+    const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
     
     // Name of the collection
     let collectionName: string
@@ -43,7 +43,7 @@ export function Collection<T extends FirestormModel>(options?: ICollectionOption
         + `You'll have to drop the name mangling for your model or state explicitely the collection.`)
     }
 
-    let md = storage.createOrGetMetadatas(constructor)
+    const md = storage.createOrGetMetadatas(constructor)
 
     md.collection = collectionName
   }

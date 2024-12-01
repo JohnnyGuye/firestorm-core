@@ -38,15 +38,15 @@ export function SubCollection<
   options: ISubCollectionOptions<T_Model>
   ) {
 
-  let type = options.type
+  const type = options.type
 
   return (object: T_Host, propertyKey: K) => {
 
-    let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+    const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
     const md = storage.createOrGetMetadatas(object.constructor)
     md.addSubCollection(propertyKey)
 
-    let submd = storage.createOrGetMetadatas(type)
+    const submd = storage.createOrGetMetadatas(type)
     submd.collection = options.collection || propertyKey
 
   }

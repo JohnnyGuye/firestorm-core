@@ -37,7 +37,7 @@ export class FirestormMetadata<T> {
    */
   public addKey(key: string) {
     if (!this._keys) this._keys = new Map<string, string>()
-    let documentKey = pascalToSnakeCase(key)
+    const documentKey = pascalToSnakeCase(key)
     this._keys.set(key, documentKey)
   }
 
@@ -186,7 +186,7 @@ export class FirestormMetadata<T> {
     
     const klassInstance: any = new this.type
 
-    for (let [key, defaultMapping] of this._keys) {
+    for (const [key, defaultMapping] of this._keys) {
 
       if (this.isKeyIgnored(key)) continue
 
@@ -199,7 +199,7 @@ export class FirestormMetadata<T> {
       if (!mappedTo) continue
 
       const convert = this.getDocumentToModelConverter(key)
-      let val = convert(document[mappedTo])
+      const val = convert(document[mappedTo])
       
       if (val === undefined && !this.isAcceptingUndefined(key)) continue
 
@@ -225,7 +225,7 @@ export class FirestormMetadata<T> {
 
     const document: any = {}
 
-    for (let [key, defaultMapping] of this._keys) {
+    for (const [key, defaultMapping] of this._keys) {
 
       if (this.isKeyIgnored(key)) continue
       
@@ -235,7 +235,7 @@ export class FirestormMetadata<T> {
       if (!mappedTo) continue
 
       const convert = this.getModelToDocumentConverter(key)
-      let val = convert((object as any)[key])
+      const val = convert((object as any)[key])
       
       if (val === undefined && !this.isAcceptingUndefined(key)) continue
 
@@ -250,7 +250,7 @@ export class FirestormMetadata<T> {
 
     const bp: any = { }
     
-    for (let prop of this.modelProperties) {
+    for (const prop of this.modelProperties) {
       const mapping = this.isMappedTo(prop)
 
       if (!mapping) {

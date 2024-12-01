@@ -41,7 +41,7 @@ export function resolveInstance<T extends FirestormModel>(
   
     if (typeof idOrModel !== 'string') return idOrModel
   
-    let instance: T = new type()
+    const instance: T = new type()
     instance.id = idOrModel
     
     return instance

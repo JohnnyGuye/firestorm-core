@@ -34,7 +34,7 @@ export class SingleDocumentRepository<T extends FirestormModel> extends BaseRepo
   async writeAsync(model: T) {
 
     model.id = this.documentId
-    let documentRef: DocumentReference = this.documentRef
+    const documentRef: DocumentReference = this.documentRef
     
     const data = this.classToFirestoreDocument(model)
 
@@ -53,7 +53,7 @@ export class SingleDocumentRepository<T extends FirestormModel> extends BaseRepo
   async updateAsync(model: Partial<T>) {
 
     model.id = this.documentId
-    let documentRef: DocumentReference = this.documentRef
+    const documentRef: DocumentReference = this.documentRef
 
     const data = this.classToFirestoreDocument(model)
 

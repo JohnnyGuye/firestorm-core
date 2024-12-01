@@ -69,7 +69,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      */
     async updateAsync(model: Partial<T> & MandatoryFirestormModel) {
 
-        let id = model.id
+        const id = model.id
         let documentRef: DocumentReference
         
         documentRef = doc(this.firestore, this.collectionPath, id)
@@ -88,7 +88,7 @@ export class CrudRepository<T extends FirestormModel> extends BaseRepository<T> 
      */
     async findByIdAsync(id: string): Promise<T | null> {
 
-        let path = this.pathToDocument(id)
+        const path = this.pathToDocument(id)
 
         const docRef: DocumentReference = doc(this.firestore, path)
         const documentSnapshot: DocumentSnapshot = await getDoc(docRef)

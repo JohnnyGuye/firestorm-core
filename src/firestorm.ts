@@ -56,7 +56,7 @@ const DEFAULT_EMULATOR_OPTIONS: FullEmulatorConnectionOptions = {
 }
 
 function mergeOptionsToDefault(options?: EmulatorConnectionOptions) : FullEmulatorConnectionOptions {
-    let compoundedOptions = Object.assign({}, DEFAULT_EMULATOR_OPTIONS, options)
+    const compoundedOptions = Object.assign({}, DEFAULT_EMULATOR_OPTIONS, options)
     return compoundedOptions
 }
 
@@ -91,7 +91,7 @@ export class Firestorm {
      * @returns 
      */
     connect(options?: FirebaseOptions) {
-        let app = getApps().find(app => app.name == this.name) 
+        const app = getApps().find(app => app.name == this.name) 
         if (app) {
             this._app = app
             return

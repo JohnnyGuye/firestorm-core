@@ -149,7 +149,7 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
    */
   public static mergeUploadTaskEvents(tasks: UploadTaskEvent[]) {
 
-    let mergedTask = tasks.reduce<MergedUploadTaskChangeEvent>(
+    const mergedTask = tasks.reduce<MergedUploadTaskChangeEvent>(
       (acc, cur) => {
         acc.bytesTransferred += cur.bytesTransferred
         acc.totalBytes += cur.totalBytes

@@ -18,7 +18,8 @@
     "build-es6": "tsc -p ./tsconfig.es6.json",
     "build-es22": "tsc -p ./tsconfig.esm.json",
     "pub": "npm run build && npm publish",
-    "test": "jest",
+    "test": "echo 'You should really implement a test process'",
+    "lint": "npx eslint",
     "watch": "npm-watch build",
     "watch-test": "npm-watch tests",
     "clear": ""

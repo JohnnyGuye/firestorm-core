@@ -31,7 +31,7 @@ export class FirestormMetadataStorage {
    */
   public createMetadatas(type: any) {
 
-    let md = this.tryCreateMetadatas(type) 
+    const md = this.tryCreateMetadatas(type) 
     if (!md) throw new AlreadyExistingMetadatasError(type)
 
     return md
@@ -60,11 +60,11 @@ export class FirestormMetadataStorage {
   private tryCreateMetadatas(type: any) {
     if (this.hasMetadatas(type)) return null
 
-    let metadata = new FirestormMetadata(type)
+    const metadata = new FirestormMetadata(type)
     
     // Extract the properties
     const instantiatedObject = new type
-    for (let key of Object.getOwnPropertyNames(instantiatedObject)) {
+    for (const key of Object.getOwnPropertyNames(instantiatedObject)) {
       metadata.addKey(key)
     }
 
@@ -75,7 +75,7 @@ export class FirestormMetadataStorage {
 
   private tryGetMetadatas(type: any) {
     if (!this._typeMetadatas) return null
-    let md = this.typeMetadatas.get(type)
+    const md = this.typeMetadatas.get(type)
 
     if (!md) return null
     return md

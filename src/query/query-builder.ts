@@ -88,7 +88,7 @@ export abstract class QueryBuildBlock implements IQueryBuildBlock {
 
   public get flattenedChain() {
 
-    let blocks = []
+    const blocks = []
     let currentBlock: QueryBuildBlock | null = this.root
 
     while (currentBlock) {

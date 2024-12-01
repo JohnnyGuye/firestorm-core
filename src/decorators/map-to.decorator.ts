@@ -25,7 +25,7 @@ export function MapTo(options: IMapToOptions | string) {
 
   return (object: FirestormModel, propertyKey: string) => {
 
-    let storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+    const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
     const md = storage.createOrGetMetadatas(object.constructor)
     md.addKeyRemapping(propertyKey, localOptions.target)
 

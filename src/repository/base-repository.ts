@@ -84,7 +84,7 @@ export class BaseRepository<T extends FirestormModel> {
 
         const pathBlocks: string[] = []
         if (this.parents) {
-            for (let p of this.parents) {
+            for (const p of this.parents) {
                 const c = p.collection
                 const id = p.id
 
