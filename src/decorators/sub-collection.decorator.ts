@@ -3,7 +3,7 @@ import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { FirestormModel, ISubCollection } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 
-export { ISubCollection } from "../core/firestorm-model"
+export type { ISubCollection } from "../core/firestorm-model"
 
 /**
  * Options for the decorator SubCollection

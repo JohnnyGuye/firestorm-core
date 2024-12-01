@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // "moduleResolution": "node",
+    "module": "CommonJS",
+    "target": "ES6",
+    // "useDefineForClassFields": false,
+    // "lib": [
+    //   "es6",
+    //   "dom"
+    // ],
+    "outDir": "./dist/es6"
+  }
+}

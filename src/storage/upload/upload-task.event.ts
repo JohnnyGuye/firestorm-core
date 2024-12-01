@@ -1,6 +1,6 @@
 import { TaskState as StorageTaskState } from "firebase/storage"
 
-export { TaskState as StorageTaskState } from "firebase/storage"
+export type { TaskState as StorageTaskState } from "firebase/storage"
 
 /**
  * Base event emitted each time an upload task has to emit
