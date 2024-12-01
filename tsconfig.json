@@ -1,33 +1,26 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
-  "compileOnSave": false,
   "compilerOptions": {
+    "incremental": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitThis": true,
+    "moduleResolution": "nodenext",
+    "module": "NodeNext",
+    "stripInternal": true,
+    "noEmit": true,
+    "lib": ["esnext", "dom"],
+    "target": "esnext",
     "baseUrl": "/src",
     "paths": {
       "@firestorm": ["index"],
       "@firestorm/*": ["*"]
     },
-    "outDir": "./dist",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "sourceMap": true,
-    "declaration": true,
-    "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "target": "ES5",
-    "module": "CommonJS",
-    "useDefineForClassFields": false,
-    "lib": [
-      "es6",
-      "dom"
-    ]
   },
   "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*"]
+  "exclude": ["node_modules", "**/__tests__/*", "dist"]
 }

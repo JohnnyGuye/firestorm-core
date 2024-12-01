@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "isolatedModules": true,
+    "target": "ES5",
+    "module": "CommonJS",
+    "useDefineForClassFields": false,
+    "lib": [
+      "es6",
+      "dom"
+    ]
+  }
+}
