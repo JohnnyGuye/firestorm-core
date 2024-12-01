@@ -5,13 +5,15 @@ import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { FirestoreDocument } from "../core/firestore-document"
 import { logError } from "../core/logging"
 
+export type ContainerOption = 'array'
+
 /**
  * Interface stipulating the container if any for complexe type decorator
  */
 interface IContainerOptions {
 
   /** The container in which the model is. Only supports array so far */
-  container?: 'array'
+  container?: ContainerOption
 
 }
 

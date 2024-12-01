@@ -18,7 +18,5 @@
       "@firestorm": ["index"],
       "@firestorm/*": ["*"]
     },
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/__tests__/*", "dist"]
+  }
 }
