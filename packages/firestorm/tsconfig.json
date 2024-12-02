@@ -13,7 +13,7 @@
     "stripInternal": true,
     "lib": ["esnext", "dom"],
     "target": "esnext",
-    "baseUrl": "/src",
+    "baseUrl": ".",
     "paths": {
       "@firestorm": ["index"],
       "@firestorm/*": ["*"]

@@ -16,7 +16,7 @@ import { Type } from "../core/helpers";
 import { IQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
-import { IParentCollectionOption } from "./parent-collection.interface";
+import { IParentCollectionOptions } from "./parent-collection-options.interface";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -26,7 +26,7 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
     constructor(
         type: Type<T>, 
         firestore: Firestore, 
-        parents?: IParentCollectionOption<IFirestormModel>[]
+        parents?: IParentCollectionOptions<IFirestormModel>[]
         ) {
         super(type, firestore, parents)
     }
@@ -98,7 +98,7 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
 
     /**
      * Check if a document with this id already exists in the database
-     * @warning It's doing findById under the hood so it's almost always preferable to use the other. It's just a convenience
+     * @see findByIdAsync It's doing findById under the hood so it's almost always preferable to use the other. It's just a convenience
      * @param id Id of the item to check the existency
      * @returns A promise returning true if an item with this id exists in the collection
      */
@@ -125,20 +125,31 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
     }
 
     /**
-     * @warning Experimental
      * Gets a random item in the whole collection.
      * 
      * It relies on the presence of the field "id" in the document so it won't work if that is not the case.
-     * @returns 
+     * @returns A random element of the collection or null if no elements.
      */
     async getRandomAsync(): Promise<T | null> {
         
         const documentRef = doc(collection(this.firestore, this.collectionPath))
         const baseId = documentRef.id
-        let res = await this.queryAsync(new Query().where("id", ">=", baseId).orderBy("id", 'ascending').limit(1))
+
+        let res = await this.queryAsync(
+            new Query()
+                .where("id", ">=", baseId)
+                .orderBy("id", 'ascending')
+                .limit(1)
+            )
+
         if (res.length == 1) return res[0]
 
-        res = await this.queryAsync(new Query().where("id", "<", baseId).orderBy("id", 'descending').limit(1))
+        res = await this.queryAsync(
+            new Query()
+                .where("id", "<", baseId)
+                .orderBy("id", 'descending')
+                .limit(1)
+            )
 
         if (res.length == 1) return res[0]
 
@@ -177,7 +188,8 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
      * 
      * Trying to delete a document that doesn't exist will just silently fail
      * 
-     * @warning This doesn't typecheck the model. It only types check that you provided an id
+     * This doesn't typecheck the model. It only types check that you provided an id
+     * 
      * @param model Model of the document to delete.
      * @returns A promise that returns when the document has been deleted
      */

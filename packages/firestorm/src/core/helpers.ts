@@ -45,8 +45,15 @@ export function buildPath(...pathArray: string[]) {
     return pathArray.join("/")
 }
 
+/**
+ * Describes a function that can generate an object
+ */
 export declare const Type: FunctionConstructor;
 
+/**
+ * Newable function of T
+ * @template T Type of the object
+ */
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export declare interface Type<T> extends Function {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,5 +1,5 @@
 export * from "./firestorm"
-export * from "./repository"
+export * from "./repositories"
 export * from "./query"
 export * from "./decorators"
 export * from "./core/firestorm-model"

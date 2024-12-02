@@ -23,6 +23,11 @@ export interface UploadTaskEvent {
   readonly bytesTransferred: number
 
   /**
+   * Amount of bytes until the end of the transfer
+   */
+  readonly remainingBytes: number
+
+  /**
    * Total bytes to transfer
    */
   readonly totalBytes: number
@@ -37,19 +42,38 @@ export class UploadTaskChangeEvent implements UploadTaskEvent {
   private _byteTransferred: number
   private _totalBytes: number
 
-  constructor(public readonly state: StorageTaskState, bytesTransferred: number, totalBytes: number) {
+  /**
+   * @param state State of the task
+   * @param bytesTransferred Amount of byte already transferred
+   * @param totalBytes Amount of bytes to transfer
+   */
+  constructor(
+      public readonly state: StorageTaskState, 
+      bytesTransferred: number, 
+      totalBytes: number
+    ) {
+
     this._byteTransferred = Math.max(0, bytesTransferred)
     this._totalBytes = Math.max(0, totalBytes, this.bytesTransferred)
+
   }
 
+  /** @inheritdoc */
   get bytesTransferred() {
     return this._byteTransferred
   }
 
+  /** @inheritdoc */
+  get remainingBytes() {
+    return this.totalBytes - this._byteTransferred
+  }
+
+  /** @inheritdoc */
   get totalBytes() {
     return this._totalBytes
   }
 
+  /** @inheritdoc */
   get completionRate() {
     if (this.totalBytes == 0) return 1
     return this.bytesTransferred / this.totalBytes
@@ -73,16 +97,25 @@ export class UploadTaskCompleteEvent implements UploadTaskEvent {
     this._bytes = Math.max(0, bytes)
   }
 
+  /** @inheritdoc */
   get bytesTransferred() {
     return this._bytes
   }
 
+  /** @inheritdoc */
+  get remainingBytes() {
+    return 0
+  }
+
+  /** @inheritdoc */
   get totalBytes() {
     return this._bytes
   }
 
+  /** @inheritdoc */
   get completionRate() { return 1 }
 
+  /** @inheritdoc */
   get state(): 'success' {
     return 'success'
   }
@@ -104,10 +137,11 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
 
   private _byteTransferred: number = 0
   private _totalBytes: number = 0
+  private _state: StorageTaskState = 'success'
 
   constructor() {}
   
-
+  /** @inheritdoc */
   get bytesTransferred() {
     return this._byteTransferred
   }
@@ -116,6 +150,12 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
     this._byteTransferred = value
   }
 
+  /** @inheritdoc */
+  get remainingBytes() {
+    return this.totalBytes - this._byteTransferred
+  }
+
+  /** @inheritdoc */
   get totalBytes() {
     return this._totalBytes
   }
@@ -124,12 +164,13 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
     this._totalBytes = value
   }
 
+  /** @inheritdoc */
   get completionRate() {
     if (this.totalBytes == 0) return 1
     return this.bytesTransferred / this.totalBytes
   }
 
-  private _state: StorageTaskState = 'success'
+  /** @inheritdoc */
   get state() {
     return this._state
   }

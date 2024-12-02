@@ -2,6 +2,9 @@ import { AlreadyExistingMetadatasError, NotFoundMetadataError } from "../errors"
 import { FirestormMetadata } from "./firestorm-metadata";
 import { Type } from "./helpers";
 
+/**
+ * Class containing all the metadatas stored in firestorm
+ */
 export class FirestormMetadataStorage {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

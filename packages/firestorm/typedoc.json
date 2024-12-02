@@ -1,0 +1,9 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/index.ts",
+    "./src/core/*.ts",
+    "./src/emulator/*.ts"
+  ],
+  "out": "docs",
+}

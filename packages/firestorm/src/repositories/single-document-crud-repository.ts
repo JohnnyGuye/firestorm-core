@@ -1,7 +1,7 @@
 import { DocumentReference, DocumentSnapshot, Firestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
-import { IParentCollectionOption } from "./parent-collection.interface";
+import { IParentCollectionOptions } from "./parent-collection-options.interface";
 import { Type } from "../core/helpers";
 
 /**
@@ -17,7 +17,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRep
   constructor(
     type: Type<T>,
     firestore: Firestore,
-    parents?: IParentCollectionOption<IFirestormModel>[]
+    parents?: IParentCollectionOptions<IFirestormModel>[]
     ) {
     
     super(type, firestore, parents)
@@ -47,6 +47,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRep
    * Modifies the item in the database.
    * 
    * The id, if provided, is ignored in the model and set to this.documentId
+   * 
    * @param model Partial or full model to update. It must have an id.
    * @returns A Promise that resolved when the item has been updated
    */
@@ -79,7 +80,8 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRep
 
   /**
    * Check if the document exists in the database
-   * @warning It's usng getAsync under the hood so it's almost always preferable to use the other. It's just a convenience
+   *
+   * If you need to use the document later in the process, {@link getAsync} is a better fit
    * @returns 
    */
   async existsAsync() {

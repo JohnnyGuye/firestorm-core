@@ -6,12 +6,15 @@ import { UploadTask, UploadTaskSnapshot, getDownloadURL } from "firebase/storage
 /**
  * Creates an UploadTaskChangeEvent from a firebase UploadTaskSnapshot
  * @param snapshot 
- * @returns 
+ * @returns An upload task change event
  */
 function fromFirebaseUploadTaskSnapshot(snapshot: UploadTaskSnapshot) {
   return new UploadTaskChangeEvent(snapshot.state, snapshot.bytesTransferred, snapshot.totalBytes)
 }
 
+/**
+ * Creates an observable around an file upload task
+ */
 export class UploadTaskObservable extends Observable<UploadTaskEvent> {
 
   constructor(

@@ -1,74 +1,31 @@
 import { Type } from "./core/helpers"
 import { IFirestormModel } from "./core/firestorm-model";
-import { IParentCollectionOption, BaseRepository, CrudRepository } from "./repository";
+import { IParentCollectionOptions, BaseRepository, CrudRepository } from "./repositories";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { 
     Firestore, 
     getFirestore, 
-    EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions, 
     connectFirestoreEmulator 
 } from "firebase/firestore"
 import { 
     FirebaseStorage, 
     connectStorageEmulator, 
-    EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions, 
     getStorage 
 } from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
 import { StorageRepository } from "./storage";
-import { SingleDocumentRepository } from "./repository/single-document-crud-repository";
+import { SingleDocumentRepository } from "./repositories/single-document-crud-repository";
+import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
+export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
 class MissingAppError extends Error {
 
     constructor() { super("[Firestorm] You must connect firestorm first.") }
 }
 
-interface BaseEmulatorConnectionOptions {
-    readonly host: string
-    readonly port: number
-}
-
-interface FirestoreEmulatorConnectionOptions extends BaseEmulatorConnectionOptions {
-    readonly mockUserToken?: FirestoreEmulatorMockTokenOptions | string | undefined
-}
-
-interface StoreEmulatorConnectionOptions extends BaseEmulatorConnectionOptions {
-    readonly mockUserToken?: StorageEmulatorMockTokenOptions | string | undefined
-}
-
-// const DEFAULT_EMULATOR_OPTIONS: Readonly<Pick<FirestoreEmulatorConnectionOptions, 'host' | 'port'>> = {
-//     host: "127.0.0.1",
-//     port: 8080
-// }
-
-interface EmulatorConnectionOptions {
-    readonly firestore?: FirestoreEmulatorConnectionOptions
-    readonly storage?: StoreEmulatorConnectionOptions
-}
-
-interface FullEmulatorConnectionOptions extends EmulatorConnectionOptions {
-    firestore: Readonly<FirestoreEmulatorConnectionOptions>
-    storage: Readonly<StoreEmulatorConnectionOptions>
-}
-
-const DEFAULT_EMULATOR_OPTIONS: FullEmulatorConnectionOptions = {
-    firestore: {
-        host: "127.0.0.1",
-        port: 8080
-    },
-    storage: {
-        host: "127.0.0.1",
-        port: 9199
-    }
-}
-
-function mergeOptionsToDefault(options?: EmulatorConnectionOptions) : FullEmulatorConnectionOptions {
-    const compoundedOptions = Object.assign({}, DEFAULT_EMULATOR_OPTIONS, options)
-    return compoundedOptions
-}
 
 /**
  * This class is the hub that enables you to connect to queries
@@ -115,7 +72,7 @@ export class Firestorm {
 
     /**
      * Call this after connecting to use the emulator instead of the database.
-     * @param options Connection options. Defaults to @see DEFAULT_EMULATOR_OPTIONS
+     * @param options Connection options. Defaults to {@link DEFAULT_EMULATOR_OPTIONS}
      */
     useEmulator(options?: EmulatorConnectionOptions) {
 
@@ -157,7 +114,7 @@ export class Firestorm {
      */
     public getCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
-        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
+        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
         ) {
         return this.getRepository(CrudRepository<T>, type, ...parentCollections)
     }
@@ -172,7 +129,7 @@ export class Firestorm {
     public getSingleDocumentCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
         documentId: string,
-        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
+        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
         ) {
         const repo = this.getRepository(SingleDocumentRepository<T>, type, ...parentCollections)
         repo.documentId = documentId
@@ -197,12 +154,12 @@ export class Firestorm {
     public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>,
-        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
+        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
         ): R;
     public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
         repositoryType: Type<R>,
         type: Type<T>,
-        ...parentCollections: IParentCollectionOption<IFirestormModel>[]
+        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
         ): R {
         
         return new repositoryType(type, this.firestore, parentCollections)

@@ -6,7 +6,7 @@ import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 
 import { ParentCollection } from "./parent-collection"
-import { IParentCollectionOption } from "./parent-collection.interface"
+import { IParentCollectionOptions } from "./parent-collection-options.interface"
 import { FirestoreDocument } from "../core/firestore-document"
 
 
@@ -29,7 +29,7 @@ export class BaseRepository<T extends IFirestormModel> {
     constructor(
         type: Type<T>,
         firestore: Firestore,
-        parents?: IParentCollectionOption<IFirestormModel>[]
+        parents?: IParentCollectionOptions<IFirestormModel>[]
         ) {
         
         this._type = type
@@ -49,7 +49,7 @@ export class BaseRepository<T extends IFirestormModel> {
     /**
      * Gets the name of the type.
      * 
-     * Warning: don't rely on its result to do stuff, the name will get mangled after compilation.
+     * @deprecated Don't rely on its result to do stuff, the name will get mangled after compilation.
      */
     protected get typeName() {
         return this.type.name
@@ -97,6 +97,7 @@ export class BaseRepository<T extends IFirestormModel> {
             }
         }
         pathBlocks.push(col)
+        
         return buildPath(...pathBlocks)
     }
 
