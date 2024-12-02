@@ -57,13 +57,30 @@
     "rxjs": "~7.5.0"
   },
   "files": [
-    "/dist/**/*"
+    "dist/cjs/**/!(*.tsbuildinfo)",
+    "dist/esm/**/!(*.tsbuildinfo)",
+    "dist/esm5/**/!(*.tsbuildinfo)",
+    "dist/types/**/!(*.tsbuildinfo)",
+    "src",
+    "package.json",
+    "README.md",
+    "tsconfig.json"
   ],
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "sideEffects": true
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/src/index.d.ts",
+  "sideEffects": true,
+  "exports": {
+    ".": {
+      "types": "./dist/types/src/index.d.ts",
+      "node": "./dist/cjs/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/esm/index.js"
+    },
+    "./package.json": "./package.json"
+  }
 }

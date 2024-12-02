@@ -10,6 +10,7 @@
     "node": "^18.13.0 || ^20.17.0"
   },
   "scripts": {
+    "build:firestorm": "npm run build --workspace=packages/firestorm",
     "build": "npm run build --workspaces",
     "doc:build": "npm run doc:build --workspaces",
     "doc:serve": "npm run doc:serve --workspace=packages/firestorm -- -p 1010",
