@@ -12,7 +12,9 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "doc:build": "npm run doc:build --workspaces",
-    "doc:serve": "npm run doc:serve --workspace=packages/firestorm -- -p 1010"
+    "doc:serve": "npm run doc:serve --workspace=packages/firestorm -- -p 1010",
+    "publish:firestorm": "npm run publish --workspace=packages/firestorm",
+    "publish": "npm run publish:firestorm"
   },
   "repository": {
     "type": "git",
