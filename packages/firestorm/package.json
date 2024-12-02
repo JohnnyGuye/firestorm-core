@@ -1,6 +1,6 @@
 {
   "name": "@jiway/firestorm-core",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.3",
   "description": "FirestORM is an ORM around built to manipulate Firestore.",
   "scripts": {
     "lint": "npx eslint",
@@ -8,9 +8,13 @@
     "doc:build": "npx typedoc --options typedoc.json",
     "doc:serve": "npx http-server ./docs",
     "build:clean": "rm -rf ./dist",
-    "compile": "tsc -b ./tsconfig.es6.json ./tsconfig.esm.json",
+    "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm5.json ./tsconfig.esm.json ./tsconfig.types.json",
+    "compile:cjs": "tsc -b ./tsconfig.cjs.json",
+    "compile:esm5": "tsc -b ./tsconfig.esm5.json",
+    "compile:esm": "tsc -b ./tsconfig.esm.json",
+    "compile:types": "tsc -b ./tsconfig.types.json",
     "build": "npm run build:clean & npm run compile & npm run doc:build",
-    "publish": "npm run build && npm publish",
+    "pub": "npm run build && npm publish",
     "test": "echo 'You should really implement a test process'",
     "watch": "npm-watch build",
     "watch-test": "npm-watch tests"
