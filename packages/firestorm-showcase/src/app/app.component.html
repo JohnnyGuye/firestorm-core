@@ -7,7 +7,7 @@
         <button mat-icon-button class="example-icon" (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
-        <span>FirestORM documentation</span>
+        <a [routerLink]="''" class="brand">Fire·stORM</a>
       </div>
       
       <div>
@@ -28,7 +28,7 @@
   <mat-sidenav-container>
     
     <mat-sidenav #sidenav mode="side" opened>
-      <button mat-button>Documentation</button>
+      <a mat-button [routerLink]="''">Hello!</a>
       <firestorm-sidebar-navigation></firestorm-sidebar-navigation>
     </mat-sidenav>
     

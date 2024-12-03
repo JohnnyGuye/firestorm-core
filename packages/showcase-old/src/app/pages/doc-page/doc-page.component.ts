@@ -15,6 +15,10 @@ export class DocPageComponent {
     let id = this.activeRoute.snapshot.params["id"]
     return id
   }
+
+  get docFilePath() {
+    return this.activeRoute.snapshot.params["docFilePath"]
+  }  
   
   get mainPageUrl() {
     return `./assets/doc/${this.id}/index.md`

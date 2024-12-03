@@ -7,6 +7,15 @@
  height: var(--app-content-height);
 }
 
+.brand {
+  padding: 0 1rem;
+  font-weight: 700;
+  font-family: "Slackside One", cursive;
+  background: linear-gradient(45deg, #e9931c, #720101);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .toolbar-content {
   height: 100%;
   width: 100%;

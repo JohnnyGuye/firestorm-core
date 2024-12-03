@@ -3,9 +3,55 @@
     {
       "id": "",
       "name": "Overview",
-      "file": "overview/index.md",
+      "path": "overview",
       "children": [
         
+      ]
+    },
+    {
+      "id": "decorators",
+      "name": "Decorators",
+      "path": "decorators",
+      "children": [
+        {
+          "name": "Collection",
+          "path": "decorators/collection"
+        },
+        {
+          "name": "Ignore",
+          "path": "decorators/ignore"
+        },
+        {
+          "name": "MapTo",
+          "path": "decorators/map-to"
+        },
+        {
+          "name": "Complex type",
+          "path": "decorators/complex-type"
+        },
+        {
+          "name": "Date type",
+          "path": "decorators/date-type"
+        },
+        {
+          "name": "Sub-collection",
+          "path": "decorators/sub-collection"
+        }
+      ]
+    },
+    {
+      "id": "repositories",
+      "name": "Repositories",
+      "path": "repositories",
+      "children": [
+        {
+          "name": "Base",
+          "path": "repositories/base"
+        },
+        {
+          "name": "CRUD",
+          "path": "repositories/crud"
+        }
       ]
     }
   ]

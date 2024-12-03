@@ -1,14 +1,18 @@
 import { Component, inject } from "@angular/core";
-import { MatTreeModule, MatTreeNestedDataSource } from "@angular/material/tree"
-
-import { DocumentationPageTreeItem, DOC_TREE } from "../../routing";
-import { NestedTreeControl } from "@angular/cdk/tree";
+import { MatTreeModule } from "@angular/material/tree"
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { RouterModule } from "@angular/router";
 import { DocPageService } from "../../services";
 
-const DATA = DOC_TREE
+interface DocNode {
+
+  id?: string,
+  name: string,
+  path: string,
+  children?: DocNode[]
+
+}
 
 @Component({
   standalone: true,
@@ -25,21 +29,17 @@ export class SidebarNavigationComponent {
 
   private docLayout = inject(DocPageService).getDocLayout()
 
-  private _treeData = new MatTreeNestedDataSource<DocumentationPageTreeItem>()
-  treeControl = new NestedTreeControl<DocumentationPageTreeItem>(node => node.children);
+  dataSource = this.docLayout
+
   
   constructor() {
-    this._treeData.data = DATA
-    console.log(this.docLayout)
   }
 
-  get treeData() {
-    return this._treeData
-  }
+  childrenAccessor = (node: DocNode) => node.children ?? []
 
-  hasChild = (_: number, node: DocumentationPageTreeItem) => !!node.children && node.children.length > 0
+  hasChild = (_: number, node: DocNode) => !!node.children && node.children.length > 0
 
-  nodeLink(node: DocumentationPageTreeItem) {
-    return `doc/${node.id}`
+  nodeLink(node: DocNode) {
+    return `doc/${node.path}`
   }
 }

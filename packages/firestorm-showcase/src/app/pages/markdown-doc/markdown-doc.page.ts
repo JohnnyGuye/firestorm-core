@@ -19,8 +19,8 @@ export class MarkdownDocPage {
     return id
   }
 
-  get docFileUrl() {
-    return `/doc/${this.id}/index.md`
+  get docFilePath() {
+    return this.activatedRoute.snapshot.params["docFilePath"]
   }
 
 }

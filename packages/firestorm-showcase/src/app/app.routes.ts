@@ -1,4 +1,18 @@
-import { Routes } from '@angular/router';
+import { Route, Routes, UrlMatchResult, UrlSegment, UrlSegmentGroup } from '@angular/router';
+
+
+function docMatcher(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
+
+  const dfp = `${segments.join("/")}/index.md`
+  const result = {
+    consumed: segments,
+    posParams: {
+      docFilePath: new UrlSegment(dfp, {})
+    }
+  }
+
+  return result
+}
 
 export const routes: Routes = [
   {
@@ -7,7 +21,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home').then(m => m.HomePage)
   },
   {
-    path: 'doc/:id',
+    matcher: docMatcher,
     title: 'Doc',
     loadComponent: () => import('./pages/markdown-doc').then(m => m.MarkdownDocPage)
   }
