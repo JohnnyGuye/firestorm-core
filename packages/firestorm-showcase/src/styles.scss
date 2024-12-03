@@ -1,0 +1,45 @@
+/* You can add global styles to this file, and also import other style files */
+// @use '@angular/material' as mat;
+
+// html {
+//   color-scheme: light dark;
+//   @include mat.theme((
+//     color: mat.$violet-palette,
+//     typography: Roboto,
+//     density: 0
+//   ));
+// }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+:root {
+  --mat-toolbar-standard-height: 64px;
+}
+
+*,
+.pro-sidebar {
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: #1a4173;
+  }
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: #0c1e35;
+  }
+}
+
+.markdown-clipboard-button {
+  background-color: rgba(136, 136, 136, 0.1333333333);
+  border: transparent;
+  box-shadow: 0 0 0 0 #0000;
+  color: white;
+  font-family: 'Roboto';
+}
+
+.container {
+  padding: 1rem;
+  max-width: 1368px;
+  margin: auto;
+}

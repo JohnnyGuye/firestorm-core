@@ -1,6 +1,6 @@
 {
   "private": false,
-  "name": "firestorm-showcase",
+  "name": "firestorm-showcase-old",
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",

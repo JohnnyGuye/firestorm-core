@@ -1,0 +1,42 @@
+<div class="app-container">
+
+  <mat-toolbar color="primary">
+
+    <div class="toolbar-content">
+      <div class="toolbar-start">
+        <button mat-icon-button class="example-icon" (click)="sidenav.toggle()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>FirestORM documentation</span>
+      </div>
+      
+      <div>
+
+        <firestorm-firestorm-version-badge></firestorm-firestorm-version-badge>
+      </div>
+
+      <div class="toolbar-end">
+        <a class="github-icon" href="https://github.com/JohnnyGuye/firestorm-core">
+          <i class="fa-brands fa-github"></i>
+        </a>
+      </div>
+
+    </div>
+
+  </mat-toolbar>
+  
+  <mat-sidenav-container>
+    
+    <mat-sidenav #sidenav mode="side" opened>
+      <button mat-button>Documentation</button>
+      <firestorm-sidebar-navigation></firestorm-sidebar-navigation>
+    </mat-sidenav>
+    
+    <mat-sidenav-content>
+        <div class="app-content">
+          <router-outlet></router-outlet>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+
+</div>
