@@ -26,8 +26,8 @@
           "path": "decorators/map-to"
         },
         {
-          "name": "Complex type",
-          "path": "decorators/complex-type"
+          "name": "Complexe type",
+          "path": "decorators/complexe-type"
         },
         {
           "name": "Date type",
