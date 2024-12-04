@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build:firestorm": "npm run build --workspace=packages/firestorm",
+    "build:showcase": "npm run build --workspace=packages/showcase",
     "build": "npm run build --workspaces",
     "doc:build": "npm run doc:build --workspaces",
     "doc:serve": "npm run doc:serve --workspace=packages/firestorm -- -p 1010",
