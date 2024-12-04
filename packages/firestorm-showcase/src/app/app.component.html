@@ -1,22 +1,31 @@
 <div class="app-container">
 
-  <mat-toolbar color="primary">
+  <mat-toolbar color="primary" class="z-depth-5" >
 
-    <div class="toolbar-content">
+    <div class="toolbar-content" >
       <div class="toolbar-start">
         <button mat-icon-button class="example-icon" (click)="sidenav.toggle()">
           <mat-icon>menu</mat-icon>
         </button>
-        <a [routerLink]="''" class="brand">Fire·stORM</a>
+      </div>
+
+
+      <div>
+        <div class="brand-container">
+          <a [routerLink]="''" class="brand">Fire·stORM</a>
+          <firestorm-firestorm-version-badge style="font-size: 0.7rem; line-height: 1;"></firestorm-firestorm-version-badge>
+        </div>
       </div>
       
-      <div>
-
-        <firestorm-firestorm-version-badge></firestorm-firestorm-version-badge>
-      </div>
-
       <div class="toolbar-end">
-        <a class="github-icon" href="https://github.com/JohnnyGuye/firestorm-core">
+        
+        <a mat-button class="toolbar-element" href="https://firestorm-doc.vercel.app/">
+          <span>JSDoc</span>
+        </a>
+        <a mat-icon-button class="toolbar-element" href="https://www.npmjs.com/package/@jiway/firestorm-core">
+          <i class="fa-brands fa-npm"></i>
+        </a>
+        <a mat-icon-button class="github-icon" href="https://github.com/JohnnyGuye/firestorm-core">
           <i class="fa-brands fa-github"></i>
         </a>
       </div>
@@ -27,7 +36,7 @@
   
   <mat-sidenav-container>
     
-    <mat-sidenav #sidenav mode="side" opened>
+    <mat-sidenav #sidenav mode="side" opened class="z-depth-2">
       <a mat-button [routerLink]="''">Hello!</a>
       <firestorm-sidebar-navigation></firestorm-sidebar-navigation>
     </mat-sidenav>

@@ -5,7 +5,7 @@ const pack = firestormpackage
 @Component({
   standalone: true,
   selector: 'firestorm-firestorm-version-badge',
-  template: `<div class="vtmn-badge"><span class="npm"></span><span>v{{version}}</span></div>`,
+  template: `<span class="npm"></span><span>v{{version}}</span>`,
 })
 export class FirestormVersionBadgeComponent {
   get version() { return pack.version }

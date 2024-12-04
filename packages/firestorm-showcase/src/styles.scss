@@ -40,6 +40,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .container {
   padding: 1rem;
-  max-width: 1368px;
+  max-width: 1152px;
   margin: auto;
+}
+
+.mat-drawer-inner-container {
+  border-right: 2px solid #88888822;
 }

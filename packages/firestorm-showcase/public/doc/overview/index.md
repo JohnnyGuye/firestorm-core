@@ -1,6 +1,7 @@
 # Overview
 
-Blabla bli blabla
+Welcome to FirestORM.
+This documentation explains the logic of Firestorm, if you are looking for a more comprehensive doc, the [JSDoc is here](https://firestorm-doc.vercel.app/)
 
 ## Model
 
