@@ -17,7 +17,8 @@
     "serve:doc": "npm run doc:serve --workspace=packages/firestorm -- -p 1010",
     "serve:showcase": "npm run serve --workspace=packages/showcase",
     "publish:firestorm": "npm run publish --workspace=packages/firestorm",
-    "publish": "npm run publish:firestorm"
+    "publish": "npm run publish:firestorm",
+    "link:firestorm": "npm link --workspace=packages/firestorm && npm link @jiway/firestorm-core --workspace=packages/showcase"
   },
   "repository": {
     "type": "git",
