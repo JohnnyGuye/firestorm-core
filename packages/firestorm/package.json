@@ -16,7 +16,7 @@
     "build": "npm run build:clean & npm run compile & npm run doc:build",
     "pub": "npm run build && npm publish",
     "test": "echo 'You should really implement a test process'",
-    "watch": "npm-watch build",
+    "watch": "npx npm-watch build",
     "watch-test": "npm-watch tests"
   },
   "repository": {

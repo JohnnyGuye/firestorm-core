@@ -3,6 +3,7 @@ import { IFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
 import { IParentCollectionOptions } from "./parent-collection-options.interface";
 import { Type } from "../core/helpers";
+import { RepositoryGeneratorFunction } from "./repository-creation-function";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
@@ -90,5 +91,23 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRep
 
   private get documentRef() {
     return doc(this.firestore, this.collectionPath, this.documentId)
+  }
+}
+
+/**
+ * Gets the generator function for a {@link SingleDocumentRepository} of model {@link T}
+ * @template T Model of the document tracked.
+ * @param documentId The id of the document that the generated repository should track.
+ * @returns A function that generated a single document repository on the document provided.
+ */
+export function getSingleDocumentRepositoryGenerator<T extends IFirestormModel>(documentId: string): RepositoryGeneratorFunction<SingleDocumentRepository<T>, T> {
+  return (
+      firestore: Firestore, 
+      type: Type<T>, 
+      parentCollections?: IParentCollectionOptions[]
+  ) => {
+      const repo = new SingleDocumentRepository(type, firestore, parentCollections)
+      repo.documentId = documentId
+      return repo
   }
 }

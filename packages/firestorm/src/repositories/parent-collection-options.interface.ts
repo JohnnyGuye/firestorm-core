@@ -29,7 +29,7 @@ interface IParentCollectionSetThree<T extends FirestormModel> {
 /**
  * 
  */
-export type IParentCollectionOptions<T extends IFirestormModel> 
+export type IParentCollectionOptions<T extends IFirestormModel = IFirestormModel> 
   = {
       type: Type<T>
       instance: T

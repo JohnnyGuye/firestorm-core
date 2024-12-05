@@ -1,6 +1,6 @@
 import { Type } from "./core/helpers"
 import { IFirestormModel } from "./core/firestorm-model";
-import { IParentCollectionOptions, BaseRepository, CrudRepository } from "./repositories";
+import { IParentCollectionOptions, BaseRepository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { 
@@ -15,16 +15,13 @@ import {
 } from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
 import { StorageRepository } from "./storage";
-import { SingleDocumentRepository } from "./repositories/single-document-crud-repository";
+import { getSingleDocumentRepositoryGenerator } from "./repositories/single-document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
+import { MissingAppError } from "./errors/missing-app.error";
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
-class MissingAppError extends Error {
-
-    constructor() { super("[Firestorm] You must connect firestorm first.") }
-}
 
 
 /**
@@ -53,6 +50,7 @@ export class Firestorm {
      * 
      * If an app with the same name already exists, it will use that.
      * Otherwise it will create a new instance using the options.
+     * 
      * @throws if no previous app of the same name and no options provided
      * @param options Options to create the app
      * @returns 
@@ -116,7 +114,11 @@ export class Firestorm {
         type: Type<T>, 
         ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
         ) {
-        return this.getRepository(CrudRepository<T>, type, ...parentCollections)
+        return this.getRepositoryFromFunction(
+            getCrudRepositoryGenerator(), 
+            type, 
+            ...parentCollections
+        )
     }
 
     /**
@@ -131,38 +133,19 @@ export class Firestorm {
         documentId: string,
         ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
         ) {
-        const repo = this.getRepository(SingleDocumentRepository<T>, type, ...parentCollections)
-        repo.documentId = documentId
-        return repo
+        return this.getRepositoryFromFunction(
+            getSingleDocumentRepositoryGenerator(documentId),
+            type,
+            ...parentCollections
+        )
     }
 
-    /**
-     * Gets the repository for a model
-     * @param type Type of the model
-     * @returns 
-     */
-    public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
-        repositoryType: Type<R>,
-        type: Type<T>
-        ): R;
-    /**
-     * Gets the repository for a submodel
-     * @param type Type of the submodel
-     * @param parentCollections The parent collections
-     * @returns 
-     */
-    public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
-        repositoryType: Type<R>,
+    public getRepositoryFromFunction<R extends BaseRepository<T>, T extends IFirestormModel>(
+        generator: RepositoryGeneratorFunction<R, T>,
         type: Type<T>,
         ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
-        ): R;
-    public getRepository<R extends BaseRepository<T>, T extends IFirestormModel>(
-        repositoryType: Type<R>,
-        type: Type<T>,
-        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
-        ): R {
-        
-        return new repositoryType(type, this.firestore, parentCollections)
+    ) {
+        return generator(this.firestore, type, parentCollections)
     }
 
     /**

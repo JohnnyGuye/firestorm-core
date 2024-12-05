@@ -1,4 +1,4 @@
-import { DocumentSnapshot, Firestore } from "firebase/firestore"
+import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, runTransaction, Transaction, TransactionOptions } from "firebase/firestore"
 
 import { Type, buildPath } from "../core/helpers"
 import { IFirestormModel, resolveId } from "../core/firestorm-model"
@@ -8,6 +8,7 @@ import { MissingIdentifierError } from "../errors"
 import { ParentCollection } from "./parent-collection"
 import { IParentCollectionOptions } from "./parent-collection-options.interface"
 import { FirestoreDocument } from "../core/firestore-document"
+import { TransactionFnc } from "../core/transaction"
 
 
 
@@ -99,6 +100,69 @@ export class BaseRepository<T extends IFirestormModel> {
         pathBlocks.push(col)
         
         return buildPath(...pathBlocks)
+    }
+
+    /**
+     * Gets a reference to the document corresponding to this id.
+     * 
+     * @param id Id for which you want a document ref
+     * @returns A document ref corresponding to the model
+     */
+    protected getDocumentRef(id: string): DocumentReference;
+    /**
+     * Gets a reference to the document corresponding to this model.
+     * 
+     * If the model doesn't have any id, it will give you a reference to a new document, generate an id and assign it to the model
+     * 
+     * @param model Model for which you want a document ref
+     * @returns A document ref corresponding to the model
+     */
+    protected getDocumentRef(model: IFirestormModel): DocumentReference;
+    protected getDocumentRef(modelOrId: IFirestormModel | string): DocumentReference;
+    protected getDocumentRef(modelOrId: IFirestormModel | string): DocumentReference {
+        let id = resolveId(modelOrId)
+        if (id) {
+            return doc(this.firestore, this.collectionPath, id)
+        }
+
+        const documentRef = doc(collection(this.firestore, this.collectionPath))
+        
+        if (typeof modelOrId === 'object') {
+            modelOrId.id = id = documentRef.id
+        }
+
+        return documentRef
+    }
+
+    /**
+     * Gets a collection reference to the collection of this repository
+     * @returns Collection ref to this repository
+     */
+    protected get collectionRef() {
+        return collection(this.firestore, this.collectionPath)
+    }
+
+    /**
+     * Gets a document reference for each of the models provided.
+     * 
+     * @see getDocumentRef For the rules on each individual model/documentRef
+     * 
+     * @param models Models for which you want document refs
+     * @returns A document ref for each of the models provided in the same order
+     */
+    protected getDocumentRefs(ids: string[]): DocumentReference[];
+    protected getDocumentRefs(models: IFirestormModel[]): DocumentReference[];
+    protected getDocumentRefs(modelsOrIds: (IFirestormModel | string)[]): DocumentReference[];
+    protected getDocumentRefs(modelsOrIds: (IFirestormModel | string)[]): DocumentReference[] {
+        return modelsOrIds.map(mOrId => this.getDocumentRef(mOrId))
+    }
+
+    protected async runTransactionAsync(transactionFnc: TransactionFnc, options?: TransactionOptions) {
+        await runTransaction(
+            this.firestore, 
+            transactionFnc,
+            options
+        )
     }
 
     /**
