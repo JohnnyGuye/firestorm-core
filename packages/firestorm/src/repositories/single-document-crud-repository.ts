@@ -36,7 +36,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRep
     model.id = this.documentId
     const documentRef: DocumentReference = this.documentRef
     
-    const data = this.classToFirestoreDocument(model)
+    const data = this.modelToDocument(model)
 
     await setDoc(documentRef, data)
 
@@ -56,7 +56,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRep
     model.id = this.documentId
     const documentRef: DocumentReference = this.documentRef
 
-    const data = this.classToFirestoreDocument(model)
+    const data = this.modelToDocument(model)
 
     await updateDoc(documentRef, data)
 

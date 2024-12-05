@@ -55,11 +55,23 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
             documentRef = doc(this.firestore, this.collectionPath, id)
         }
         
-        const data = this.classToFirestoreDocument(model)
+        const data = this.modelToDocument(model)
 
         await setDoc(documentRef, data)
 
         return model
+    }
+
+    /**
+     * Creates a collection of items in teh database.
+     * 
+     * It behaves exactly like {@link model}
+     * /!\ It doesn't use batches so some documents may be created even if the method fails
+     * @param models 
+     * @returns A promise that resolves when all the items have been created
+     */
+    async createMultipleAsync(...models: T[]): Promise<T[]> {
+        return await Promise.all(models.map(m => this.createAsync(m)))
     }
 
     /**
@@ -72,7 +84,7 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
         const id = model.id
         const documentRef: DocumentReference = doc(this.firestore, this.collectionPath, id)
 
-        const data = this.classToFirestoreDocument(model)
+        const data = this.modelToDocument(model)
 
         await updateDoc(documentRef, data)
 

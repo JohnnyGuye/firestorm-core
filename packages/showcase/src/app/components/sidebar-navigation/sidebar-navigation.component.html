@@ -6,12 +6,16 @@
   </mat-tree-node>
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
+    
     <button mat-icon-button matTreeNodeToggle
             [attr.aria-label]="'Toggle ' + node.name">
       <mat-icon class="mat-icon-rtl-mirror">
         {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
+
     <a mat-button [routerLink]="nodeLink(node)">{{node.name}}</a>
   </mat-tree-node>
 </mat-tree>
+
+<a mat-button [routerLink]="'playground'">Playground</a>

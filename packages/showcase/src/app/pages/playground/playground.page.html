@@ -1,0 +1,22 @@
+<div class="container">
+  <h1>Playground</h1>
+  <section class="section">
+    <p>Here you can see FirestORM in action</p>
+
+    
+    <div class="row">
+      <div class="col s2">
+        <button mat-button (click)="retrieveEntities()">
+          Retrieve entities
+        </button>
+      </div>
+      <div class="col s5">
+        <markdown lineNumbers [data]="hello | language:'typescript' "></markdown>
+      </div>
+      <div class="col s5">
+        <button mat-raised-button (click)="switch()">Model/Document</button>
+        <markdown lineNumbers [data]="retrievedEntitiesAsJson | language:'js' "></markdown>
+      </div>
+    </div>
+  </section>
+</div>

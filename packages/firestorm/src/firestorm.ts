@@ -41,7 +41,7 @@ export class Firestorm {
     /**
      * Create an instance of Firestorm.
      * 
-     * It doesn't instantly connect. You have to make a call to @see connect for that
+     * It doesn't instantly connect. You have to make a call to {@link connect} for that
      * @param name Name of the instance
      */
     constructor(name?: string) {

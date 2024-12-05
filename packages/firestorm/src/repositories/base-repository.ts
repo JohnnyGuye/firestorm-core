@@ -129,7 +129,7 @@ export class BaseRepository<T extends IFirestormModel> {
             throw Error(`There is no data in the snapshot of ${retrievedId} in collection ${this.collectionPath}`)
         }
 
-        const klass = this.firestoreDocumentToClass(data)
+        const klass = this.documentToModel(data)
         if (!klass) {
             throw Error(`Failed to convert the document of id '${retrievedId}' in collection ${this.collectionPath}`)
         }
@@ -144,16 +144,34 @@ export class BaseRepository<T extends IFirestormModel> {
      * @param document 
      * @returns 
      */
-    public firestoreDocumentToClass(document: FirestoreDocument): T | null {
+    public documentToModel(document: FirestoreDocument): T {
         return this.typeMetadata.convertDocumentToModel(document)
     }
 
     /**
-     * Converts a partial model to a document
-     * @param object 
+     * Converts multiple documents to their corresponding model
+     * @param documents 
      * @returns 
      */
-    public classToFirestoreDocument(object: Partial<T>): FirestoreDocument {
-        return this.typeMetadata.convertModelToDocument(object)
+    public documentsToModels(documents: FirestoreDocument[]): T[] {
+        return documents.map(d => this.documentToModel(d))
+    }
+
+    /**
+     * Converts a partial model to a document
+     * @param model 
+     * @returns 
+     */
+    public modelToDocument(model: Partial<T>): FirestoreDocument {
+        return this.typeMetadata.convertModelToDocument(model)
+    }
+
+    /**
+     * Converts multiple models to their corresponding document
+     * @param models 
+     * @returns 
+     */
+    public modelsToDocuments(models: Partial<T>[]): FirestoreDocument[] {
+        return models.map(m => this.modelToDocument(m))
     }
 }

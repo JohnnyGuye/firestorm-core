@@ -21,6 +21,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/home').then(m => m.HomePage)
   },
   {
+    path: 'playground',
+    title: 'Playground',
+    loadComponent: () => import('./pages/playground').then(m => m.PlaygroundPage)
+  },
+  {
     matcher: docMatcher,
     title: 'Doc',
     loadComponent: () => import('./pages/markdown-doc').then(m => m.MarkdownDocPage)

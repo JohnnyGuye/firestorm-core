@@ -21,7 +21,7 @@ export interface IMandatoryFirestormModel extends IFirestormModel {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FirestormModel = IFirestormModel & { new: (...args: any[]) => any}
+export type FirestormModel = IFirestormModel
 export type MandatoryFirestormModel = IMandatoryFirestormModel
 
 /**

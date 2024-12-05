@@ -3,6 +3,7 @@ import { FirestormModel } from "../core/firestorm-model"
 import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
 import { logWarn } from "../core/logging"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
+import { ClassDecoratorReturn } from "./decorator-utilities"
 
 /**
  * Options for the collection decorator
@@ -17,12 +18,20 @@ export interface ICollectionOptions {
 /**
  * Class decorator for a model.
  * 
+ * Not providing the collection will take the classe's name and make it a snake_case_plural. 
+ * 
+ * @deprecated Doesn't work if the names are mangled at compilation.
+ */
+export function Collection<T extends FirestormModel>(): ClassDecoratorReturn<T>;
+/**
+ * Class decorator for a model.
+ * 
  * This model's default local collection path can be specified through the options.
- * If not provided, it will take the classe's name and make it a plural. (/!\ doesn't work if the names are mangled at compilation)
  * 
  * @param options Options of the collection
  */
-export function Collection<T extends FirestormModel>(options?: ICollectionOptions) {
+export function Collection<T extends FirestormModel>(options: ICollectionOptions): ClassDecoratorReturn<T>;
+export function Collection<T extends FirestormModel>(options?: ICollectionOptions): ClassDecoratorReturn<T> {
   return (constructor: Type<T>) => {
     
     // Storage
