@@ -45,8 +45,11 @@ export interface IQueryBuildBlock {
    * A reference to the next query block or null if this block is the last
    */
   readonly next: IQueryBuildBlock | null
-
-  toConstraints(): QueryConstraint[]
+  /**
+   * Converts the full chain to a firebase set of query constraints
+   * @returns Firebase query constraints equivalent to this query
+   */
+  toConstraints(): QueryConstraint[];
 }
 
 /**
@@ -164,7 +167,9 @@ export abstract class QueryBuildBlock implements IQueryBuildBlock {
     return !!this.next
   }
 
-  /** @inheritdoc */
+  /** 
+   * Converts this block to the corresponding query constraint
+   */
   protected abstract toConstraint(): QueryConstraint | null;
 
   /**
@@ -183,13 +188,13 @@ export abstract class QueryBuildBlock implements IQueryBuildBlock {
     return blocks
   }
 
+  /** @inheritdoc */
   toConstraints(): QueryConstraint[] {
 
     return this.flattenedChain
       .map(block => block.toConstraint())
-      .filter(constraint => !!constraint) as QueryConstraint[]
+      .filter(Boolean) as QueryConstraint[]
   }
-
 }
 
 /**
@@ -233,6 +238,7 @@ export class WhereBlock
   implements ICanPrecedeWhere, ICanPrecedeOrderBy, ICanPrecedeLimit {
 
   /** 
+   * Creates a where clause query block that restricts the query to documents matching the query
    * @param field The document field on which the clause will be applied
    * @param operator The operation that will be applied to this field
    * @param value The value against which the the value in the field will be tested
@@ -282,6 +288,7 @@ export class OrderByBlock
   implements ICanPrecedeOrderBy, ICanPrecedeLimit {
 
   /**
+   * Creates an order by query block that orders the documents by a property
    * @param field The ordering document field
    * @param direction The direction of the order, ascending or descending
    */
@@ -332,7 +339,7 @@ export class OrderByBlock
 export class LimitBlock extends QueryBuildBlock {
 
   /**
-   * 
+   * Creates a limit query block that restricts the amount of documents retrieved by a number
    * @param limit The amount of documents retrieved at most
    * @param from If the limit is applied to the starting documents retrieved or the ending
    */
@@ -343,6 +350,7 @@ export class LimitBlock extends QueryBuildBlock {
     super()
   }
 
+  /** @inheritdoc */
   toConstraint() {
     switch(this.from) {
       case 'start': return limit(this.limit)

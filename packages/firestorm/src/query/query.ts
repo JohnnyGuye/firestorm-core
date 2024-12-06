@@ -26,6 +26,9 @@ The sum of filters, sort orders, and parent document path (1 for a subcollection
 /**
  * A query represents an instruction given to the firestore engine to
  * match a specific set of documents within a collection.
+ * 
+ * It's designed to prevent some errors in your query at compile time instead of runtime.
+ * (although some rules cannot be checked at compile time or will be checked in future versions)
  */
 export class Query {
 
@@ -36,7 +39,7 @@ export class Query {
   private get start() { return this._startBlock }
 
   /**
-   * Adds a where clause to the query
+   * Appends a where clause to the query
    * @param field Field on which the where clause is applied
    * @param operator Operator of the clause
    * @param value Value to check against the value of the field against
@@ -51,7 +54,7 @@ export class Query {
   }
 
   /**
-   * Adds an order by clause to the query
+   * Appends an order by clause to the query
    * @param field Field on which to apply the sorting
    * @param direction Direction of the sort
    * @returns The {@link OrderByBlock} appended to the query
@@ -64,7 +67,7 @@ export class Query {
   }
 
   /**
-   * Adds a limit clause to the query
+   * Appends a limit clause to the query
    * @param limit Amount of element to query at most
    * @param from Starts from the start or the end of the query
    * @returns The {@link LimitBlock} appended to the query
@@ -73,7 +76,12 @@ export class Query {
     return this.start.limit(limit, from)
   }
   
+  /**
+   * Converts the query to a firebase set of query constraints
+   * @returns Firebase query constraints equivalent to this query
+   */
   toConstraints(): QueryConstraint[] {
     return this.start.toConstraints()
   }
+  
 }
