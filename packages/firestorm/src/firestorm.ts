@@ -20,6 +20,7 @@ import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
 
 export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
+import { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
 

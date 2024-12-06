@@ -13,7 +13,7 @@
     "build:firestorm": "npm run build --workspace=packages/firestorm",
     "build:showcase": "npm run build --workspace=packages/showcase",
     "build": "npm run build --workspaces",
-    "build:doc": "npm run doc:build --workspaces",
+    "build:doc": "npm run doc:build --workspace=packages/firestorm",
     "watch:firestorm": "npm run watch --workspace=packages/firestorm",
     "serve:doc": "npm run doc:serve --workspace=packages/firestorm -- -p 1010",
     "serve:showcase": "npm run serve --workspace=packages/showcase",

@@ -147,10 +147,18 @@ export class BaseRepository<T extends IFirestormModel> {
      * 
      * @see getDocumentRef For the rules on each individual model/documentRef
      * 
-     * @param models Models for which you want document refs
+     * @param ids Ids for which you want document refs
      * @returns A document ref for each of the models provided in the same order
      */
     protected getDocumentRefs(ids: string[]): DocumentReference[];
+    /**
+     * Gets a document reference for each of the models provided.
+     * 
+     * @see getDocumentRef For the rules on each individual model/documentRef
+     * 
+     * @param models Models for which you want document refs
+     * @returns A document ref for each of the models provided in the same order
+     */
     protected getDocumentRefs(models: IFirestormModel[]): DocumentReference[];
     protected getDocumentRefs(modelsOrIds: (IFirestormModel | string)[]): DocumentReference[];
     protected getDocumentRefs(modelsOrIds: (IFirestormModel | string)[]): DocumentReference[] {

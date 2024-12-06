@@ -1,29 +1,5 @@
 import { QueryConstraint } from "firebase/firestore";
-import { LimitClauseDirection, LimitClauseLimit, OrderClauseDirection, QueryClauseField, StartBlock, WhereClauseOperator, WhereClauseValue } from "./query-builder";
-
-export type QueryCheckEntryLevel = 'warning' | 'error'
-
-export abstract class QueryCheckEntry {
-
-  constructor(public readonly level: QueryCheckEntryLevel, public readonly message: string) {}
-
-}
-
-export class TooManyConstraintsQueryError extends QueryCheckEntry {
-
-  constructor() {
-    super('error', "Too many constraints in this query. It cannot exceed 100.")
-  }
-  
-}
-
-export class InequalityOperatorsOnDifferentFieldQueryError extends QueryCheckEntry {
-
-  constructor(public readonly fields: string[]) {
-    super('error', "All where filters with an inequality must be on the same field. You have filters on: " + fields.join(", "))
-  }
-
-}
+import { LimitClauseDirection, LimitClauseLimit, OrderClauseDirection, OrderByBlock, QueryClauseField, StartBlock, WhereBlock, WhereClauseOperator, WhereClauseValue, LimitBlock } from "./query-builder";
 
 /*
 Warning: A != query clause might match many documents in a collection. To control the number of results returned, use a limit clause or paginate your query.
@@ -47,10 +23,16 @@ You can't order your query by a field included in an equality (==) or in clause.
 The sum of filters, sort orders, and parent document path (1 for a subcollection, 0 for a root collection) in a query cannot exceed 100.
 */
 
+/**
+ * A query represents an instruction given to the firestore engine to
+ * match a specific set of documents within a collection.
+ */
 export class Query {
 
+  /** Initial building block of a query */
   private _startBlock: StartBlock = new StartBlock()
 
+  /** Gets the initial building block of a query */
   private get start() { return this._startBlock }
 
   /**
@@ -58,13 +40,13 @@ export class Query {
    * @param field Field on which the where clause is applied
    * @param operator Operator of the clause
    * @param value Value to check against the value of the field against
-   * @returns 
+   * @returns The {@link WhereBlock} appended to the query
    */
   where(
     field: QueryClauseField,
     operator: WhereClauseOperator, 
     value: WhereClauseValue
-  ) {
+  ): WhereBlock {
     return this.start.where(field, operator, value)
   }
 
@@ -72,12 +54,12 @@ export class Query {
    * Adds an order by clause to the query
    * @param field Field on which to apply the sorting
    * @param direction Direction of the sort
-   * @returns 
+   * @returns The {@link OrderByBlock} appended to the query
    */
   orderBy(
     field: QueryClauseField,
     direction: OrderClauseDirection
-  ) {
+  ): OrderByBlock {
     return this.start.orderBy(field, direction)
   }
 
@@ -85,9 +67,9 @@ export class Query {
    * Adds a limit clause to the query
    * @param limit Amount of element to query at most
    * @param from Starts from the start or the end of the query
-   * @returns 
+   * @returns The {@link LimitBlock} appended to the query
    */
-  limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start') {
+  limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start'): LimitBlock {
     return this.start.limit(limit, from)
   }
   

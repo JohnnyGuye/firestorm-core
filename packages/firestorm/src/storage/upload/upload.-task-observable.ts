@@ -17,11 +17,20 @@ function fromFirebaseUploadTaskSnapshot(snapshot: UploadTaskSnapshot) {
  */
 export class UploadTaskObservable extends Observable<UploadTaskEvent> {
 
-  constructor(
+  /**
+   * 
+   * @param subscribe 
+   */
+  protected constructor(
     subscribe: ((this: Observable<UploadTaskEvent>, subscriber: Subscriber<UploadTaskEvent>) => TeardownLogic)) {
     super(subscribe)
   }
 
+  /**
+   * Creates an {@link UploadTaskObservable} from an UploadTask from firebase's api
+   * @param uploadTaskResolver 
+   * @returns 
+   */
   public static fromUploadTask(uploadTaskResolver: () => UploadTask) {
 
     return new UploadTaskObservable(

@@ -3,7 +3,47 @@
   "entryPoints": [
     "./src/index.ts",
     "./src/core/*.ts",
-    "./src/emulator/*.ts"
+    "./src/emulator/*.ts",
   ],
+  "excludeReferences": true,
+  "excludeInternal": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeNotDocumented": false,
+  "excludeCategories": [],
+  "includeVersion": true,
+  "includeHierarchySummary": true,
   "out": "docs",
+  "visibilityFilters": {
+    "protected": true,
+    "private": true,
+    "inherited": true,
+    "external": false,
+    "@alpha": false
+  },
+  "useFirstParagraphOfCommentAsSummary": true,
+  "requiredToBeDocumented": [
+    "Project",
+    "Module",
+    "Namespace",
+    "Enum",
+    "EnumMember",
+    "Variable",
+    "Function",
+    "Class",
+    "Interface",
+    "Property",
+    "Method",
+    "Accessor",
+    "TypeAlias",
+    "Parameter",
+    "Constructor",
+    "Reference"
+  ],
+  "validation": {
+    "notDocumented": true,
+    "invalidLink": true,
+    "unusedMergeModuleWith": true,
+    "notExported": true
+  }
 }

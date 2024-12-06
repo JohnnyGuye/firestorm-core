@@ -82,5 +82,8 @@
       "default": "./dist/esm/index.js"
     },
     "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "typedoc-github-theme": "^0.2.0"
   }
 }

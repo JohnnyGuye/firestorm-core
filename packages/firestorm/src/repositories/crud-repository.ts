@@ -229,7 +229,7 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
      * 
      * Trying to delete a document that doesn't exist silently fails.
      * 
-     * @param ids 
+     * @param ids Ids of the document to delete
      */
     async deleteMultipleAsync(ids: string[]): Promise<void>;
     /**
@@ -242,7 +242,7 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
      * 
      * This doesn't typecheck the model. It only types check that you provided an id
      * 
-     * @param ids 
+     * @param models Models with the id of the documents to delete 
      */
     async deleteMultipleAsync(models: IFirestormModel[]): Promise<void>
     async deleteMultipleAsync(modelOrIds: (string | IFirestormModel)[]): Promise<void> {
@@ -277,7 +277,6 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
 /**
  * Gets the generator function for a {@link CrudRepository} of model {@link T}
  * @template T The model of the documents.
- * @param documentId The id of the document that the generated repository should track.
  * @returns A function that generated a single document repository on the document provided.
  */
 export function getCrudRepositoryGenerator<T extends IFirestormModel>(): RepositoryGeneratorFunction<CrudRepository<T>, T> {
