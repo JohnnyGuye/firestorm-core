@@ -1,22 +1,62 @@
-<div class="container">
+<div class="container is-fluid">
   <h1>Playground</h1>
   <section class="section">
-    <p>Here you can see FirestORM in action</p>
+    <p>
+      Here you can see FirestORM in action. 
+    </p>
+    <p>
+      The databse uses models informations of the game Phasmophobia. I'm just a big fan of this game, sorry if you dislike ghosts :/
+    </p>
 
-    
-    <div class="row">
-      <div class="col s2">
-        <button mat-button (click)="retrieveEntities()">
+    <mat-accordion>
+
+      <firestorm-playground-section [title]="'Model of an ghost entity'" [snippet]="ghostEntityModelSnippet">
+        <p description>
+          In this section you'll see a snippet of what a ghost entity looks like in the code.
+        </p>
+
+        <firestorm-playground-plain-object-markdown result [data]="ghostBluePrint"></firestorm-playground-plain-object-markdown>
+      </firestorm-playground-section>
+
+      <firestorm-playground-section [title]="'Read collection'" [snippet]="retrieveSnippet">
+  
+        <p description>
+          This is how you retrieve a full collection.
+        </p>
+        <button description mat-button (click)="retrieveEntities()">
           Retrieve entities
         </button>
-      </div>
-      <div class="col s5">
-        <markdown lineNumbers [data]="hello | language:'typescript' "></markdown>
-      </div>
-      <div class="col s5">
-        <button mat-raised-button (click)="switch()">Model/Document</button>
-        <markdown lineNumbers [data]="retrievedEntitiesAsJson | language:'js' "></markdown>
-      </div>
-    </div>
+
+        <firestorm-playground-model-markdown result [datas]="retrievedEntities" [repo]="entityRepo"></firestorm-playground-model-markdown>
+  
+      </firestorm-playground-section>
+  
+      <firestorm-playground-section [title]="'Aggregate collection'" [snippet]="aggregateSnippet">
+        
+        <p description>
+          This how you make aggregation queries on full collections.
+        </p>
+        <button description mat-button (click)="aggregateEntities()">
+          Count entities
+        </button>
+  
+        <firestorm-playground-plain-object-markdown result [data]="aggregatedEntities"></firestorm-playground-plain-object-markdown>
+  
+      </firestorm-playground-section>
+
+      <firestorm-playground-section [title]="'Aggregate collection with query'" [snippet]="aggregateWithQuerySnippet">
+        
+        <p description>
+          This how you make aggregation queries on collections restricted by a query.
+        </p>
+        <button description mat-button (click)="aggregateStandardSpeedEntities()">
+          Count standard speed entities
+        </button>
+  
+        <firestorm-playground-plain-object-markdown result [data]="aggregatedStandardSpeedEntities"></firestorm-playground-plain-object-markdown>
+  
+      </firestorm-playground-section>
+    </mat-accordion>
+    
   </section>
 </div>

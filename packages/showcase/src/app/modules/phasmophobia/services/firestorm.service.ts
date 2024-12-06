@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Firestorm } from "@jiway/firestorm-core"
 import { default as environment } from "@environment";
 import { PhasmoEntity } from "../models";
+import { GHOST_ENTITIES } from "../models/predefined-entities";
 
 const phasmo = environment.firebases.phasmo
 
@@ -12,9 +13,16 @@ export class FirestormService {
 
   constructor() {
     this.firestorm.connect(phasmo)
+    // this.initPhasmo()
   }
 
+  
   public get entityRepository() {
     return this.firestorm.getCrudRepository(PhasmoEntity)
+  }
+
+  private async initPhasmo() {
+    await this.entityRepository.deleteAllAsync()
+    await this.entityRepository.createMultipleAsync(...GHOST_ENTITIES)
   }
 }

@@ -268,4 +268,8 @@ export class BaseRepository<T extends IFirestormModel> {
     public modelsToDocuments(models: Partial<T>[]): FirestoreDocument[] {
         return models.map(m => this.modelToDocument(m))
     }
+
+    public get documentBlueprint() {
+        return this.typeMetadata.documentBlueprint
+    }
 }

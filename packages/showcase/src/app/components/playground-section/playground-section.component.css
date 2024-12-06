@@ -1,0 +1,8 @@
+:host {
+  display: block;
+}
+
+.section-title {
+  font-weight: 200;
+  margin-bottom: 1em;
+}
