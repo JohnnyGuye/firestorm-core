@@ -24,7 +24,7 @@
     "@angular/platform-server": "^19.0.0",
     "@angular/router": "^19.0.0",
     "@angular/ssr": "^19.0.2",
-    "@jiway/firestorm-core": "^1.0.0-alpha.3",
+    "@jiway/firestorm-core": "^1.0.0-alpha.4",
     "express": "^4.18.2",
     "ngx-markdown": "^19.0.0",
     "prismjs": "^1.29.0",
