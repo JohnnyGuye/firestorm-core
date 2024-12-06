@@ -118,6 +118,12 @@ export class BaseRepository<T extends IFirestormModel> {
      * @returns A document ref corresponding to the model
      */
     protected getDocumentRef(model: IFirestormModel): DocumentReference;
+    /**
+     * Gets a reference to the document corresponding to this model.
+     * 
+     * @param modelOrId Id or model for which you want a document ref
+     * @returns A document ref corresponding to the model
+     */
     protected getDocumentRef(modelOrId: IFirestormModel | string): DocumentReference;
     protected getDocumentRef(modelOrId: IFirestormModel | string): DocumentReference {
         let id = resolveId(modelOrId)
@@ -160,11 +166,22 @@ export class BaseRepository<T extends IFirestormModel> {
      * @returns A document ref for each of the models provided in the same order
      */
     protected getDocumentRefs(models: IFirestormModel[]): DocumentReference[];
+    /**
+     * Gets a document reference for each of the models provided.
+     * 
+     * @param modelsOrIds Ids or models for which you want document refs
+     * @returns A document ref for each of the models provided in the same order
+     */
     protected getDocumentRefs(modelsOrIds: (IFirestormModel | string)[]): DocumentReference[];
     protected getDocumentRefs(modelsOrIds: (IFirestormModel | string)[]): DocumentReference[] {
         return modelsOrIds.map(mOrId => this.getDocumentRef(mOrId))
     }
 
+    /**
+     * Runs a tansaction on the transaction function provided
+     * @param transactionFnc Operations to do durring the transaction
+     * @param options Transaction options
+     */
     protected async runTransactionAsync(transactionFnc: TransactionFnc, options?: TransactionOptions) {
         await runTransaction(
             this.firestore, 
@@ -175,7 +192,7 @@ export class BaseRepository<T extends IFirestormModel> {
 
     /**
      * Builds the path to a document
-     * @param modelOrId 
+     * @param modelOrId Model or id for which you want the Firestore's DB path
      * @returns 
      */
     public pathToDocument(modelOrId: IFirestormModel | string): string {
@@ -187,10 +204,10 @@ export class BaseRepository<T extends IFirestormModel> {
 
     /**
      * Converts a snapshot to a model
-     * @param documentSnapshot 
+     * @param documentSnapshot Document snapshot in firestore
      * @returns 
      */
-    public firestoreDocumentSnapshotToClass(
+    protected firestoreDocumentSnapshotToClass(
         documentSnapshot: DocumentSnapshot
         ): T {
         
@@ -213,8 +230,8 @@ export class BaseRepository<T extends IFirestormModel> {
 
     /**
      * Converts a document to a model (if the id is not in the document, it is lost in the process)
-     * @param document 
-     * @returns 
+     * @param document Document to convert
+     * @returns The converted model
      */
     public documentToModel(document: FirestoreDocument): T {
         return this.typeMetadata.convertDocumentToModel(document)
@@ -222,8 +239,8 @@ export class BaseRepository<T extends IFirestormModel> {
 
     /**
      * Converts multiple documents to their corresponding model
-     * @param documents 
-     * @returns 
+     * @param documents Documents to convert
+     * @returns The converted models
      */
     public documentsToModels(documents: FirestoreDocument[]): T[] {
         return documents.map(d => this.documentToModel(d))
@@ -231,8 +248,8 @@ export class BaseRepository<T extends IFirestormModel> {
 
     /**
      * Converts a partial model to a document
-     * @param model 
-     * @returns 
+     * @param model Model to convert
+     * @returns The converted document
      */
     public modelToDocument(model: Partial<T>): FirestoreDocument {
         return this.typeMetadata.convertModelToDocument(model)
@@ -240,8 +257,8 @@ export class BaseRepository<T extends IFirestormModel> {
 
     /**
      * Converts multiple models to their corresponding document
-     * @param models 
-     * @returns 
+     * @param models Models to convert
+     * @returns The converted documents
      */
     public modelsToDocuments(models: Partial<T>[]): FirestoreDocument[] {
         return models.map(m => this.modelToDocument(m))

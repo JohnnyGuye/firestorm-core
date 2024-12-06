@@ -1,8 +1,13 @@
 import { EmulatorMockTokenOptions as FirestoreEmulatorMockTokenOptions} from "firebase/firestore"
 import { EmulatorMockTokenOptions as StorageEmulatorMockTokenOptions} from "firebase/storage"
 
+/**
+ * Basic infos required to connect to an emulator
+ */
 export interface BaseEmulatorConnectionOptions {
+  /** Host url */
   readonly host: string
+  /** Port where the emulator is available */
   readonly port: number
 }
 
@@ -24,7 +29,9 @@ export interface StoreEmulatorConnectionOptions extends BaseEmulatorConnectionOp
  * Options for the connection to the emulator
  */
 export interface EmulatorConnectionOptions {
+  /** Options for firestore */
   readonly firestore?: FirestoreEmulatorConnectionOptions
+  /** Options for storage */
   readonly storage?: StoreEmulatorConnectionOptions
 }
 

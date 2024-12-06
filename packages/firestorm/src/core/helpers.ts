@@ -1,8 +1,8 @@
 
 /**
  * Converts a string in pascal or camel case to a string in snake case
- * @param pascalCaseString 
- * @returns 
+ * @param pascalCaseString The string to converts from pascalCase to snake_case
+ * @returns snake_cased string
  */
 export function pascalToSnakeCase(pascalCaseString: string) {
   return pascalCaseString
@@ -12,8 +12,11 @@ export function pascalToSnakeCase(pascalCaseString: string) {
 
 /**
  * Transforms a singular string in a plural string
- * @param word 
- * @returns 
+ * 
+ * It's not englishly accurate, but at least it's consistant in a dev's world
+ * 
+ * @param word The world to pluralize
+ * @returns The pluralized word
  */
 export function stringSingularToPlural(word: string) {
 
@@ -37,12 +40,12 @@ export function stringSingularToPlural(word: string) {
 }
 
 /**
- * Builds a path object by agregating a collection of chunk of path
- * @param pathArray 
- * @returns 
+ * Builds a path object by agregating a collection of segments
+ * @param segments Segments to aggregate
+ * @returns Path aggregated
  */
-export function buildPath(...pathArray: string[]) {
-    return pathArray.join("/")
+export function buildPath(...segments: string[]) {
+    return segments.join("/")
 }
 
 /**

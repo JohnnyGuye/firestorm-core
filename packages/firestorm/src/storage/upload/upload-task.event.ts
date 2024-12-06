@@ -43,6 +43,7 @@ export class UploadTaskChangeEvent implements UploadTaskEvent {
   private _totalBytes: number
 
   /**
+   * Creates the event.
    * @param state State of the task
    * @param bytesTransferred Amount of byte already transferred
    * @param totalBytes Amount of bytes to transfer
@@ -89,7 +90,7 @@ export class UploadTaskCompleteEvent implements UploadTaskEvent {
   private _bytes: number
 
   /**
-   * 
+   * Creates the event.
    * @param bytes Bytes uploaded
    * @param url Url at which the resource is available
    */
@@ -138,8 +139,6 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
   private _byteTransferred: number = 0
   private _totalBytes: number = 0
   private _state: StorageTaskState = 'success'
-
-  constructor() {}
   
   /** @inheritdoc */
   get bytesTransferred() {
@@ -227,9 +226,6 @@ export class MergedUploadTaskChangeEvent extends AbstractMergedUploadTaskEvent {
 
   private _urls: (string | undefined)[] = []
 
-  /**
-   * 
-   */
   get urls() {
     return this._urls
   }
@@ -241,7 +237,7 @@ export class MergedUploadTaskChangeEvent extends AbstractMergedUploadTaskEvent {
 export class MergedUploadTaskCompleteEvent extends AbstractMergedUploadTaskEvent {
 
   /**
-   * 
+   * Creates the event.
    * @param bytes Bytes uploaded
    * @param urls Urls at which the resources are available. In the same order as the tasks
    */

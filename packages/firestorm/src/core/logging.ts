@@ -1,6 +1,6 @@
 /**
  * Logs information messages in firestorm
- * @param params 
+ * @param params Informations to print
  */
 export function logInfo(...params: unknown[]) {
   console.log(...params)
@@ -8,7 +8,7 @@ export function logInfo(...params: unknown[]) {
 
 /**
  * Logs warning messages in firestorm
- * @param params 
+ * @param params Informations to print
  */
 export function logWarn(...params: unknown[]) {
   console.warn(...params)
@@ -16,7 +16,7 @@ export function logWarn(...params: unknown[]) {
 
 /**
  * Logs error message in firestorm
- * @param params 
+ * @param params Informations to print
 */
 export function logError(...params: unknown[]) {
   console.error(...params)
