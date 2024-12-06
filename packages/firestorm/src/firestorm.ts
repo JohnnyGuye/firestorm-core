@@ -18,11 +18,13 @@ import { StorageRepository } from "./storage";
 import { getSingleDocumentRepositoryGenerator } from "./repositories/single-document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
-
-export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 import { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
+/**
+ * Default name for a firebase if none provided.
+ */
+export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
 
 
 /**
@@ -108,7 +110,7 @@ export class Firestorm {
      * Gets the basic CRUD repository for a model
      * @template T Type of the model
      * @param type Type of the model
-     * @param parentCollections 
+     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
      * @returns 
      */
     public getCrudRepository<T extends IFirestormModel>(
@@ -125,8 +127,8 @@ export class Firestorm {
     /**
      * Gets the mono document CRUD repository for a model
      * @param type Type of the document model
-     * @param parentCollections The parent collections
      * @param documentId Id of the document
+     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
      * @returns 
      */
     public getSingleDocumentCrudRepository<T extends IFirestormModel>(
@@ -141,6 +143,16 @@ export class Firestorm {
         )
     }
 
+    /**
+     * Creates a repository using a generator function
+     * 
+     * @template R Type of the repository
+     * @template T Type of the model
+     * @param generator Generator function of the repository
+     * @param type Type of the model 
+     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @returns 
+     */
     public getRepositoryFromFunction<R extends BaseRepository<T>, T extends IFirestormModel>(
         generator: RepositoryGeneratorFunction<R, T>,
         type: Type<T>,
