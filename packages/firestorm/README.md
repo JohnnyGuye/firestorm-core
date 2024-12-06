@@ -1,4 +1,4 @@
-# FIRESTORM: the Firestore ORM
+# FirestORM: the Firestore ORM
 
 Firestorm is built around the official toolkit of firestore.
 

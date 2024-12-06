@@ -1,10 +1,14 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
-    "./src/index.ts",
-    "./src/core/*.ts",
-    "./src/emulator/*.ts",
+    "./src/firestorm.ts",
+    "./src/repositories/index.ts",
+    "./src/query/index.ts",
+    "./src/storage/index.ts",
+    "./src/core/index.ts",
+    "./src/errors/index.ts",
   ],
+  "sortEntryPoints": false,
   "excludeReferences": true,
   "excludeInternal": true,
   "excludePrivate": true,
