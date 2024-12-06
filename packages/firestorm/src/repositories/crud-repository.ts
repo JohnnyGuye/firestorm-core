@@ -11,14 +11,20 @@ import {
     QuerySnapshot, 
     DocumentReference, 
     DocumentSnapshot,
-    writeBatch
+    writeBatch,
+    getAggregateFromServer,
+    average,
+    sum,
+    count,
+    AggregateField
 } from "firebase/firestore";
 import { Type } from "../core/helpers";
-import { IQueryBuildBlock, Query } from "../query";
+import { AggregationQuery, AggregationResult, AggregationVerbs, IQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { BaseRepository } from "./base-repository";
 import { IParentCollectionOptions } from "./parent-collection-options.interface";
 import { RepositoryGeneratorFunction } from "./repository-creation-function";
+import { logWarn } from "../core/logging";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -126,20 +132,56 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
 
     /**
      * Queries a collection of items
-     * @param firestoryQuery Query
+     * @param firestormQuery Query
      * @returns A promise on the items that are results of the query
      */
-    async queryAsync(firestoryQuery: Query | IQueryBuildBlock): Promise<T[]>{
+    async queryAsync(firestormQuery: Query | IQueryBuildBlock): Promise<T[]>{
 
-        const col = collection(this.firestore, this.collectionPath)
-
-        const q = query(col, ...firestoryQuery.toConstraints())
-        const querySnapshot: QuerySnapshot = await getDocs(q)
+        const querySnapshot: QuerySnapshot = await getDocs(this.toFirestoreQuery(firestormQuery))
         if (querySnapshot.empty) return []
 
         return querySnapshot.docs.map(docSnapshot => {
             return this.firestoreDocumentSnapshotToClass(docSnapshot)
         })
+    }
+
+    async aggregateAsync<A extends AggregationQuery<T>>(aggQuery: A, query: Query): Promise<AggregationResult<A>> {
+
+        const partialMapping = new Map<string, string>()
+
+        for (let key of Object.getOwnPropertyNames(aggQuery)) {
+            const mappedTo = this.typeMetadata.isMappedTo(key)
+            if (!mappedTo) {
+                logWarn(`The property ${key} as no document correspondance`)
+                continue
+            }
+            partialMapping.set(key, mappedTo)
+        }
+
+        const aggSpec = (() => {
+            let as: Record<string, AggregateField<number>> = {}
+            for (let [key, mapping] of partialMapping) {
+                switch ((aggQuery as any)[key] as AggregationVerbs) {
+                    case 'count':
+                        as[key] = count()
+                        break;
+                    case 'average':
+                        as[key] = average(mapping)
+                        break;
+                    case 'sum':
+                        as[key] = sum(mapping)
+                        break;
+                }
+            }
+            return as
+        })()
+
+        const snapshot = await getAggregateFromServer(
+            this.toFirestoreQuery(query),
+            aggSpec
+        )
+
+        return snapshot.data() as AggregationResult<A>
     }
 
     /**

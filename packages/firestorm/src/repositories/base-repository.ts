@@ -1,4 +1,4 @@
-import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, runTransaction, Transaction, TransactionOptions } from "firebase/firestore"
+import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, Transaction, TransactionOptions } from "firebase/firestore"
 
 import { Type, buildPath } from "../core/helpers"
 import { IFirestormModel, resolveId } from "../core/firestorm-model"
@@ -9,6 +9,7 @@ import { ParentCollection } from "./parent-collection"
 import { IParentCollectionOptions } from "./parent-collection-options.interface"
 import { FirestoreDocument } from "../core/firestore-document"
 import { TransactionFnc } from "../core/transaction"
+import { IQueryBuildBlock, Query } from "../query"
 
 
 
@@ -188,6 +189,10 @@ export class BaseRepository<T extends IFirestormModel> {
             transactionFnc,
             options
         )
+    }
+
+    protected toFirestoreQuery(firestormQuery: Query | IQueryBuildBlock): FirestoreQuery {
+        return query(this.collectionRef, ...firestormQuery.toConstraints())
     }
 
     /**
