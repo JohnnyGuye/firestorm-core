@@ -1,4 +1,4 @@
-export * from "./base-repository"
+export * from "./repository"
 export * from "./crud-repository"
 export * from "./single-document-crud-repository"
 export * from "./parent-collection"

@@ -1,7 +1,7 @@
 import { Firestore } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { Type } from "../core/helpers";
-import { BaseRepository } from "./base-repository";
+import { Repository } from "./repository";
 import { IParentCollectionOptions } from "./parent-collection-options.interface";
 
 /**
@@ -9,7 +9,7 @@ import { IParentCollectionOptions } from "./parent-collection-options.interface"
  * @template R The type of repository created
  * @template T The model of the documents in the repository
  */
-export type RepositoryGeneratorFunction<R extends BaseRepository<T>, T extends IFirestormModel>
+export type RepositoryGeneratorFunction<R extends Repository<T>, T extends IFirestormModel>
   = (
       firestore: Firestore, 
       type: Type<T>, 

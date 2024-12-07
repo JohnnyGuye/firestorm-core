@@ -1,6 +1,6 @@
 import { Type } from "./core/helpers"
 import { IFirestormModel } from "./core/firestorm-model";
-import { IParentCollectionOptions, BaseRepository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
+import { IParentCollectionOptions, Repository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { 
@@ -153,7 +153,7 @@ export class Firestorm {
      * @param parentCollections The parent collections between the collection of this repository and the root of firestore
      * @returns 
      */
-    public getRepositoryFromFunction<R extends BaseRepository<T>, T extends IFirestormModel>(
+    public getRepositoryFromFunction<R extends Repository<T>, T extends IFirestormModel>(
         generator: RepositoryGeneratorFunction<R, T>,
         type: Type<T>,
         ...parentCollections: IParentCollectionOptions<IFirestormModel>[]

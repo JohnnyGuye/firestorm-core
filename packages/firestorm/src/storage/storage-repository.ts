@@ -1,4 +1,4 @@
-import { UploadTaskObservable } from "./upload/upload.-task-observable";
+import { UploadTaskObservable } from "./upload/upload-task-observable";
 import { FirebaseStorage, ref, uploadBytesResumable } from "firebase/storage";
 
 export class StorageRepository {

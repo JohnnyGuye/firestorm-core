@@ -53,6 +53,21 @@ export interface IQueryBuildBlock {
 }
 
 /**
+ * @summary Type guard for {@link IQueryBuildBlock}
+ * 
+ * It works by duck typing the top level without checking the values of the properties so be mindful.
+ * 
+ * @param value Object to typeguard
+ * @returns 
+ */
+export function isQueryBuildBlock(value: unknown): value is IQueryBuildBlock  {
+  if (!value || typeof value !== 'object') return false
+  return 'previous' in value
+    && 'next' in value
+    && 'toConstraints' in value
+}
+
+/**
  * Discribes a query block that can create a where clause as its following block
  */
 export interface ICanPrecedeWhere {

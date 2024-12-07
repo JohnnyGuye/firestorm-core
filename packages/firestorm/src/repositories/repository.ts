@@ -16,7 +16,7 @@ import { IQueryBuildBlock, Query } from "../query"
 /**
  * A repository is a typed access to a specific collection
  */
-export class BaseRepository<T extends IFirestormModel> {
+export abstract class Repository<T extends IFirestormModel> {
         
     private _type: Type<T>
     protected readonly firestore: Firestore

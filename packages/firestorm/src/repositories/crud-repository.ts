@@ -12,23 +12,20 @@ import {
     DocumentSnapshot,
     writeBatch,
     getAggregateFromServer,
-    average,
-    sum,
-    count,
-    AggregateField
+    SnapshotListenOptions
 } from "firebase/firestore";
 import { Type } from "../core/helpers";
-import {  aggregationQueryToAggregateSpec, AggregationResult, AggregationVerb, ExplicitAggregationQuery, IQueryBuildBlock, Query } from "../query";
+import {  aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
-import { BaseRepository } from "./base-repository";
+import { Repository } from "./repository";
 import { IParentCollectionOptions } from "./parent-collection-options.interface";
 import { RepositoryGeneratorFunction } from "./repository-creation-function";
-import { logWarn } from "../core/logging";
+import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
 
 /**
  * Repository with a basic CRUD implementation.
  */
-export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T> {
+export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
 
     constructor(
         type: Type<T>, 
@@ -164,6 +161,44 @@ export class CrudRepository<T extends IFirestormModel> extends BaseRepository<T>
         )
 
         return snapshot.data() as AggregationResult<A_Query>
+    }
+
+    /**
+     * Listens to the changes of the full collection.
+     */
+    listen(): CollectionObservable<T>;
+    /**
+     * Listens to the changes of a document
+     * 
+     * @param id Id of the document to listen to
+     */
+    listen(id: string): DocumentObservable<T>;
+    /**
+     * Listens to the changes of a document
+     * 
+     * @param model Model with the id of the document to listen to
+     */
+    listen(model: IFirestormModel): DocumentObservable<T>;
+    /**
+     * Listens to the changes of documents in a query
+     * 
+     * @param query Query on the documents
+     */
+    listen(query: Query | IQueryBuildBlock): CollectionObservable<T>;
+    listen(modelOrQueryOrId?: Query | IQueryBuildBlock | IFirestormModel | string) {
+
+        const options: SnapshotListenOptions = { includeMetadataChanges: false, source: 'default' }
+        
+        if (!modelOrQueryOrId) {
+            return createCollectionObservable(this, this.collectionRef, options)
+        }
+
+        if (modelOrQueryOrId instanceof Query || isQueryBuildBlock(modelOrQueryOrId)) {
+            return createQueryObservable(this, this.collectionRef, modelOrQueryOrId, options)
+        }
+
+        const ref = this.getDocumentRef(modelOrQueryOrId)
+        return createDocumentObservable(this, ref, options)
     }
 
     /**

@@ -1,6 +1,6 @@
 import { DocumentReference, DocumentSnapshot, Firestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
-import { BaseRepository } from "./base-repository";
+import { Repository } from "./repository";
 import { IParentCollectionOptions } from "./parent-collection-options.interface";
 import { Type } from "../core/helpers";
 import { RepositoryGeneratorFunction } from "./repository-creation-function";
@@ -8,7 +8,7 @@ import { RepositoryGeneratorFunction } from "./repository-creation-function";
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
  */
-export class SingleDocumentRepository<T extends IFirestormModel> extends BaseRepository<T> {
+export class SingleDocumentRepository<T extends IFirestormModel> extends Repository<T> {
   
   /**
    * Id of the document
