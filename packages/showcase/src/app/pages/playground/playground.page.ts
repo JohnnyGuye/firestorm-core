@@ -1,11 +1,11 @@
 import { Component, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { FirestormService } from "@modules/phasmophobia";
-import { PhasmoEntity } from "@modules/phasmophobia/models";
+import { PhasmoEntity, PhasmoGame } from "@modules/phasmophobia/models";
 import { MarkdownModule } from "ngx-markdown";
 import { PlaygroundModelMarkdownComponent } from "@components/playground-model-markdown";
 import { PlaygroundSectionComponent } from "@components/playground-section";
-import { ExplicitAggregationField, ExplicitAggregationQuery, Query } from "@jiway/firestorm-core";
+import { ExplicitAggregationQuery, Query } from "@jiway/firestorm-core";
 import { PlaygroundPlainObjectMarkdownComponent } from "../../components/playground-plain-object-markdown/playground-plain-object-markdown.component";
 import { MatExpansionModule } from "@angular/material/expansion";
 
@@ -66,6 +66,32 @@ export class PlaygroundPage {
 
     this.aggregatedStandardSpeedEntities = await this.firestormSrv.entityRepository
       .aggregateAsync(aggSpec, query)
+  }
+
+  public async startListeningToRandomGameChanges() {
+
+    const entities = await this.entityRepo.findAllAsync()
+
+    const it = setInterval(() => {
+      const entityId = entities[Math.floor(Math.random() * entities.length)].id
+      const game = new PhasmoGame()
+      game.ghostEntity = entityId
+      this.firestormSrv.randomGameRepository.writeAsync(game)
+    }, 500)
+    
+    const listener = this.firestormSrv.gameRepository.listen(this.firestormSrv.randomGameRepository.documentId)
+    const subscription = listener.subscribe({
+      next: console.log,
+      error: console.error,
+      complete: console.warn
+    })
+    setTimeout(() => {
+      clearInterval(it)
+      subscription.unsubscribe()
+      console.log("Listening stoped")
+    }, 4000)
+
+    console.log("Listening started")
   }
 
   ghostEntityModelSnippet = 

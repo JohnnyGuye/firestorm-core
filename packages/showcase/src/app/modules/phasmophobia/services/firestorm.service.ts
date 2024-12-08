@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Firestorm } from "@jiway/firestorm-core"
 import { default as environment } from "@environment";
-import { PhasmoEntity } from "../models";
+import { PhasmoEntity, PhasmoGame } from "../models";
 import { GHOST_ENTITIES } from "../models/predefined-entities";
 
 const phasmo = environment.firebases.phasmo
@@ -19,6 +19,14 @@ export class FirestormService {
   
   public get entityRepository() {
     return this.firestorm.getCrudRepository(PhasmoEntity)
+  }
+
+  public get gameRepository() {
+    return this.firestorm.getCrudRepository(PhasmoGame)
+  }
+
+  public get randomGameRepository() {
+    return this.firestorm.getSingleDocumentCrudRepository(PhasmoGame, "a_random_game")
   }
 
   private async initPhasmo() {

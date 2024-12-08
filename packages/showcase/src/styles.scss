@@ -14,6 +14,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 :root {
   --mat-toolbar-standard-height: 64px;
+  --mat-expansion-header-hover-state-layer-color: #20202020;
 }
 
 *,
@@ -51,4 +52,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mat-drawer-inner-container {
   border-right: 2px solid #88888822;
+}
+
+.mat-expansion-panel-header {
+  background-color: #ba5914 !important;
 }

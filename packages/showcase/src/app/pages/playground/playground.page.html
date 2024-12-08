@@ -56,6 +56,20 @@
         <firestorm-playground-plain-object-markdown result [data]="aggregatedStandardSpeedEntities"></firestorm-playground-plain-object-markdown>
   
       </firestorm-playground-section>
+
+      <firestorm-playground-section [title]="'Document change listener'">
+
+        <button description mat-button (click)="startListeningToRandomGameChanges()">
+          Listen
+        </button>
+
+        <p description>
+          The button will generate two new games per second and listen to this randomized game in parallel for the next 4 seconds. <br/>
+          Check the console to see it in action.
+        </p>
+
+      </firestorm-playground-section>
+
     </mat-accordion>
     
   </section>
