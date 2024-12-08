@@ -3,6 +3,8 @@ import { Route, Routes, UrlMatchResult, UrlSegment, UrlSegmentGroup } from '@ang
 
 function docMatcher(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
 
+  if (segments[0].path != 'doc') return null
+
   const dfp = `${segments.join("/")}/index.md`
   const result = {
     consumed: segments,
@@ -24,6 +26,12 @@ export const routes: Routes = [
     path: 'playground',
     title: 'Playground',
     loadComponent: () => import('./pages/playground').then(m => m.PlaygroundPage)
+  },
+  {
+    path: 'dev/db',
+    pathMatch: 'full',
+    title: 'Dev DB Tools',
+    loadComponent: () => import('./pages/db-tools').then(m => m.DbtoolsPage)
   },
   {
     matcher: docMatcher,

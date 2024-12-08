@@ -28,5 +28,10 @@ export class PhasmoEntity {
    * Base speed of the entity (in m/s)
    */
   baseSpeed: number = 1.7
+
+  /**
+   * The threshold at which the entity can hunt by default
+   */
+  huntSanityThreshold: number = 50
   
 }
