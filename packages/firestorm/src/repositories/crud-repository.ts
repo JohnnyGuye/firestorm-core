@@ -169,24 +169,28 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
 
     /**
      * Listens to the changes of the full collection.
+     * @returns An observable on the changes of any document in the collection
      */
     listen(): CollectionObservable<T_model>;
     /**
      * Listens to the changes of a document
      * 
      * @param id Id of the document to listen to
+     * @returns An observable on the document's changes
      */
     listen(id: string): DocumentObservable<T_model>;
     /**
      * Listens to the changes of a document
      * 
      * @param model Model with the id of the document to listen to
+     * @returns An observable on the document's changes
      */
     listen(model: IFirestormModel): DocumentObservable<T_model>;
     /**
      * Listens to the changes of documents in a query
      * 
      * @param query Query on the documents
+     * @returns An observable on the documents matched by the query changes
      */
     listen(query: Query | IQueryBuildBlock): CollectionObservable<T_model>;
     listen(modelOrQueryOrId?: Query | IQueryBuildBlock | IFirestormModel | string) {

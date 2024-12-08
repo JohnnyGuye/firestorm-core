@@ -16,17 +16,23 @@ import { MatExpansionModule } from "@angular/material/expansion"
 
     <div class="row">
       <div class="col s12">
-        <ng-content select="[description]"></ng-content>
+        <div class="box">
+          <ng-content select="[description]"></ng-content>
+        </div>
       </div>
     </div>
     <div class="row">
       <div class="col s6">
         <div class="section-title">Code snippet</div>
-        <markdown lineNumbers [data]="snippet | language:'typescript' "></markdown>
+        <div class="section-content">
+          <markdown lineNumbers [data]="snippet | language:'typescript' "></markdown>
+        </div>
       </div>
       <div class="col s6">
         <div class="section-title">Result</div>
-        <ng-content select="[result]"></ng-content>
+        <div class="section-content">
+          <ng-content select="[result]"></ng-content>
+        </div>
       </div>
     </div>
   </mat-expansion-panel>

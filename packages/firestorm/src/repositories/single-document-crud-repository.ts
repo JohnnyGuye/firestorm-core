@@ -1,8 +1,9 @@
-import { DocumentReference, DocumentSnapshot, Firestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
 import { IParentCollectionOptions, RepositoryGeneratorFunction } from "./common";
 import { Type } from "../core/type";
+import { createDocumentObservable, DocumentObservable } from "../realtime-listener";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
@@ -54,6 +55,8 @@ export class SingleDocumentRepository<T_model extends IFirestormModel> extends R
    * 
    * The id, if provided, is ignored in the model and set to this.documentId
    * 
+   * It will fail if the document doesn't exist.
+   * 
    * @param model Partial or full model to update. It must have an id.
    * @returns A Promise that resolved when the item has been updated
    */
@@ -82,6 +85,15 @@ export class SingleDocumentRepository<T_model extends IFirestormModel> extends R
     if (!documentSnapshot.exists()) return null
     
     return this.firestoreDocumentSnapshotToModel(documentSnapshot)
+  }
+
+  /**
+   * Listens to the changes of the document
+   * @returns An observable on the document's changes
+   */
+  listen(): DocumentObservable<T_model> {
+    const options: SnapshotListenOptions = { includeMetadataChanges: false, source: 'default' }
+    return createDocumentObservable(this, this.documentRef, options)
   }
 
   /**

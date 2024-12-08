@@ -8,6 +8,8 @@ import { PlaygroundSectionComponent } from "@components/playground-section";
 import { ExplicitAggregationQuery, Query } from "@jiway/firestorm-core";
 import { PlaygroundPlainObjectMarkdownComponent } from "../../components/playground-plain-object-markdown/playground-plain-object-markdown.component";
 import { MatExpansionModule } from "@angular/material/expansion";
+import { PgSectionAggregateQueryComponent } from "./phasmo/pg-section-aggregate-query/pg-section-aggregate-query.component";
+import { PgSectionDocumentListenerComponent } from "./phasmo/pg-section-document-listener/pg-section-document-listener.component";
 
 @Component({
   standalone: true,
@@ -18,7 +20,9 @@ import { MatExpansionModule } from "@angular/material/expansion";
     PlaygroundSectionComponent,
     PlaygroundModelMarkdownComponent,
     PlaygroundPlainObjectMarkdownComponent,
-    MatExpansionModule
+    MatExpansionModule,
+    PgSectionAggregateQueryComponent,
+    PgSectionDocumentListenerComponent
 ]
 })
 export class PlaygroundPage {
@@ -35,7 +39,6 @@ export class PlaygroundPage {
   public retrievedEntities: PhasmoEntity[] = []
 
   public aggregatedEntities: any = {}
-  public aggregatedStandardSpeedEntities: any = {}
 
   public async retrieveEntities() {
     
@@ -57,41 +60,6 @@ export class PlaygroundPage {
         }
       }
     )
-  }
-
-  public async aggregateStandardSpeedEntities() {
-
-    const aggSpec: ExplicitAggregationQuery = { entityCount: { verb: "count" } }
-    const query = new Query().where('base_speed', '==', 1.7)
-
-    this.aggregatedStandardSpeedEntities = await this.firestormSrv.entityRepository
-      .aggregateAsync(aggSpec, query)
-  }
-
-  public async startListeningToRandomGameChanges() {
-
-    const entities = await this.entityRepo.findAllAsync()
-
-    const it = setInterval(() => {
-      const entityId = entities[Math.floor(Math.random() * entities.length)].id
-      const game = new PhasmoGame()
-      game.ghostEntity = entityId
-      this.firestormSrv.randomGameRepository.writeAsync(game)
-    }, 500)
-    
-    const listener = this.firestormSrv.gameRepository.listen(this.firestormSrv.randomGameRepository.documentId)
-    const subscription = listener.subscribe({
-      next: console.log,
-      error: console.error,
-      complete: console.warn
-    })
-    setTimeout(() => {
-      clearInterval(it)
-      subscription.unsubscribe()
-      console.log("Listening stoped")
-    }, 4000)
-
-    console.log("Listening started")
   }
 
   ghostEntityModelSnippet = 
@@ -150,13 +118,4 @@ const aggregation
     .aggregateAsync(aggregationQuery)
 `
 
-  aggregateWithQuerySnippet = 
-`
-const aggregationQuery: ExplicitAggregationQuery = { entityCount: { verb: "count" } }
-const query = new Query().where('base_speed', '==', 1.7)
-
-const aggregation 
-  = await entityRepository
-    .aggregateAsync(aggregationQuery, query)
-`
 }

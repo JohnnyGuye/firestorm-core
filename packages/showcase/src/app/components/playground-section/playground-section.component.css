@@ -6,3 +6,12 @@
   font-weight: 200;
   margin-bottom: 1em;
 }
+
+.section-content {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.box {
+  padding: 1rem;
+}
