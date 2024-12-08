@@ -1,5 +1,5 @@
-import { Type } from "../core/helpers"
-import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
+import { Type } from "../core/type"
+import { FirestormMetadataStore } from "../core/firestorm-metadata-store"
 import { DocumentToModelConverter, FirestormModel, ModelToDocumentConverter } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { FirestoreDocument } from "../core/firestore-document"
@@ -86,7 +86,7 @@ export function ComplexType<T, M extends FirestormModel, K extends string>(
   if ("type" in options) {
     return (object: M, key: K) => {
 
-      const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+      const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
       const md = storage.getOrCreateMetadatas(object.constructor as Type<M>)
 
       const typeMd = storage.getOrCreateMetadatas(options.type)
@@ -104,7 +104,7 @@ export function ComplexType<T, M extends FirestormModel, K extends string>(
   if ("toDocument" in options && "toModel" in options) {
     return (object: M, key: K) => {
       
-      const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+      const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
       const md = storage.getOrCreateMetadatas(object.constructor as Type<M>)
 
       const docToMod = (document: FirestoreDocument) => options.toModel(document)

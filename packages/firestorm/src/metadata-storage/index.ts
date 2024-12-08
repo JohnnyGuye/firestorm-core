@@ -1,10 +1,10 @@
-import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage";
+import { FirestormMetadataStore } from "../core/firestorm-metadata-store";
 
 /**
  * The global instance storage of metadatas. 
  * Every metadatas necessary for firestom to work is stored here.
  */
-export const FIRESTORM_METADATA_STORAGE = new FirestormMetadataStorage()
+export const FIRESTORM_METADATA_STORAGE = new FirestormMetadataStore()
 
 export function firestormMetadatasToJson() {
 

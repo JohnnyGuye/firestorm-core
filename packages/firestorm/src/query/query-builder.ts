@@ -30,7 +30,14 @@ export type LimitClauseLimit = number
  */
 export type LimitClauseDirection = 'start' | 'end'
 
-const inequalityOperators: WhereClauseOperator[] = ['<', '<=', '!=', 'not-in', '>', '>='] as const
+/**
+ * List of inequality operators
+ */
+export const inequalityOperators: WhereClauseOperator[] = ['<', '<=', '!=', 'not-in', '>', '>='] as const
+/**
+ * Inequality operators
+ */
+export type InequalityOperators = typeof inequalityOperators[number]
 
 /**
  * Discribes the minimal requirements for a query block

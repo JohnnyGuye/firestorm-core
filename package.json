@@ -10,6 +10,7 @@
     "node": "^18.13.0 || ^20.17.0 || ^22.0.0"
   },
   "scripts": {
+    "lint:firestorm": "npm run lint --workspace=packages/firestorm",
     "build:firestorm": "npm run build --workspace=packages/firestorm",
     "build:showcase": "npm run build --workspace=packages/showcase",
     "build": "npm run build --workspaces",

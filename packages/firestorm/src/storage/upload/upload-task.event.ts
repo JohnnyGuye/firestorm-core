@@ -134,6 +134,9 @@ export interface MergedUploadTaskEvent extends UploadTaskEvent {
 
 }
 
+/**
+ * Merge of event of multiple sub upload tasks
+ */
 abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
 
   private _byteTransferred: number = 0
@@ -144,7 +147,8 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
   get bytesTransferred() {
     return this._byteTransferred
   }
-
+  
+  /** @inheritdoc */
   protected set bytesTransferred(value: number) {
     this._byteTransferred = value
   }
@@ -158,7 +162,8 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
   get totalBytes() {
     return this._totalBytes
   }
-
+  
+  /** @inheritdoc */
   protected set totalBytes(value: number) {
     this._totalBytes = value
   }
@@ -173,11 +178,16 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
   get state() {
     return this._state
   }
-
+  
+  /**
+   * Sets the state of the storage task
+   * @param value New value of the state
+   */
   protected set state(value: StorageTaskState) {
     this._state = value
   }
 
+  /** @inheritdoc */
   abstract readonly urls: (string | undefined)[]
 
   /**
@@ -222,10 +232,14 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
 
 }
 
+/**
+ * Merge of event of multiple sub upload tasks
+ */
 export class MergedUploadTaskChangeEvent extends AbstractMergedUploadTaskEvent {
 
   private _urls: (string | undefined)[] = []
 
+  /** @inheritdoc */
   get urls() {
     return this._urls
   }

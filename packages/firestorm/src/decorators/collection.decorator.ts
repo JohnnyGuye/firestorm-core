@@ -1,6 +1,6 @@
-import { Type, pascalToSnakeCase, stringSingularToPlural } from "../core/helpers"
+import { Type, pascalToSnakeCase, stringSingularToPlural } from "../core"
 import { FirestormModel } from "../core/firestorm-model"
-import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
+import { FirestormMetadataStore } from "../core/firestorm-metadata-store"
 import { logWarn } from "../core/logging"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { ClassDecoratorReturn } from "./decorator-utilities"
@@ -35,7 +35,7 @@ export function Collection<T extends FirestormModel>(options?: ICollectionOption
   return (constructor: Type<T>) => {
     
     // Storage
-    const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+    const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
     
     // Name of the collection
     let collectionName: string

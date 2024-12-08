@@ -1,22 +1,27 @@
 import { DocumentReference, DocumentSnapshot, Firestore, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
-import { IParentCollectionOptions } from "./parent-collection-options.interface";
-import { Type } from "../core/helpers";
-import { RepositoryGeneratorFunction } from "./repository-creation-function";
+import { IParentCollectionOptions, RepositoryGeneratorFunction } from "./common";
+import { Type } from "../core/type";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
  */
-export class SingleDocumentRepository<T extends IFirestormModel> extends Repository<T> {
+export class SingleDocumentRepository<T_model extends IFirestormModel> extends Repository<T_model> {
   
   /**
    * Id of the document
    */
   public documentId: string = ""
 
+  /**
+   * Creates a new {@link SingleDocumentRepository} on a model
+   * @param type Type on which the repository operates
+   * @param firestore The instance of firestore this repository connects to
+   * @param parents The optional parent collections for repositories of subcollections
+   */
   constructor(
-    type: Type<T>,
+    type: Type<T_model>,
     firestore: Firestore,
     parents?: IParentCollectionOptions<IFirestormModel>[]
     ) {
@@ -32,7 +37,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends Reposit
    * @param model Model to store
    * @returns 
    */
-  async writeAsync(model: T) {
+  async writeAsync(model: T_model) {
 
     model.id = this.documentId
     const documentRef: DocumentReference = this.documentRef
@@ -52,7 +57,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends Reposit
    * @param model Partial or full model to update. It must have an id.
    * @returns A Promise that resolved when the item has been updated
    */
-  async updateAsync(model: Partial<T>) {
+  async updateAsync(model: Partial<T_model>) {
 
     model.id = this.documentId
     const documentRef: DocumentReference = this.documentRef
@@ -76,7 +81,7 @@ export class SingleDocumentRepository<T extends IFirestormModel> extends Reposit
 
     if (!documentSnapshot.exists()) return null
     
-    return this.firestoreDocumentSnapshotToClass(documentSnapshot)
+    return this.firestoreDocumentSnapshotToModel(documentSnapshot)
   }
 
   /**

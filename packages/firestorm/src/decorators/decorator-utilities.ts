@@ -1,3 +1,3 @@
-import { Type } from "../core/helpers"
+import { Type } from "../core/type"
 
 export type ClassDecoratorReturn<T> = (constructor: Type<T>) => void

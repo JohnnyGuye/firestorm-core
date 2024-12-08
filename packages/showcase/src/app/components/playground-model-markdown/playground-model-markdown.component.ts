@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from "@angular/material/button-toggle"
-import { BaseRepository, FirestormModel } from '@jiway/firestorm-core';
+import { FirestormModel, Repository } from '@jiway/firestorm-core';
 import { MarkdownModule } from 'ngx-markdown';
 
 type DisplayOption = 'document' | 'model'
@@ -39,7 +39,7 @@ export class PlaygroundModelMarkdownComponent<T extends FirestormModel> {
   }
 
   @Input()
-  repo?: BaseRepository<T>
+  repo?: Repository<T>
 
   public set showAs(value: DisplayOption) {
     this._showAs = value

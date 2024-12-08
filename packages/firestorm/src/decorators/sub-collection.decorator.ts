@@ -1,5 +1,5 @@
-import { Type } from "../core/helpers"
-import { FirestormMetadataStorage } from "../core/firestorm-metadata-storage"
+import { Type } from "../core/type"
+import { FirestormMetadataStore } from "../core/firestorm-metadata-store"
 import { FirestormModel, IFirestormModel } from "../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 
@@ -40,7 +40,7 @@ export function SubCollection<
 
   return (object: T_Host, propertyKey: K) => {
 
-    const storage: FirestormMetadataStorage = FIRESTORM_METADATA_STORAGE
+    const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
     const md = storage.getOrCreateMetadatas(object.constructor as Type<T_Host>)
     md.addSubCollection(propertyKey)
 

@@ -11,6 +11,12 @@ export class DocumentListenerEvent<T_model extends IFirestormModel> {
 
   private _document: FirestoreDocument | null
 
+  /**
+   * Creates a {@link DocumentListenerEvent}
+   * @internal
+   * @param snapshot Document snapshot emitted by firestore 
+   * @param repository Repository used to perform conversions from documents
+   */
   constructor(
     snapshot: DocumentSnapshot,
     private readonly repository: Repository<T_model>
@@ -51,10 +57,10 @@ export type DocumentObservable<T_model extends IFirestormModel> = Observable<Doc
 
 /**
  * Creates an observable on a document
- * @param repository 
- * @param documentRef 
- * @param options 
- * @returns 
+ * @param repository Repository that created the listener
+ * @param documentRef Reference to the document to listen to
+ * @param options Listening options
+ * @returns A document observable
  */
 export function createDocumentObservable<T_model extends IFirestormModel>(
   repository: Repository<T_model>, 

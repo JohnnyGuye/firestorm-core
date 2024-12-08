@@ -1,15 +1,11 @@
-import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, Transaction, TransactionOptions } from "firebase/firestore"
+import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, TransactionOptions } from "firebase/firestore"
 
-import { Type, buildPath } from "../core/helpers"
-import { IFirestormModel, resolveId } from "../core/firestorm-model"
+import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath } from "../core"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
-
-import { ParentCollection } from "./parent-collection"
-import { IParentCollectionOptions } from "./parent-collection-options.interface"
-import { FirestoreDocument } from "../core/firestore-document"
-import { TransactionFnc } from "../core/transaction"
 import { IQueryBuildBlock, Query } from "../query"
+
+import { ParentCollection, IParentCollectionOptions } from "./common"
 
 
 
@@ -19,8 +15,12 @@ import { IQueryBuildBlock, Query } from "../query"
 export abstract class Repository<T extends IFirestormModel> {
         
     private _type: Type<T>
-    protected readonly firestore: Firestore
     private parents?: ParentCollection<IFirestormModel>[] = []
+    
+    /**
+     * Instance of firestore this repository uses to reach the DB
+     */
+    protected readonly firestore: Firestore
     
     /**
      * Creates a new repository on a model
@@ -191,6 +191,11 @@ export abstract class Repository<T extends IFirestormModel> {
         )
     }
 
+    /**
+     * Converts a firestORM query to a firestore query
+     * @param firestormQuery Query to convert
+     * @returns The firestorm query
+     */
     protected toFirestoreQuery(firestormQuery: Query | IQueryBuildBlock): FirestoreQuery {
         return query(this.collectionRef, ...firestormQuery.toConstraints())
     }
@@ -210,9 +215,9 @@ export abstract class Repository<T extends IFirestormModel> {
     /**
      * Converts a snapshot to a model
      * @param documentSnapshot Document snapshot in firestore
-     * @returns 
+     * @returns Converts a document snapshot to a model
      */
-    protected firestoreDocumentSnapshotToClass(
+    protected firestoreDocumentSnapshotToModel(
         documentSnapshot: DocumentSnapshot
         ): T {
         
@@ -269,6 +274,10 @@ export abstract class Repository<T extends IFirestormModel> {
         return models.map(m => this.modelToDocument(m))
     }
 
+    /**
+     * Gets the blueprint for a document built with the type of this repository
+     * @deprecated ⚠️ Not ready
+     */
     public get documentBlueprint() {
         return this.typeMetadata.documentBlueprint
     }

@@ -1,12 +1,25 @@
-import { Observable, Subscriber, TeardownLogic } from "rxjs";
+import { FirestoreDocument, IFirestormModel } from "../core";
 
-
-export type SubscribeFunction<T> = (this: Observable<T>, subscriber: Subscriber<T>) => TeardownLogic
-
+/** Origin of the record of the document change */
 export type DocumentChangeSource = 'local' | 'server'
 
-export type DocChangeType = 'initial' | 'added' | 'modified' | 'removed'
+/** Type of the document change */
+export type DocumentChangeType = 'initial' | 'added' | 'modified' | 'removed'
 
-export interface DocChange {
-  type: DocChangeType
+/**
+ * Base interface for a document change
+ */
+export interface DocumentChange<T_model extends IFirestormModel> {
+  /** Id of the document */
+  id: string
+  /** The document as it is in the DB or local cache */
+  document: FirestoreDocument
+  /** The model of the document */
+  model: T_model | null
+  /** The current index of the document in your query */
+  index: number
+  /** The previous index of the documnet in your query */
+  previousIndex: number
+  /** The type of change this document received */
+  type: DocumentChangeType
 }

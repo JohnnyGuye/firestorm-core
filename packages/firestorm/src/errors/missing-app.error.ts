@@ -3,5 +3,6 @@
  */
 export class MissingAppError extends Error {
 
+  /** Creates a {@link MissingAppError} */
   constructor() { super("[Firestorm] You must connect firestorm first.") }
 }

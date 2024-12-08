@@ -1,5 +1,4 @@
 import { AggregateField, AggregateSpec, average, count, sum } from "firebase/firestore"
-import { IFirestormModel } from "../core/firestorm-model"
 
 /**
  * Possible aggregation verbs.
@@ -9,40 +8,56 @@ import { IFirestormModel } from "../core/firestorm-model"
  */
 export type AggregationVerb = 'count' | 'sum' | 'average'
 
+/**
+ * Definition for an aggregation query field
+ */
 export type ExplicitAggregationField = 
   {
+    /** The action to perform on the field */
     verb: 'count'
   } 
   |
   {
+    /** Field to compute the verb across the queried documents */
     field: string,
+    /** The action to perform on the field */
     verb: 'sum'
   } 
   |
   {
+    /** Field to compute the verb across the queried documents */
     field: string,
+    /** The action to perform on the field */
     verb: 'average'
   }
 
+/**
+ * Definition for an aggreagation query
+ */
 export type ExplicitAggregationQuery = Record<string, ExplicitAggregationField>
 
-// export type ImplicitAggregationQuery<M> = Record<keyof M, AggregationVerb>
-
-// export type AggregationQuery<M> = ImplicitAggregationQuery<M> | ExplicitAggregationQuery
-
+/**
+ * Type for the result of an aggregation query
+ */
 export type AggregationResult<Source> = Record<keyof Source, number>
 
-export function explicitAggregationFieldToAggregateField(eaf: ExplicitAggregationField): AggregateField<number> {
+function explicitAggregationFieldToAggregateField(eaf: ExplicitAggregationField): AggregateField<number> {
   switch (eaf.verb) {
     case 'count':   return count();
     case 'sum':     return sum(eaf.field)
     case 'average': return average(eaf.field)
   }
 }
-export function aggregationQueryToAggregateSpec(eaq: ExplicitAggregationQuery): AggregateSpec {
-  const aggSpec: any = {}
-  for (let key in eaq) {
-    aggSpec[key] = explicitAggregationFieldToAggregateField(eaq[key])
+
+/**
+ * Converts a firestorm aggregation query to a firestore aggregate spec
+ * @param explicitAggregationQuery The aggreagation query to convert
+ * @returns The quivalent aggregate spec
+ */
+export function aggregationQueryToAggregateSpec(explicitAggregationQuery: ExplicitAggregationQuery): AggregateSpec {
+  const aggSpec: Record<string, AggregateField<number>> = {}
+  for (const key in explicitAggregationQuery) {
+    aggSpec[key] = explicitAggregationFieldToAggregateField(explicitAggregationQuery[key])
   }
   return aggSpec
 }

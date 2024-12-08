@@ -4,6 +4,7 @@
     "./src/firestorm.ts",
     "./src/repositories/index.ts",
     "./src/query/index.ts",
+    "./src/realtime-listener/index.ts",
     "./src/storage/index.ts",
     "./src/core/index.ts",
     "./src/errors/index.ts",
@@ -45,8 +46,8 @@
     "Reference"
   ],
   "validation": {
-    "notDocumented": true,
-    "invalidLink": true,
+    "notDocumented": false,
+    "invalidLink": false,
     "unusedMergeModuleWith": true,
     "notExported": true
   }

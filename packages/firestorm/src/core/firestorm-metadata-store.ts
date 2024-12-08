@@ -1,20 +1,14 @@
 import { AlreadyExistingMetadatasError, NotFoundMetadataError } from "../errors";
 import { FirestormMetadata } from "./firestorm-metadata";
-import { Type } from "./helpers";
+import { Type } from "./type";
 
 /**
  * Class containing all the metadatas stored in firestorm
  */
-export class FirestormMetadataStorage {
+export class FirestormMetadataStore {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _typeMetadatas = new Map<Type<any>, FirestormMetadata<any>>
-
-  constructor() {}
-
-  private get typeMetadatas() {
-    return this._typeMetadatas
-  }
+  private readonly typeMetadatas = new Map<Type<any>, FirestormMetadata<any>>
 
   /**
    * Checks if a specific type as metadatas associated
@@ -22,10 +16,16 @@ export class FirestormMetadataStorage {
    * @returns True if it has metadatas, false otherwise
    */
   public hasMetadatas<T>(type: Type<T>) {
-    if (!this._typeMetadatas) return false
+    if (!this.typeMetadatas) return false
     return this.typeMetadatas.has(type)
   }
 
+  /**
+   * Gets the metadatas of a type
+   * @throws NotFoundMetadataError if there are not metadatas for this type
+   * @param type Type to retrieves the metadas from
+   * @returns 
+   */
   public getMetadatas<T>(type: Type<T>) {
     const md = this.tryGetMetadatas(type)
     if (!md) throw new NotFoundMetadataError(type)
@@ -89,9 +89,15 @@ export class FirestormMetadataStorage {
     return metadata
   }
 
+  /**
+   * Tries to retrieve the metadatas for a type.
+   * 
+   * @param type Type for which you want the metadatas
+   * @returns The metadatas for this type or null if no metadatas.
+   */
   private tryGetMetadatas<T>(type: Type<T>) {
 
-    if (!this._typeMetadatas) return null
+    if (!this.typeMetadatas) return null
     
     const md = this.typeMetadatas.get(type)
     if (!md) return null

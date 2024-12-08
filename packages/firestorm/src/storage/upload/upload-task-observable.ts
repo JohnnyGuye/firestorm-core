@@ -1,6 +1,7 @@
-import { Observable, Subscriber, TeardownLogic } from "rxjs";
+import { Observable } from "rxjs";
 import { UploadTaskChangeEvent, UploadTaskCompleteEvent, UploadTaskEvent } from "./upload-task.event";
 import { UploadTask, UploadTaskSnapshot, getDownloadURL } from "firebase/storage";
+import { SubscribeFunction } from "@firestorm/src/core/observable";
 
 
 /**
@@ -18,11 +19,11 @@ function fromFirebaseUploadTaskSnapshot(snapshot: UploadTaskSnapshot) {
 export class UploadTaskObservable extends Observable<UploadTaskEvent> {
 
   /**
+   * Creates an {@link UploadTaskObservable}
    * 
    * @param subscribe 
    */
-  protected constructor(
-    subscribe: ((this: Observable<UploadTaskEvent>, subscriber: Subscriber<UploadTaskEvent>) => TeardownLogic)) {
+  protected constructor(subscribe: SubscribeFunction<UploadTaskEvent>) {
     super(subscribe)
   }
 

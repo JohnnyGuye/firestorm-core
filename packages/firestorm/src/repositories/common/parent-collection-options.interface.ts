@@ -1,5 +1,4 @@
-import { IFirestormModel } from "../core/firestorm-model"
-import { Type } from "../core/helpers"
+import { IFirestormModel, Type } from "../../core"
 
 // Technically I could infer the type from the instance T. There is probably a way aswell to not use the key though it may be complicated
 
@@ -27,21 +26,30 @@ interface IParentCollectionSetThree<T extends FirestormModel> {
 */
 
 /**
- * 
+ * Parent collection options
  */
 export type IParentCollectionOptions<T extends IFirestormModel = IFirestormModel> 
   = {
+      /** Type of the parent document */
       type: Type<T>
+      /** An instance of the parent document */
       instance: T
+      /** Some kind of league of legends? */
       key: string  
     } 
   | {
+      /** Type of the parent document */
       type: Type<T>
+      /** Id of the parent document */
       id: string,
+      /** Some kind of league of legends? */
       key: string
     } 
   | {
+      /** Type of the parent document */
       type: Type<T>
+      /** An instance of the parent document or its id */
       instanceOrId: T | string,
+      /** Some kind of league of legends? */
       key: string
     }

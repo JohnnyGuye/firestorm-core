@@ -14,21 +14,26 @@ import {
     getAggregateFromServer,
     SnapshotListenOptions
 } from "firebase/firestore";
-import { Type } from "../core/helpers";
+import { Type } from "../core/type";
 import {  aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
-import { IParentCollectionOptions } from "./parent-collection-options.interface";
-import { RepositoryGeneratorFunction } from "./repository-creation-function";
+import { IParentCollectionOptions, RepositoryGeneratorFunction } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
 
 /**
  * Repository with a basic CRUD implementation.
  */
-export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
+export class CrudRepository<T_model extends IFirestormModel> extends Repository<T_model> {
 
+    /**
+     * Creates a new {@link CrudRepository} on a model
+     * @param type Type on which the repository operates
+     * @param firestore The instance of firestore this repository connects to
+     * @param parents The optional parent collections for repositories of subcollections
+     */
     constructor(
-        type: Type<T>, 
+        type: Type<T_model>, 
         firestore: Firestore, 
         parents?: IParentCollectionOptions<IFirestormModel>[]
         ) {
@@ -45,10 +50,10 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * If an item with the same id is already present it will override it destructively 
      * (the entire document will be replaced in database)
      * 
-     * @param model 
+     * @param model Model to create
      * @returns A promise that resolved when and on the item that has been created.
      */
-    async createAsync(model: T): Promise<T> {
+    async createAsync(model: T_model): Promise<T_model> {
         
         const documentRef = this.getDocumentRef(model)
         const data = this.modelToDocument(model)
@@ -64,21 +69,20 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * 
      * It behaves exactly like {@link createAsync} on a per model basis.
      * 
-     * @param models 
+     * @param models Models to create
      * @returns A promise that resolves when the items have been created.
      */
-    async createMultipleAsync(...models: T[]): Promise<T[]> {
+    async createMultipleAsync(...models: T_model[]): Promise<T_model[]> {
         const batch = writeBatch(this.firestore)
 
         models
             .map((model) => {
                 return { 
-                    model: model,
                     ref: this.getDocumentRef(model),
                     data: this.modelToDocument(model) 
                 }
             })
-            .forEach(({ model, ref, data}) => {
+            .forEach(({ ref, data}) => {
                 batch.set(ref, data)
             })
         
@@ -92,7 +96,7 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * @param model Partial or full model to update. It must have an id.
      * @returns A promise resolved when the item has been updated.
      */
-    async updateAsync(model: Partial<T> & IMandatoryFirestormModel) {
+    async updateAsync(model: Partial<T_model> & IMandatoryFirestormModel) {
 
         const documentRef = this.getDocumentRef(model)
         const data = this.modelToDocument(model)
@@ -107,13 +111,13 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * @param id Id of the item to find
      * @returns A promise containing either the item retrieved or null if not found
      */
-    async findByIdAsync(id: string): Promise<T | null> {
+    async findByIdAsync(id: string): Promise<T_model | null> {
 
         const documentSnapshot: DocumentSnapshot = await getDoc(this.getDocumentRef(id))
 
         if (!documentSnapshot.exists()) return null
         
-        return this.firestoreDocumentSnapshotToClass(documentSnapshot)
+        return this.firestoreDocumentSnapshotToModel(documentSnapshot)
     }
 
     /**
@@ -131,13 +135,13 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * @param firestormQuery Query
      * @returns A promise on the items that are results of the query
      */
-    async queryAsync(firestormQuery: Query | IQueryBuildBlock): Promise<T[]>{
+    async queryAsync(firestormQuery: Query | IQueryBuildBlock): Promise<T_model[]>{
 
         const querySnapshot: QuerySnapshot = await getDocs(this.toFirestoreQuery(firestormQuery))
         if (querySnapshot.empty) return []
 
         return querySnapshot.docs.map(docSnapshot => {
-            return this.firestoreDocumentSnapshotToClass(docSnapshot)
+            return this.firestoreDocumentSnapshotToModel(docSnapshot)
         })
     }
 
@@ -166,25 +170,25 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
     /**
      * Listens to the changes of the full collection.
      */
-    listen(): CollectionObservable<T>;
+    listen(): CollectionObservable<T_model>;
     /**
      * Listens to the changes of a document
      * 
      * @param id Id of the document to listen to
      */
-    listen(id: string): DocumentObservable<T>;
+    listen(id: string): DocumentObservable<T_model>;
     /**
      * Listens to the changes of a document
      * 
      * @param model Model with the id of the document to listen to
      */
-    listen(model: IFirestormModel): DocumentObservable<T>;
+    listen(model: IFirestormModel): DocumentObservable<T_model>;
     /**
      * Listens to the changes of documents in a query
      * 
      * @param query Query on the documents
      */
-    listen(query: Query | IQueryBuildBlock): CollectionObservable<T>;
+    listen(query: Query | IQueryBuildBlock): CollectionObservable<T_model>;
     listen(modelOrQueryOrId?: Query | IQueryBuildBlock | IFirestormModel | string) {
 
         const options: SnapshotListenOptions = { includeMetadataChanges: false, source: 'default' }
@@ -208,7 +212,7 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * 
      * @returns A random element of the collection or null if no elements.
      */
-    async getRandomAsync(): Promise<T | null> {
+    async getRandomAsync(): Promise<T_model | null> {
         
         const documentRef = doc(collection(this.firestore, this.collectionPath))
         const baseId = documentRef.id
@@ -238,14 +242,14 @@ export class CrudRepository<T extends IFirestormModel> extends Repository<T> {
      * Gets all the items of a collection
      * @returns A promise containing all the items in the collection
      */
-    async findAllAsync(): Promise<T[]> {
+    async findAllAsync(): Promise<T_model[]> {
 
         const querySnapshot: QuerySnapshot = await getDocs(this.collectionRef)
 
         if (querySnapshot.empty) return []
 
         return querySnapshot.docs.map(docSnapshot => {
-            return this.firestoreDocumentSnapshotToClass(docSnapshot)
+            return this.firestoreDocumentSnapshotToModel(docSnapshot)
         })
 
     }

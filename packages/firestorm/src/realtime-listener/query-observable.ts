@@ -8,13 +8,20 @@ import { CollectionListenerEvent } from "./collection-observable"
 /**
  * Events emitted after a collection is modified.
  */
-export class QueryListenerEvent<T_model extends IFirestormModel> extends CollectionListenerEvent<T_model> {
+export class QueryListenerEvent<T_model extends IFirestormModel> extends CollectionListenerEvent<T_model> {}
 
-}
-
+/** Type of a query observable on T_model */
 export type QueryObservable<T_model extends IFirestormModel> = Observable<QueryListenerEvent<T_model>>
 
 
+/**
+ * Createa a query observable
+ * @param repository Repository that created the listener
+ * @param collectionRef Reference to the collection to listen to
+ * @param query The query on this collection
+ * @param options Listening options
+ * @returns A query observable
+ */
 export function createQueryObservable<T_model extends IFirestormModel>(
   repository: Repository<T_model>,
   collectionRef: CollectionReference,

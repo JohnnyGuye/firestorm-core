@@ -38,27 +38,3 @@ export function stringSingularToPlural(word: string) {
       : ending.toLocaleUpperCase()
     )
 }
-
-/**
- * Builds a path object by agregating a collection of segments
- * @param segments Segments to aggregate
- * @returns Path aggregated
- */
-export function buildPath(...segments: string[]) {
-    return segments.join("/")
-}
-
-/**
- * Describes a function that can generate an object
- */
-export declare const Type: FunctionConstructor;
-
-/**
- * Newable function of T
- * @template T Type of the object
- */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export declare interface Type<T> extends Function {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    new (...args: any[]): T;
-}

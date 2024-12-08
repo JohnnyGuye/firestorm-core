@@ -1,24 +1,16 @@
-import { Type } from "./core/helpers"
+import { Type } from "./core/type"
 import { IFirestormModel } from "./core/firestorm-model";
 import { IParentCollectionOptions, Repository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
-import { 
-    Firestore, 
-    getFirestore, 
-    connectFirestoreEmulator 
-} from "firebase/firestore"
-import { 
-    FirebaseStorage, 
-    connectStorageEmulator, 
-    getStorage 
-} from "firebase/storage"
+import { Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore"
+import { FirebaseStorage, connectStorageEmulator, getStorage } from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
-import { StorageRepository } from "./storage";
+import { FirestormStorage } from "./storage";
 import { getSingleDocumentRepositoryGenerator } from "./repositories/single-document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
-import { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
+
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
 /**
@@ -32,6 +24,9 @@ export const DEFAULT_FIREBASE_APP_NAME: string = "[DEFAULT]"
  */
 export class Firestorm {
 
+    /**
+     * Name of the app
+     */
     public readonly name: string = ""
     private _app: FirebaseApp | null = null
     private _firestore: Firestore | null = null
@@ -82,7 +77,8 @@ export class Firestorm {
         connectFirestoreEmulator(this.firestore, firestoreOpt.host, firestoreOpt.port)
 
         const storageOpt = opt.storage
-        connectStorageEmulator(this.storage, storageOpt.host, storageOpt.port)
+        connectStorageEmulator(this.firebaseStorage, storageOpt.host, storageOpt.port)
+        
     }
 
     /**
@@ -97,13 +93,6 @@ export class Firestorm {
      */
     get options() {
         return this._app?.options || null
-    }
-
-    /**
-     * The underlying firebase app
-     */
-    get app() {
-        return this._app
     }
 
     /**
@@ -165,8 +154,8 @@ export class Firestorm {
      * Gets a storage repository
      * @returns 
      */
-    public getStorageRepository() {
-        return new StorageRepository(this.storage)
+    public get storage() {
+        return new FirestormStorage(this.firebaseStorage)
     }
 
     /**
@@ -181,10 +170,18 @@ export class Firestorm {
         return this._firestore
     }
 
+    //#region  Direct firease access
+    /**
+     * The underlying firebase app
+     */
+    public get firebaseApp() {
+        return this._app
+    }
+    
     /**
      * The instance of auth
      */
-    public get auth() {
+    public get firebaseAuth() {
         if (!this._app) throw new MissingAppError()
 
         if (!this._auth)
@@ -195,7 +192,7 @@ export class Firestorm {
     /**
      * The instance of storage
      */
-    public get storage() {
+    public get firebaseStorage() {
         if (!this._app) throw new MissingAppError()
 
         if (!this._storage)
@@ -203,5 +200,5 @@ export class Firestorm {
         
         return this._storage
     }
-
+    //#endregion
 }

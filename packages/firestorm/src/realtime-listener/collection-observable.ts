@@ -1,14 +1,21 @@
 import { Observable } from "rxjs";
-import { CollectionReference, DocumentSnapshot, onSnapshot, QuerySnapshot, SnapshotListenOptions, query } from "firebase/firestore";
+import { CollectionReference, DocumentSnapshot, onSnapshot, QuerySnapshot, SnapshotListenOptions } from "firebase/firestore";
 import { Repository } from "../repositories";
 import { IFirestormModel } from "../core";
-import { DocChange } from "./_common";
+import { DocumentChange } from "./_common";
 
 /**
  * Events emitted after a collection is modified.
  */
 export class CollectionListenerEvent<T_model extends IFirestormModel> {
 
+  /**
+   * Creates a {@link CollectionListenerEvent}
+   * @internal
+   * @param snapshot Document snapshot emitted by firestore 
+   * @param previousSnapshot The last snapshot emitted
+   * @param repository Repository used to perform conversions from documents
+   */
   constructor(
     private readonly snapshot: QuerySnapshot, 
     private readonly previousSnapshot: QuerySnapshot | null,
@@ -32,7 +39,7 @@ export class CollectionListenerEvent<T_model extends IFirestormModel> {
   /**
    * All the changes, document by document
    */
-  get docChanges(): DocChange[] {
+  get docChanges(): DocumentChange<T_model>[] {
     return this.snapshot
       .docChanges()
       .map((value) => {
@@ -51,6 +58,11 @@ export class CollectionListenerEvent<T_model extends IFirestormModel> {
       })
   }
 
+  /**
+   * Converts a document snapshot to a model
+   * @param snapshot 
+   * @returns 
+   */
   private snapshotToModel(snapshot: DocumentSnapshot): T_model | null {
     
     const id =  snapshot.id
@@ -80,6 +92,9 @@ export class CollectionListenerEvent<T_model extends IFirestormModel> {
     return this.snapshot.size
   }
 
+  /**
+   * Source of the document change
+   */
   get source() {
     return this.snapshot.metadata.fromCache ? 'local' : 'server'
   }
@@ -91,11 +106,18 @@ export class CollectionListenerEvent<T_model extends IFirestormModel> {
     return !this.previousSnapshot
   }
 
-
 }
 
+/** Type of a collection observable on T_model */
 export type CollectionObservable<T_model extends IFirestormModel> = Observable<CollectionListenerEvent<T_model>>
 
+/**
+ * Createa a collection observable
+ * @param repository Repository that created the listener
+ * @param collectionRef Reference to the collection to listen to
+ * @param options Listening options
+ * @returns A collection observable
+ */
 export function createCollectionObservable<T_model extends IFirestormModel>(
   repository:Repository<T_model>,
   collectionRef: CollectionReference,

@@ -1,18 +1,32 @@
-import { Type } from "../core/helpers"
-import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
-import { IFirestormModel, resolveInstance } from "../core/firestorm-model"
+import { IFirestormModel, resolveInstance, Type } from "../../core"
+import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 import { IParentCollectionOptions } from "./parent-collection-options.interface"
 
 /**
  * For sub repositories of documents, this holds the informations of the parent document.
  */
-export class ParentCollection<T extends IFirestormModel> {
+export class ParentCollection<T_model extends IFirestormModel> {
 
-    readonly type: Type<T>
-    readonly instance: T
+    /**
+     * Type of the model of the parent collection
+     */
+    readonly type: Type<T_model>
+    /**
+     * An instance of the model used as the parent document
+     */
+    readonly instance: T_model
+    /**
+     * @deprecated I don't know what the fck that is.
+     */
     readonly key: string
     
-    constructor(type: Type<T>, parent: T, key: string) {
+    /**
+     * Creates a {@link ParentCollection}
+     * @param type Type of the documents in the parent collection
+     * @param parent The parent document
+     * @param key Some kind of league of legends?
+     */
+    protected constructor(type: Type<T_model>, parent: T_model, key: string) {
         this.type = type
         this.instance = parent
         this.key = key
@@ -46,6 +60,11 @@ export class ParentCollection<T extends IFirestormModel> {
         return this.instance.id
     }
 
+    /**
+     * Factory of parent collection
+     * @param options Creation options
+     * @returns A parent collection
+     */
     public static createFromOptions<T extends IFirestormModel>(options: IParentCollectionOptions<T>) {
         if ("type" in options && "instance" in options && "key" in options) {
             return new ParentCollection(options.type, options.instance, options.key)

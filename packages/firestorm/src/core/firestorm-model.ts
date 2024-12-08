@@ -1,5 +1,5 @@
 import { FirestoreDocument } from "./firestore-document"
-import { Type } from "./helpers"
+import { Type } from "./type"
 
 /**
  * Minimal requirements for a firestorm model
@@ -15,13 +15,15 @@ export interface IFirestormModel {
  * Requirements for a firestorm model that is referenced
  */
 export interface IMandatoryFirestormModel extends IFirestormModel {
-    
+   
+    /** @inheritdoc */
     id: string
 
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+/** Alias of {@link IFirestormModel} */
 export type FirestormModel = IFirestormModel
+
+/** Alias of {@link IMandatoryFirestormModel} */
 export type MandatoryFirestormModel = IMandatoryFirestormModel
 
 /**
@@ -29,8 +31,17 @@ export type MandatoryFirestormModel = IMandatoryFirestormModel
  * @param modelOrId Model or id 
  * @returns An id
  */
+export function resolveId(modelOrId: IMandatoryFirestormModel | string): string;
+/**
+ * Take a firestorm model or an id and gets the id
+ * @param modelOrId Model or id 
+ * @returns An id
+ */
+export function resolveId(modelOrId: IFirestormModel | string): string | null;
 export function resolveId(modelOrId: IFirestormModel | string) {
-    return (typeof modelOrId !== "string" ? modelOrId.id : modelOrId)
+    if (modelOrId === null) return null;
+    if (typeof modelOrId === 'string') return modelOrId
+    return modelOrId.id
 }
 
 /**
@@ -66,10 +77,14 @@ export type ISubCollection<T extends IFirestormModel | IdDictionary<IFirestormMo
 
 /**
  * Type of a conversion function from a FirestormModel to a firestore document data object
+ * @param model The model to convert
+ * @returns The correspoding document to the model
  */
 export type ModelToDocumentConverter<T> = (model: T) => FirestoreDocument
 
 /**
  * Type of a conversion function from a firestore document data object to a FirestormModel
+ * @param documentData The document to convert
+ * @return The model corresponding to the document
  */
 export type DocumentToModelConverter<T> = (documentData: FirestoreDocument) => T
