@@ -1,9 +1,9 @@
-import { Type } from "../core/type"
-import { FirestormMetadataStore } from "../core/firestorm-metadata-store"
-import { FirestormModel, IFirestormModel } from "../core/firestorm-model"
-import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
+import { Type } from "../../core/type"
+import { FirestormMetadataStore } from "../../core/firestorm-metadata-store"
+import { FirestormModel, IFirestormModel, ISubCollection } from "../../core/firestorm-model"
+import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 
-export type { ISubCollection } from "../core/firestorm-model"
+export type { ISubCollection } from "../../core/firestorm-model"
 
 /**
  * Options for the decorator SubCollection
@@ -29,23 +29,23 @@ export interface ISubCollectionOptions<T extends IFirestormModel> {
  */
 // T_Sub extends ISubCollection<T_Model>,
 export function SubCollection<
-  T_Host extends FirestormModel,
-  T_Model extends IFirestormModel,
+  T_model extends FirestormModel & Record<K, ISubCollection<T_target_model>>,
+  T_target_model extends IFirestormModel,
   K extends string
   >(
-  options: ISubCollectionOptions<T_Model>
+  options: ISubCollectionOptions<T_target_model>
   ) {
 
   const type = options.type
 
-  return (object: T_Host, propertyKey: K) => {
+  return (object: T_model, propertyName: K) => {
 
     const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
-    const md = storage.getOrCreateMetadatas(object.constructor as Type<T_Host>)
-    md.addSubCollection(propertyKey)
+    const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
+    md.addSubCollection(propertyName, type)
 
     const submd = storage.getOrCreateMetadatas(type)
-    submd.collection = options.collection || propertyKey
+    submd.collection = options.collection || propertyName
 
   }
 

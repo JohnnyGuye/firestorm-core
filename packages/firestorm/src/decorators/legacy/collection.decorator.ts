@@ -1,8 +1,8 @@
-import { Type, pascalToSnakeCase, stringSingularToPlural } from "../core"
-import { FirestormModel } from "../core/firestorm-model"
-import { FirestormMetadataStore } from "../core/firestorm-metadata-store"
-import { logWarn } from "../core/logging"
-import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
+import { Type, pascalToSnakeCase, stringSingularToPlural } from "../../core"
+import { FirestormModel } from "../../core/firestorm-model"
+import { FirestormMetadataStore } from "../../core/firestorm-metadata-store"
+import { logWarn } from "../../core/logging"
+import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 import { ClassDecoratorReturn } from "./decorator-utilities"
 
 /**

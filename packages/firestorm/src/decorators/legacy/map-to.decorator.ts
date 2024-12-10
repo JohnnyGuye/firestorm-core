@@ -1,7 +1,7 @@
-import { FirestormModel } from "../core/firestorm-model"
-import { FirestormMetadataStore } from "../core/firestorm-metadata-store"
-import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
-import { Type } from "../core/type"
+import { FirestormModel } from "../../core/firestorm-model"
+import { FirestormMetadataStore } from "../../core/firestorm-metadata-store"
+import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
+import { Type } from "../../core/type"
 
 /**
  * Options for the decorator MapTo
@@ -28,7 +28,7 @@ export function MapTo<M extends FirestormModel>(options: IMapToOptions | string)
 
     const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
     const md = storage.getOrCreateMetadatas(object.constructor as Type<M>)
-    md.addKeyRemapping(propertyKey, localOptions.target)
+    md.addPropertyRemapping(propertyKey, localOptions.target)
 
   }
 }

@@ -16,3 +16,8 @@ export declare interface Type<T> extends Function {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     new (...args: any[]): T;
 }
+
+export function isIn<K extends string>(object: unknown, propertyName: K): object is Record<K, any> {
+    if (object === null || object === undefined || typeof object !== 'object') return false
+    return propertyName in object
+}

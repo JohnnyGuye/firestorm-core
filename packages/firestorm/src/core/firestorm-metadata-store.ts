@@ -81,7 +81,7 @@ export class FirestormMetadataStore {
     // Extract the properties
     const instantiatedObject: T = new type
     for (const key of Object.getOwnPropertyNames(instantiatedObject)) {
-      metadata.addKey(key)
+      metadata.addProperty(key)
     }
 
     this.typeMetadatas.set(type, metadata)

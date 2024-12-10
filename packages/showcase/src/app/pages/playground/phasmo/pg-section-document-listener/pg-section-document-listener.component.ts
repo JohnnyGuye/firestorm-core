@@ -87,6 +87,7 @@ export class PgSectionDocumentListenerComponent extends PlaygroundSection {
       next: (snapshot) => {
         this._snapshots.push(snapshot)
         this._snapshots = [...this._snapshots]
+        console.log(snapshot)
       },
       error: console.error,
       complete: console.warn
@@ -112,7 +113,7 @@ export class PgSectionDocumentListenerComponent extends PlaygroundSection {
     const entity = entities[Math.floor(Math.random() * entities.length)]
     
     const game = new PhasmoGame()
-    game.ghostEntity = entity.id
+    game.ghostEntity.id = entity.id
     this.randomGameRepository.writeAsync(game)
 
   }

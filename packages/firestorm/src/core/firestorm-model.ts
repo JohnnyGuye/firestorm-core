@@ -1,4 +1,4 @@
-import { FirestoreDocument } from "./firestore-document"
+import { FirestoreDocument, FirestoreDocumentField } from "./firestore-document"
 import { Type } from "./type"
 
 /**
@@ -83,8 +83,22 @@ export type ISubCollection<T extends IFirestormModel | IdDictionary<IFirestormMo
 export type ModelToDocumentConverter<T> = (model: T) => FirestoreDocument
 
 /**
+ * Type of a conversion function from a FirestormModel to a firestore document data object
+ * @param model The model to convert
+ * @returns The correspoding document to the model
+ */
+export type ModelToDocumentFieldConverter<T> = (model: T) => FirestoreDocumentField
+
+/**
  * Type of a conversion function from a firestore document data object to a FirestormModel
  * @param documentData The document to convert
  * @return The model corresponding to the document
  */
 export type DocumentToModelConverter<T> = (documentData: FirestoreDocument) => T
+
+/**
+ * Type of a conversion function from a firestore document data object to a FirestormModel
+ * @param documentData The document to convert
+ * @return The model corresponding to the document
+ */
+export type DocumentToModelFieldConverter<T> = (documentData: FirestoreDocumentField) => T
