@@ -66,14 +66,7 @@ export function resolveInstance<T extends IFirestormModel>(
 /**
  * Dictionary of id and model corresponding to this id
  */
-export type IdDictionary<T extends IFirestormModel> = Map<string, T>
-
-/**
- * Explicit interface for subcollections.
- * 
- * Use it in conjonctions with the decorator SubCollection for clean type checking.
- */
-export type ISubCollection<T extends IFirestormModel | IdDictionary<IFirestormModel> | IFirestormModel[]> = T
+export type IdModelDictionary<T extends FirestormModel> = Map<string, T>
 
 /**
  * Type of a conversion function from a FirestormModel to a firestore document data object

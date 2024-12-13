@@ -1,5 +1,5 @@
 import { AlreadyExistingMetadatasError, NotFoundMetadataError } from "../errors";
-import { FirestormMetadata } from "./firestorm-metadata";
+import { FirestormMetadata } from "./model-metadata";
 import { Type } from "./type";
 
 /**

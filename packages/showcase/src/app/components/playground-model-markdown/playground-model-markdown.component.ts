@@ -21,21 +21,21 @@ type DisplayOption = 'document' | 'model'
   <markdown [data]="json | language:'js' "></markdown>
   `,
   styleUrl: './playground-model-markdown.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PlaygroundModelMarkdownComponent<T extends FirestormModel> { 
 
-  private _datas: T[] = []
+  private _data?: T | T[] | null = null
   private _showAs: DisplayOption = 'document'
 
   @Input()
-  set datas(value: T[]) {
-    this._datas = value
+  set data(value: T[] | T | null | undefined) {
+    this._data = value
     this.refreshJson()
   }
 
-  get datas() {
-    return this._datas
+  get data() {
+    return this._data
   }
 
   @Input()
@@ -59,13 +59,23 @@ export class PlaygroundModelMarkdownComponent<T extends FirestormModel> {
   private refreshJson() {
     if (!this.repo) return 
     
+    if (!this.data) {
+      this.json = "null"
+      return
+    }
+
     switch (this._showAs) {
       case 'document':
-        const docs = this.repo.modelsToDocuments(this.datas)
-        this.json = JSON.stringify(docs, undefined, 2)
+        if (this.data instanceof Array) {
+          const docs = this.repo.modelsToDocuments(this.data)
+          this.json = JSON.stringify(docs, undefined, 2)
+        } else {
+          const doc = this.repo.modelToDocument(this.data)
+          this.json = JSON.stringify(doc, undefined, 2)
+        }
         break;
       case 'model':
-        const models = this.datas
+        const models = this.data
         this.json = JSON.stringify(models, undefined, 2)
         break;
     }

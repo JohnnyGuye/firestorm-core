@@ -18,8 +18,9 @@ import { Type } from "../core/type";
 import {  aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
-import { IParentCollectionOptions, RepositoryGeneratorFunction } from "./common";
+import { IParentCollectionOptions, RelationshipIncludes, RepositoryGeneratorFunction } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
+import { ToOneRelationship } from "../decorators";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -111,13 +112,35 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
      * @param id Id of the item to find
      * @returns A promise containing either the item retrieved or null if not found
      */
-    async findByIdAsync(id: string): Promise<T_model | null> {
+    async findByIdAsync(id: string, includes?: RelationshipIncludes<T_model>): Promise<T_model | null> {
 
         const documentSnapshot: DocumentSnapshot = await getDoc(this.getDocumentRef(id))
 
         if (!documentSnapshot.exists()) return null
         
-        return this.firestoreDocumentSnapshotToModel(documentSnapshot)
+        const model = this.firestoreDocumentSnapshotToModel(documentSnapshot)
+        
+        if (!includes) return model
+
+        for (let pmd of this.typeMetadata.relationshipMetadatas) {
+
+            const pName = pmd.name
+            const relationship = pmd.relationship
+            if (!relationship) continue
+            if (!(pName in model)) continue
+            
+            const relProp = (model as any)[pName]
+            if (relProp instanceof ToOneRelationship && relProp.id) {
+                
+                const crud = getCrudRepositoryGenerator()(this.firestore, relProp.type)
+                const include = await crud.findByIdAsync(relProp.id)
+                relProp.setModel(include)
+
+            }
+            
+            console.log(pmd.name, pmd.relationship, relProp)
+        }
+        return model
     }
 
     /**

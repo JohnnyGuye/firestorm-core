@@ -10,6 +10,7 @@ import { PlaygroundPlainObjectMarkdownComponent } from "../../components/playgro
 import { MatExpansionModule } from "@angular/material/expansion";
 import { PgSectionAggregateQueryComponent } from "./phasmo/pg-section-aggregate-query/pg-section-aggregate-query.component";
 import { PgSectionDocumentListenerComponent } from "./phasmo/pg-section-document-listener/pg-section-document-listener.component";
+import { PgSectionFindIncludeComponent } from "./phasmo/pg-section-find-include/pg-section-find-include.component";
 
 @Component({
   standalone: true,
@@ -22,7 +23,8 @@ import { PgSectionDocumentListenerComponent } from "./phasmo/pg-section-document
     PlaygroundPlainObjectMarkdownComponent,
     MatExpansionModule,
     PgSectionAggregateQueryComponent,
-    PgSectionDocumentListenerComponent
+    PgSectionDocumentListenerComponent,
+    PgSectionFindIncludeComponent
 ]
 })
 export class PlaygroundPage {

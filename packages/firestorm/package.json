@@ -4,6 +4,7 @@
   "description": "FirestORM is an ORM around built to manipulate Firestore.",
   "scripts": {
     "lint": "npx eslint",
+    "clean": "npm run build:clean & npm run doc:clean",
     "doc:clean": "rm -rf ./docs",
     "doc:build": "npx typedoc --options typedoc.json",
     "doc:serve": "npx http-server ./docs",

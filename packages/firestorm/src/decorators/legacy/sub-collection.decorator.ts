@@ -1,9 +1,10 @@
 import { Type } from "../../core/type"
 import { FirestormMetadataStore } from "../../core/firestorm-metadata-store"
-import { FirestormModel, IFirestormModel, ISubCollection } from "../../core/firestorm-model"
+import { FirestormModel, IFirestormModel } from "../../core/firestorm-model"
 import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 
-export type { ISubCollection } from "../../core/firestorm-model"
+import { SubCollection } from "../common/sub-collection.decorator"
+export { SubCollection as ISubCollection } from "../common/sub-collection.decorator"
 
 /**
  * Options for the decorator SubCollection
@@ -29,7 +30,7 @@ export interface ISubCollectionOptions<T extends IFirestormModel> {
  */
 // T_Sub extends ISubCollection<T_Model>,
 export function SubCollection<
-  T_model extends FirestormModel & Record<K, ISubCollection<T_target_model>>,
+  T_model extends FirestormModel & Record<K, SubCollection<T_target_model>>,
   T_target_model extends IFirestormModel,
   K extends string
   >(

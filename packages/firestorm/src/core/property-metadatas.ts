@@ -1,5 +1,7 @@
+import { ToOneRelationship  } from "../decorators"
+import { RelationshipLocation } from "../decorators/common/relationships"
 import { FirestoreDocumentField } from "./firestore-document"
-import { DocumentToModelFieldConverter, ModelToDocumentFieldConverter } from "./firestorm-model"
+import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { logWarn } from "./logging"
 import { pascalToSnakeCase } from "./string-manipulation"
 import { Type } from "./type"
@@ -8,13 +10,35 @@ interface SubCollectionMetadatas<T> {
   type: Type<T>
 }
 
-export class PropertyMetadatas<T = any> {
+export type RelationshipKind = 'to-one' | 'sub'
 
-  private _toDocConverter?: ModelToDocumentFieldConverter<T>
-  private _toModelConverter?: DocumentToModelFieldConverter<T>
+export interface RelationshipMetadata<T extends FirestormModel> {
+
+  targetType: Type<T>
+
+  kind: RelationshipKind
+
+}
+
+export interface ToOneRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
+
+  kind: 'to-one'
+
+  location: RelationshipLocation
+
+}
+
+export class FirestormPropertyMetadata<T_property_type = any> {
+
+  private _relationship?: RelationshipMetadata<any>
+  private _toDocConverter?: ModelToDocumentFieldConverter<T_property_type>
+  private _toModelConverter?: DocumentToModelFieldConverter<T_property_type>
 
   constructor(public readonly name: string) {}
 
+  /**
+   * Gets the default document field matched with this property
+   */
   get defaultDocumentFieldName() {
     return pascalToSnakeCase(this.name)
   }
@@ -25,34 +49,69 @@ export class PropertyMetadatas<T = any> {
   /** Overrides the default field name of the document */
   mappedTo?: string
 
-  /** Field in the document mapped to this property */
+  /** 
+   * Field in the document mapped to this property 
+   * */
   get documentFieldName() {
     if (this.mappedTo) return this.mappedTo
     return this.defaultDocumentFieldName
   }
 
-  toOne?: Type<any>
+  /**
+   * Gets the relationship this field covers if any
+   */
+  get relationship() {
+    return this._relationship
+  }
 
-  subCollection?: SubCollectionMetadatas<T>
+  private set relationship(value: RelationshipMetadata<any> | undefined) {
+    if (this._relationship) {
+      logWarn(`You replaced a previous ${this._relationship.kind} relationship on the field ${this.name} for a ${value?.kind}`)
+    }
+    this._relationship = value
+  }
 
-  set toDocumentConverter(value: ModelToDocumentFieldConverter<T>) {
+  /**
+   * Sets this field as being a ToOne relationship
+   * @param targetType 
+   * @param location 
+   */
+  public setToOneRelationship<T_target_model extends FirestormModel>(
+    targetType: Type<T_target_model>, 
+    location: RelationshipLocation
+  ) {
+
+    const toOneRel: ToOneRelationshipMetadata<T_target_model> = { targetType, location, kind: 'to-one' }
+    this.relationship = toOneRel
+
+    this.toModelConverter = ((field: FirestoreDocumentField) => {
+      return new ToOneRelationship(targetType, typeof field === 'string' ? field : undefined)
+    }) as DocumentToModelFieldConverter<T_property_type>
+
+    this.toDocumentConverter = ((model: ToOneRelationship<T_target_model>) => model.id || null) as ModelToDocumentFieldConverter<T_property_type>
+
+  }
+
+  subCollection?: SubCollectionMetadatas<T_property_type>
+
+  set toDocumentConverter(value: ModelToDocumentFieldConverter<T_property_type>) {
     if (this._toDocConverter) {
       logWarn(`There is already a doc to model conversion for the ${this.name}. The new conversion will replace it.`)
     }
     this._toDocConverter = value
   }
 
-  get toDocumentConverter() { return this._toDocConverter || ((value: T) => value as FirestoreDocumentField)}
+  get toDocumentConverter() { return this._toDocConverter || ((value: T_property_type) => value as FirestoreDocumentField)}
   
 
-  set toModelConverter(value: DocumentToModelFieldConverter<T>) {
+  set toModelConverter(value: DocumentToModelFieldConverter<T_property_type>) {
     if (this._toModelConverter) {
       logWarn(`There is already a doc to model conversion for the ${this.name}. The new conversion will replace it.`)
     }
     this._toModelConverter = value
   }
 
-  get toModelConverter() { return this._toModelConverter || ((value: FirestoreDocumentField) => value as T)}
+  get toModelConverter() { return this._toModelConverter || ((value: FirestoreDocumentField) => value as T_property_type)}
 
   
   /**

@@ -1,5 +1,5 @@
 export * from "./firestore-document"
-export * from "./firestorm-metadata"
+export * from "./model-metadata"
 export * from "./firestorm-metadata-store"
 export * from "./firestorm-model"
 export * from "./string-manipulation"

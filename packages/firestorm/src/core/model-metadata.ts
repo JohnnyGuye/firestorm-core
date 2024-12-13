@@ -1,8 +1,9 @@
 import { FirestoreDocument } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { isIn, Type } from "./type"
-import { PropertyMetadatas } from "./property-metadatas"
+import { FirestormPropertyMetadata } from "./property-metadatas"
 import { PropertyBluePrint } from "./property-blueprint"
+import { RelationshipLocation } from "../decorators/common/relationships"
 
 
 
@@ -33,15 +34,19 @@ export class FirestormMetadata<T_model> {
    */
   collection?: string
 
-  private _propertyMetadatas = new Map<string, PropertyMetadatas>()  
+  private _propertyMetadatas = new Map<string, FirestormPropertyMetadata>()  
 
   private getOrCreatePropertyMetadata(propertyName: string) {
     let propertyMetadatas = this._propertyMetadatas.get(propertyName)
     if (!propertyMetadatas) {
-      propertyMetadatas = new PropertyMetadatas(propertyName)
+      propertyMetadatas = new FirestormPropertyMetadata(propertyName)
       this._propertyMetadatas.set(propertyName, propertyMetadatas)
     }
     return propertyMetadatas
+  }
+
+  public get relationshipMetadatas() {
+    return [...this._propertyMetadatas.values().filter(value => value.relationship)]
   }
 
   /**
@@ -81,9 +86,12 @@ export class FirestormMetadata<T_model> {
 
   public addToOneRelationship<T_target_model extends FirestormModel>(
     propertyName: string, 
-    targetType: Type<T_target_model>
+    targetType: Type<T_target_model>,
+    location: RelationshipLocation
   ) {
-    this.getOrCreatePropertyMetadata(propertyName).toOne = targetType
+    const md = this.getOrCreatePropertyMetadata(propertyName)
+    md.setToOneRelationship(targetType, location)
+
   }
 
   /**

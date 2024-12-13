@@ -11,7 +11,7 @@ export class PhasmoGame {
   createdAt: Date = new Date()
   
   /** Id of the ghost entity */
-  @ToOne({ target: PhasmoEntity })
+  @ToOne({ target: PhasmoEntity, location: 'sibling' })
   ghostEntity = new ToOneRelationship(PhasmoEntity)
 
 }
