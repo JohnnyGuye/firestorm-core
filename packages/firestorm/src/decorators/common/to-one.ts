@@ -1,6 +1,5 @@
 import { MissingIdentifierError } from "../../errors"
-import { FirestormModel, Type } from "../../core"
-import { RelationshipLocation } from "./relationships"
+import { FirestormModel, RelationshipLocation, Type } from "../../core"
 
 
 

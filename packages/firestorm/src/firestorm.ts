@@ -1,6 +1,6 @@
 import { Type } from "./core/type"
 import { IFirestormModel } from "./core/firestorm-model";
-import { IParentCollectionOptions, Repository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
+import { Repository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore"
@@ -10,6 +10,7 @@ import { FirestormStorage } from "./storage";
 import { getSingleDocumentRepositoryGenerator } from "./repositories/single-document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
+import { CollectionDocumentTuples } from "./core";
 
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
@@ -96,6 +97,16 @@ export class Firestorm {
     }
 
     /**
+     * Gets a storage repository
+     * @returns 
+     */
+    public get storage() {
+        return new FirestormStorage(this.firebaseStorage)
+    }
+
+    //#region Repositories
+
+    /**
      * Gets the basic CRUD repository for a model
      * @template T Type of the model
      * @param type Type of the model
@@ -104,12 +115,12 @@ export class Firestorm {
      */
     public getCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
-        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
+        parentPath?: CollectionDocumentTuples
         ) {
         return this.getRepositoryFromFunction(
             getCrudRepositoryGenerator(), 
             type, 
-            ...parentCollections
+            parentPath
         )
     }
 
@@ -123,12 +134,12 @@ export class Firestorm {
     public getSingleDocumentCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
         documentId: string,
-        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
+        parentPath?: CollectionDocumentTuples
         ) {
         return this.getRepositoryFromFunction(
             getSingleDocumentRepositoryGenerator(documentId),
             type,
-            ...parentCollections
+            parentPath
         )
     }
 
@@ -145,56 +156,54 @@ export class Firestorm {
     public getRepositoryFromFunction<R extends Repository<T>, T extends IFirestormModel>(
         generator: RepositoryGeneratorFunction<R, T>,
         type: Type<T>,
-        ...parentCollections: IParentCollectionOptions<IFirestormModel>[]
+        parentPath?: CollectionDocumentTuples
     ) {
-        return generator(this.firestore, type, parentCollections)
+        return generator(this.firestore, type, parentPath)
     }
 
+    //#endregion
+
+
+
+    
+    //#region  Direct firebase access
+    
     /**
-     * Gets a storage repository
-     * @returns 
-     */
-    public get storage() {
-        return new FirestormStorage(this.firebaseStorage)
+     * The underlying firebase app
+    */
+   public get firebaseApp() {
+       return this._app
     }
-
+    
+    /**
+     * The instance of auth
+    */
+   public get firebaseAuth() {
+       if (!this._app) throw new MissingAppError()
+        
+        if (!this._auth)
+            this._auth = getAuth(this._app)
+        return this._auth
+    }
+    
     /**
      * The instance of firestorm
      */
     public get firestore() {
         if (!this._app) throw new MissingAppError()
-
+ 
         if (!this._firestore)
             this._firestore = getFirestore(this._app)
-
+ 
         return this._firestore
-    }
-
-    //#region  Direct firease access
-    /**
-     * The underlying firebase app
-     */
-    public get firebaseApp() {
-        return this._app
-    }
-    
-    /**
-     * The instance of auth
-     */
-    public get firebaseAuth() {
-        if (!this._app) throw new MissingAppError()
-
-        if (!this._auth)
-            this._auth = getAuth(this._app)
-        return this._auth
     }
 
     /**
      * The instance of storage
-     */
-    public get firebaseStorage() {
-        if (!this._app) throw new MissingAppError()
-
+    */
+   public get firebaseStorage() {
+       if (!this._app) throw new MissingAppError()
+        
         if (!this._storage)
             this._storage = getStorage(this._app)
         

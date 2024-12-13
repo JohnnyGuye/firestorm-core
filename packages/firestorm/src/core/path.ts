@@ -4,5 +4,14 @@
  * @returns Path aggregated
  */
 export function buildPath(...segments: string[]) {
-  return segments.map(segment => segment.trim().replace(/\\/g, "/").replace(/(^\/*)|(\/*$)/g, "")).join("/")
+  return segments
+    .map(segment => segment.trim()
+    .replace(/\\/g, "/")
+    .replace(/(^\/*)|(\/*$)/g, ""))
+    .filter(segment => segment !== "")
+    .join("/")
+}
+
+export function toSegments(path: string) {
+  return path.split("/")
 }

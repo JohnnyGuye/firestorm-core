@@ -1,8 +1,7 @@
 import { Firestore } from "firebase/firestore";
-import { IFirestormModel } from "../../core/firestorm-model";
+import { CollectionDocumentTuples, IFirestormModel } from "../../core";
 import { Type } from "../../core/type";
 import { Repository } from "../repository";
-import { IParentCollectionOptions } from "./parent-collection-options.interface";
 
 /**
  * Type for repository generator function that can be given to firestorm to instantiate a repository
@@ -16,5 +15,5 @@ export type RepositoryGeneratorFunction<R extends Repository<T>, T extends IFire
   = (
       firestore: Firestore, 
       type: Type<T>, 
-      parentCollections?: IParentCollectionOptions[]
+      parentPath?: CollectionDocumentTuples
   ) => R;

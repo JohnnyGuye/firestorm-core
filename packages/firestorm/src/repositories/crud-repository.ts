@@ -18,9 +18,10 @@ import { Type } from "../core/type";
 import {  aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
-import { IParentCollectionOptions, RelationshipIncludes, RepositoryGeneratorFunction } from "./common";
+import { RelationshipIncludes, RepositoryGeneratorFunction } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
 import { ToOneRelationship } from "../decorators";
+import { CollectionDocumentTuples, isToOneRelationshipMetadata } from "../core";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -36,7 +37,7 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
     constructor(
         type: Type<T_model>, 
         firestore: Firestore, 
-        parents?: IParentCollectionOptions<IFirestormModel>[]
+        parents?: CollectionDocumentTuples
         ) {
         super(type, firestore, parents)
     }
@@ -130,15 +131,23 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
             if (!(pName in model)) continue
             
             const relProp = (model as any)[pName]
-            if (relProp instanceof ToOneRelationship && relProp.id) {
+            if (isToOneRelationshipMetadata(relationship) && relProp instanceof ToOneRelationship && relProp.id ) {
                 
-                const crud = getCrudRepositoryGenerator()(this.firestore, relProp.type)
+                const cdt = (() => {
+                    switch(relationship.location) {
+                        case 'root':
+                            return new CollectionDocumentTuples([])
+                        case 'sibling':
+                            return new CollectionDocumentTuples(this.parents?.tuples || [])
+                        default:
+                            return relationship.location
+                    }
+                })()
+                const crud = getCrudRepositoryGenerator()(this.firestore, relProp.type, cdt)
                 const include = await crud.findByIdAsync(relProp.id)
                 relProp.setModel(include)
 
             }
-            
-            console.log(pmd.name, pmd.relationship, relProp)
         }
         return model
     }
@@ -373,9 +382,9 @@ export function getCrudRepositoryGenerator<T extends IFirestormModel>(): Reposit
     return (
         firestore: Firestore, 
         type: Type<T>, 
-        parentCollections?: IParentCollectionOptions[]
+        parentPath?: CollectionDocumentTuples
     ) => {
-        return new CrudRepository(type, firestore, parentCollections)
+        return new CrudRepository(type, firestore, parentPath)
     }
 }
 

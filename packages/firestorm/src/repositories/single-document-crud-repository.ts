@@ -1,9 +1,10 @@
 import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
-import { IParentCollectionOptions, RepositoryGeneratorFunction } from "./common";
 import { Type } from "../core/type";
 import { createDocumentObservable, DocumentObservable } from "../realtime-listener";
+import { CollectionDocumentTuples } from "../core";
+import { RepositoryGeneratorFunction } from "./common";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
@@ -24,7 +25,7 @@ export class SingleDocumentRepository<T_model extends IFirestormModel> extends R
   constructor(
     type: Type<T_model>,
     firestore: Firestore,
-    parents?: IParentCollectionOptions<IFirestormModel>[]
+    parents?: CollectionDocumentTuples
     ) {
     
     super(type, firestore, parents)
@@ -121,9 +122,9 @@ export function getSingleDocumentRepositoryGenerator<T extends IFirestormModel>(
   return (
       firestore: Firestore, 
       type: Type<T>, 
-      parentCollections?: IParentCollectionOptions[]
+      parentPath?: CollectionDocumentTuples
   ) => {
-      const repo = new SingleDocumentRepository(type, firestore, parentCollections)
+      const repo = new SingleDocumentRepository(type, firestore, parentPath)
       repo.documentId = documentId
       return repo
   }

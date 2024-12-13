@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
-import { Firestorm } from "@jiway/firestorm-core"
+import { CollectionDocumentTuple, Firestorm } from "@jiway/firestorm-core"
 import { default as environment } from "@environment";
 import { PhasmoEntity, PhasmoGame } from "../models";
 import { GHOST_ENTITIES } from "../models/predefined-entities";
+import { CollectionDocumentTuples } from "@jiway/firestorm-core";
 
 const phasmo = environment.firebases.phasmo
 
@@ -10,6 +11,7 @@ const phasmo = environment.firebases.phasmo
 export class FirestormService {
 
   private firestorm = new Firestorm()
+  private rootCol = new CollectionDocumentTuples([new CollectionDocumentTuple<any>("playgrounds", "phasmophobia")])
 
   constructor() {
     this.firestorm.connect(phasmo)
@@ -18,11 +20,11 @@ export class FirestormService {
 
   
   public get entityRepository() {
-    return this.firestorm.getCrudRepository(PhasmoEntity)
+    return this.firestorm.getCrudRepository(PhasmoEntity, this.rootCol)
   }
 
   public get gameRepository() {
-    return this.firestorm.getCrudRepository(PhasmoGame)
+    return this.firestorm.getCrudRepository(PhasmoGame, this.rootCol)
   }
 
   public get randomGameRepository() {

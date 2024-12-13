@@ -1,8 +1,8 @@
 import { ToOneRelationship  } from "../decorators"
-import { RelationshipLocation } from "../decorators/common/relationships"
 import { FirestoreDocumentField } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { logWarn } from "./logging"
+import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata } from "./relationship"
 import { pascalToSnakeCase } from "./string-manipulation"
 import { Type } from "./type"
 
@@ -10,23 +10,7 @@ interface SubCollectionMetadatas<T> {
   type: Type<T>
 }
 
-export type RelationshipKind = 'to-one' | 'sub'
 
-export interface RelationshipMetadata<T extends FirestormModel> {
-
-  targetType: Type<T>
-
-  kind: RelationshipKind
-
-}
-
-export interface ToOneRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
-
-  kind: 'to-one'
-
-  location: RelationshipLocation
-
-}
 
 export class FirestormPropertyMetadata<T_property_type = any> {
 

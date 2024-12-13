@@ -1,7 +1,7 @@
 import { Collection, DateType, Ignore, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
 import { PhasmoEntity } from "./entity";
 
-@Collection({ collection: 'playgrounds/phasmophobia/games' })
+@Collection({ collection: 'games' })
 export class PhasmoGame {
 
   @Ignore()

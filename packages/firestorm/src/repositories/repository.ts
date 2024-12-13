@@ -1,13 +1,9 @@
 import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, TransactionOptions } from "firebase/firestore"
 
-import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath } from "../core"
+import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, CollectionDocumentTuples } from "../core"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
-
-import { ParentCollection, IParentCollectionOptions } from "./common"
-
-
 
 /**
  * A repository is a typed access to a specific collection
@@ -15,7 +11,7 @@ import { ParentCollection, IParentCollectionOptions } from "./common"
 export abstract class Repository<T extends IFirestormModel> {
         
     private _type: Type<T>
-    private parents?: ParentCollection<IFirestormModel>[] = []
+    protected parents?: CollectionDocumentTuples
     
     /**
      * Instance of firestore this repository uses to reach the DB
@@ -31,14 +27,12 @@ export abstract class Repository<T extends IFirestormModel> {
     constructor(
         type: Type<T>,
         firestore: Firestore,
-        parents?: IParentCollectionOptions<IFirestormModel>[]
+        parents?: CollectionDocumentTuples
         ) {
         
         this._type = type
         this.firestore = firestore
-        if (parents) {
-            this.parents = parents.map(ParentCollection.createFromOptions)
-        }
+        this.parents = parents
     }
 
     /**
@@ -74,8 +68,8 @@ export abstract class Repository<T extends IFirestormModel> {
     /**
      * Whether or not this repository is a subcollection or not
      */
-    public get hasParents() {
-        return this.parents && this.parents.length > 1
+    public get isOnSubcollection() {
+        return this.parents?.isSubcollection ?? false
     }
 
     /**
@@ -84,23 +78,7 @@ export abstract class Repository<T extends IFirestormModel> {
     public get collectionPath() {
         const col = this.typeMetadata.collection
         if (!col) throw new Error("No collection provided")
-
-        const pathBlocks: string[] = []
-        if (this.parents) {
-            for (const p of this.parents) {
-                const c = p.collection
-                const id = p.id
-
-                if (!c) throw new Error("No collection provided for this parent")
-                if (!id) throw new Error("No id for this element")
-
-                pathBlocks.push(c)
-                pathBlocks.push(id)
-            }
-        }
-        pathBlocks.push(col)
-        
-        return buildPath(...pathBlocks)
+        return buildPath(this.parents?.path || '', col)
     }
 
     /**

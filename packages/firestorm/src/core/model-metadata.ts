@@ -3,7 +3,7 @@ import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConv
 import { isIn, Type } from "./type"
 import { FirestormPropertyMetadata } from "./property-metadatas"
 import { PropertyBluePrint } from "./property-blueprint"
-import { RelationshipLocation } from "../decorators/common/relationships"
+import { RelationshipLocation } from "./relationship"
 
 
 
