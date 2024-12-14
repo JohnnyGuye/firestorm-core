@@ -15,13 +15,13 @@ import {
     SnapshotListenOptions
 } from "firebase/firestore";
 import { Type } from "../core/type";
-import {  aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
+import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { Repository } from "./repository";
 import { RelationshipIncludes, RepositoryGeneratorFunction } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { ToOneRelationship } from "../decorators";
-import { CollectionDocumentTuples, isToOneRelationshipMetadata } from "../core";
+import { CollectionDocumentTuples, RelationshipLocation } from "../core";
+import { includeResolver } from "./toolkit";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -123,32 +123,25 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
         
         if (!includes) return model
 
-        for (let pmd of this.typeMetadata.relationshipMetadatas) {
+        await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
+        // for (let pmd of this.typeMetadata.relationshipMetadatas) {
 
-            const pName = pmd.name
-            const relationship = pmd.relationship
-            if (!relationship) continue
-            if (!(pName in model)) continue
-            
-            const relProp = (model as any)[pName]
-            if (isToOneRelationshipMetadata(relationship) && relProp instanceof ToOneRelationship && relProp.id ) {
+        //     const pName = pmd.name
+        //     const relationship = pmd.relationship
+
+        //     if (!hasFieldOfType(model, pName, ToOneRelationship)) continue
+        //     const relProp = model[pName]
+        //     if (isToOneRelationshipMetadata(relationship) && relProp instanceof ToOneRelationship && relProp.id ) {
                 
-                const cdt = (() => {
-                    switch(relationship.location) {
-                        case 'root':
-                            return new CollectionDocumentTuples([])
-                        case 'sibling':
-                            return new CollectionDocumentTuples(this.parents?.tuples || [])
-                        default:
-                            return relationship.location
-                    }
-                })()
-                const crud = getCrudRepositoryGenerator()(this.firestore, relProp.type, cdt)
-                const include = await crud.findByIdAsync(relProp.id)
-                relProp.setModel(include)
+        //         const cdt = this.resolveRelationshipLocation(relationship.location)
+        //         const crud = getCrudRepositoryGenerator()(this.firestore, relProp.type, cdt)
+        //         const include = await crud.findByIdAsync(relProp.id)
+        //         if (include) {
+        //             relProp.setModel(include)
+        //         }
 
-            }
-        }
+        //     }
+        // }
         return model
     }
 
@@ -167,14 +160,22 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
      * @param firestormQuery Query
      * @returns A promise on the items that are results of the query
      */
-    async queryAsync(firestormQuery: Query | IQueryBuildBlock): Promise<T_model[]>{
+    async queryAsync(firestormQuery: Query | IQueryBuildBlock, includes?: RelationshipIncludes<T_model>): Promise<T_model[]>{
 
         const querySnapshot: QuerySnapshot = await getDocs(this.toFirestoreQuery(firestormQuery))
         if (querySnapshot.empty) return []
 
-        return querySnapshot.docs.map(docSnapshot => {
+        const models = querySnapshot.docs.map(docSnapshot => {
             return this.firestoreDocumentSnapshotToModel(docSnapshot)
         })
+
+        if (!includes) return models
+
+        for (let model of models) {
+            await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
+        }
+
+        return models
     }
 
     /**
@@ -278,15 +279,24 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
      * Gets all the items of a collection
      * @returns A promise containing all the items in the collection
      */
-    async findAllAsync(): Promise<T_model[]> {
+    async findAllAsync(includes?: RelationshipIncludes<T_model>): Promise<T_model[]> {
 
         const querySnapshot: QuerySnapshot = await getDocs(this.collectionRef)
 
         if (querySnapshot.empty) return []
 
-        return querySnapshot.docs.map(docSnapshot => {
+        const models = querySnapshot.docs.map(docSnapshot => {
             return this.firestoreDocumentSnapshotToModel(docSnapshot)
         })
+
+        
+        if (!includes) return models
+
+        for (let model of models) {
+            await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
+        }
+
+        return models
 
     }
 
@@ -371,6 +381,27 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
 
     //#endregion
 
+    //#region Smthg
+
+    /**
+     * Gets the basic CRUD repository for a model
+     * @template T_linked_model Type of the model
+     * @param type Type of the model
+     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @returns 
+     */
+        public getCrudRepository<T_linked_model extends IFirestormModel>(
+            type: Type<T_linked_model>, 
+            location: RelationshipLocation
+            ): CrudRepository<T_linked_model> {
+            return this.getRepositoryFromFunction(
+                getCrudRepositoryGenerator(), 
+                type, 
+                location
+            )
+        }
+
+    //#endregion
 }
 
 /**

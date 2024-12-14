@@ -1,16 +1,19 @@
 import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, TransactionOptions } from "firebase/firestore"
 
-import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, CollectionDocumentTuples } from "../core"
+import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, CollectionDocumentTuples, RelationshipLocation } from "../core"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
+import { CrudRepository, getCrudRepositoryGenerator } from "./crud-repository"
+import { getSingleDocumentRepositoryGenerator, SingleDocumentRepository } from "./single-document-crud-repository"
+import { RepositoryGeneratorFunction } from "./common"
 
 /**
  * A repository is a typed access to a specific collection
  */
-export abstract class Repository<T extends IFirestormModel> {
+export abstract class Repository<T_model extends IFirestormModel> {
         
-    private _type: Type<T>
+    private _type: Type<T_model>
     protected parents?: CollectionDocumentTuples
     
     /**
@@ -25,7 +28,7 @@ export abstract class Repository<T extends IFirestormModel> {
      * @param parents The optional parent collections for repositories of subcollections
      */
     constructor(
-        type: Type<T>,
+        type: Type<T_model>,
         firestore: Firestore,
         parents?: CollectionDocumentTuples
         ) {
@@ -62,7 +65,7 @@ export abstract class Repository<T extends IFirestormModel> {
      * The metadatas corresponding to the type of this repository
      */
     protected get typeMetadata() {
-        return this.storage.getMetadatas<T>(this._type)
+        return this.storage.getMetadatas<T_model>(this._type)
     }
 
     /**
@@ -197,7 +200,7 @@ export abstract class Repository<T extends IFirestormModel> {
      */
     protected firestoreDocumentSnapshotToModel(
         documentSnapshot: DocumentSnapshot
-        ): T {
+        ): T_model {
         
         const retrievedId: string = documentSnapshot.id
         const data = documentSnapshot.data()
@@ -216,12 +219,41 @@ export abstract class Repository<T extends IFirestormModel> {
         return klass
     }
 
+    public resolveRelationshipLocation(location: RelationshipLocation): CollectionDocumentTuples {
+        switch(location) {
+            case 'root':        return new CollectionDocumentTuples()
+            case 'sibling':     return new CollectionDocumentTuples(this.parents)
+            default:            return location
+        }
+    }
+    //#region Linked Repositories
+
+    /**
+     * Creates a repository using a generator function
+     * 
+     * @template R Type of the repository
+     * @template T_linked_model Type of the model
+     * @param generator Generator function of the repository
+     * @param type Type of the model 
+     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @returns 
+     */
+    public getRepositoryFromFunction<R extends Repository<T_linked_model>, T_linked_model extends IFirestormModel>(
+        generator: RepositoryGeneratorFunction<R, T_linked_model>,
+        type: Type<T_linked_model>,
+        location: RelationshipLocation
+    ): R {
+        return generator(this.firestore, type, this.resolveRelationshipLocation(location))
+    }
+
+    //#endregion
+
     /**
      * Converts a document to a model (if the id is not in the document, it is lost in the process)
      * @param document Document to convert
      * @returns The converted model
      */
-    public documentToModel(document: FirestoreDocument): T {
+    public documentToModel(document: FirestoreDocument): T_model {
         return this.typeMetadata.convertDocumentToModel(document)
     }
 
@@ -230,7 +262,7 @@ export abstract class Repository<T extends IFirestormModel> {
      * @param documents Documents to convert
      * @returns The converted models
      */
-    public documentsToModels(documents: FirestoreDocument[]): T[] {
+    public documentsToModels(documents: FirestoreDocument[]): T_model[] {
         return documents.map(d => this.documentToModel(d))
     }
 
@@ -239,7 +271,7 @@ export abstract class Repository<T extends IFirestormModel> {
      * @param model Model to convert
      * @returns The converted document
      */
-    public modelToDocument(model: Partial<T>): FirestoreDocument {
+    public modelToDocument(model: Partial<T_model>): FirestoreDocument {
         return this.typeMetadata.convertModelToDocument(model)
     }
 
@@ -248,7 +280,7 @@ export abstract class Repository<T extends IFirestormModel> {
      * @param models Models to convert
      * @returns The converted documents
      */
-    public modelsToDocuments(models: Partial<T>[]): FirestoreDocument[] {
+    public modelsToDocuments(models: Partial<T_model>[]): FirestoreDocument[] {
         return models.map(m => this.modelToDocument(m))
     }
 
@@ -260,3 +292,4 @@ export abstract class Repository<T extends IFirestormModel> {
         return this.typeMetadata.documentBlueprint
     }
 }
+

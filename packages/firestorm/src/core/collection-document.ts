@@ -48,7 +48,24 @@ export class CollectionDocumentTuple<T extends FirestormModel> {
 
 export class CollectionDocumentTuples {
 
-    public constructor(public readonly tuples: CollectionDocumentTuple<FirestormModel>[]) {}
+    private _tuples: CollectionDocumentTuple<FirestormModel>[] = []
+
+    public constructor(tuples?: CollectionDocumentTuple<FirestormModel>[] | CollectionDocumentTuples | CollectionDocumentTuple<FirestormModel>) {
+
+        if (!tuples) {
+            this._tuples = []
+        } else if (tuples instanceof Array) {
+            this._tuples = tuples
+        } else if (tuples instanceof CollectionDocumentTuple) {
+            this._tuples = [tuples]
+        } else {
+            this._tuples = tuples._tuples
+        }
+    }
+
+    public get tuples() {
+        return this._tuples
+    }
 
     get path() {
         return buildPath(...this.tuples.map(tuple => tuple.path))

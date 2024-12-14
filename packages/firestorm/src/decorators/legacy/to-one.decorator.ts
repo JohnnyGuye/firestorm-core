@@ -1,8 +1,9 @@
 import { FirestormMetadataStore, FirestormModel, Type } from "../../core"
 import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
-import { ToOneOptions, ToOneRelationship } from "../common/to-one"
+import { ToOneOptions } from "../common/relationship"
 
-export { ToOneRelationship } from "../common/to-one"
+import { ToOneRelationship } from "../../core/relationship"
+export { ToOneRelationship } from "../../core/relationship"
 
 /**
  * Decorator for properties or field that reference an other document.

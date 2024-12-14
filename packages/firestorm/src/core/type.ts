@@ -17,7 +17,18 @@ export declare interface Type<T> extends Function {
     new (...args: any[]): T;
 }
 
-export function isIn<K extends string>(object: unknown, propertyName: K): object is Record<K, any> {
+export function isIn<K extends string>(object: unknown, fieldName: K): object is Record<K, any> {
     if (object === null || object === undefined || typeof object !== 'object') return false
-    return propertyName in object
+    return fieldName in object
+}
+
+export function hasFieldOfType<T,const K extends string>(value: unknown, fieldName: K, type: Type<T>): value is Record<K, T> {
+
+    if (!value) return false
+    if (typeof value != 'object') return false
+    const valueAny = value as any
+    if (!(fieldName in valueAny)) return false
+    
+    return valueAny[fieldName] instanceof type
+
 }

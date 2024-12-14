@@ -121,3 +121,6 @@ export class FirestormPropertyMetadata<T_property_type = any> {
   }
 
 }
+
+export type FirestormPropertyMetadataWithRelationship<T_property_type = any, T_relationship extends FirestormModel = any>
+  = FirestormPropertyMetadata<T_property_type> & Record<'relationship', RelationshipMetadata<T_relationship>>

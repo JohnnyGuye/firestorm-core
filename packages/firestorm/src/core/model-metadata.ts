@@ -1,7 +1,7 @@
 import { FirestoreDocument } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { isIn, Type } from "./type"
-import { FirestormPropertyMetadata } from "./property-metadatas"
+import { FirestormPropertyMetadata, FirestormPropertyMetadataWithRelationship } from "./property-metadatas"
 import { PropertyBluePrint } from "./property-blueprint"
 import { RelationshipLocation } from "./relationship"
 
@@ -46,7 +46,7 @@ export class FirestormMetadata<T_model> {
   }
 
   public get relationshipMetadatas() {
-    return [...this._propertyMetadatas.values().filter(value => value.relationship)]
+    return [...this._propertyMetadatas.values().filter(value => value.relationship)] as FirestormPropertyMetadataWithRelationship[]
   }
 
   /**
