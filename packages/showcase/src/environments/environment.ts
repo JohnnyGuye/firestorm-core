@@ -1,6 +1,8 @@
 export default {
-
-  firebases: {
+  dev: {
+    useEmulator: true
+  },
+  firebaseConfigurations: {
     phasmo: {
       apiKey: "AIzaSyCfaBZURn4YqXagb4Ke1Y7GKsx08ePy-MA",
       authDomain: "firestorm-59ba4.firebaseapp.com",

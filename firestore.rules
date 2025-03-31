@@ -3,7 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 	
-  	match /playgrounds/{playground_id} {
+  	match /playgrounds/phasmophobia {
     	
       allow read: if true;
       allow write: if false;
@@ -20,7 +20,7 @@ service cloud.firestore {
     }
     
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
     
   }

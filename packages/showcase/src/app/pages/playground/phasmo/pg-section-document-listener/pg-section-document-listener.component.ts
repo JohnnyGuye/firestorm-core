@@ -90,7 +90,9 @@ export class PgSectionDocumentListenerComponent extends PlaygroundSection {
         console.log(snapshot)
       },
       error: console.error,
-      complete: console.warn
+      complete: () => {
+        console.warn("Listener completed")
+      }
     })
     
     await this.startMakingChanges()
@@ -114,6 +116,7 @@ export class PgSectionDocumentListenerComponent extends PlaygroundSection {
     
     const game = new PhasmoGame()
     game.ghostEntity.id = entity.id
+
     this.randomGameRepository.writeAsync(game)
 
   }
