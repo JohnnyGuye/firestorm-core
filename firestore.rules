@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+	
+  	match /playgrounds/{playground_id} {
+    	
+      allow read: if true;
+      allow write: if false;
+      
+      match /entities/{entity_id} {
+      	allow read: if true;
+      	allow write: if true;
+      }
+      
+      match /games/{game_id} {
+      	allow read: if true;
+      	allow write: if true;
+      }
+    }
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+  }
+}
