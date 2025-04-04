@@ -1,13 +1,13 @@
 import { Type } from "./core/type"
 import { IFirestormModel } from "./core/firestorm-model";
-import { Repository, RepositoryGeneratorFunction, getCrudRepositoryGenerator } from "./repositories";
+import { Repository, RepositoryInstantiator, createCollectionCrudRepositoryInstantiator } from "./repositories";
 
 import { FirebaseApp, FirebaseOptions, getApps, initializeApp } from "firebase/app";
 import { Firestore, getFirestore, connectFirestoreEmulator } from "firebase/firestore"
 import { FirebaseStorage, connectStorageEmulator, getStorage } from "firebase/storage"
 import { Auth, getAuth } from "firebase/auth"
 import { FirestormStorage } from "./storage";
-import { getSingleDocumentRepositoryGenerator } from "./repositories/single-document-crud-repository";
+import { createDocumentCrudRepositoryInstantiator } from "./repositories/document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
 import { CollectionDocumentTuples } from "./core";
@@ -118,7 +118,7 @@ export class Firestorm {
         parentPath?: CollectionDocumentTuples
         ) {
         return this.getRepositoryFromFunction(
-            getCrudRepositoryGenerator(), 
+            createCollectionCrudRepositoryInstantiator(), 
             type, 
             parentPath
         )
@@ -137,7 +137,7 @@ export class Firestorm {
         parentPath?: CollectionDocumentTuples
         ) {
         return this.getRepositoryFromFunction(
-            getSingleDocumentRepositoryGenerator(documentId),
+            createDocumentCrudRepositoryInstantiator(documentId),
             type,
             parentPath
         )
@@ -154,7 +154,7 @@ export class Firestorm {
      * @returns 
      */
     public getRepositoryFromFunction<R extends Repository<T>, T extends IFirestormModel>(
-        generator: RepositoryGeneratorFunction<R, T>,
+        generator: RepositoryInstantiator<R, T>,
         type: Type<T>,
         parentPath?: CollectionDocumentTuples
     ) {

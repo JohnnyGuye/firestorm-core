@@ -40,5 +40,8 @@
   "bugs": {
     "url": "https://github.com/JohnnyGuye/firestorm-core/issues"
   },
-  "homepage": "https://github.com/JohnnyGuye/firestorm-core#readme"
+  "homepage": "https://github.com/JohnnyGuye/firestorm-core#readme",
+  "devDependencies": {
+    "mocha": "^11.1.0"
+  }
 }

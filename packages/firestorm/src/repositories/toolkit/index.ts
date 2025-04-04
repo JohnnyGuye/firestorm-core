@@ -2,7 +2,7 @@ import { ToOneRelationship } from "../../decorators"
 import { FirestormMetadata, FirestormModel, isIn, isToOneRelationshipMetadata } from "../../core"
 import { Repository } from "../repository"
 import { RelationshipIncludes } from "../common"
-import { getCrudRepositoryGenerator } from "../crud-repository"
+import { createCollectionCrudRepositoryInstantiator } from "../collection-crud-repository"
 
 export function includeResolver<T_model extends FirestormModel, P extends Partial<T_model>>(
   includes: RelationshipIncludes<T_model>,
@@ -30,7 +30,7 @@ export function includeResolver<T_model extends FirestormModel, P extends Partia
       
       if (isToOneRelationshipMetadata(relationship) && propertyValue instanceof ToOneRelationship && propertyValue.id ) {
           
-          const crud = repository.getRepositoryFromFunction(getCrudRepositoryGenerator(), propertyValue.type, relationship.location)
+          const crud = repository.getRepositoryFromFunction(createCollectionCrudRepositoryInstantiator(), propertyValue.type, relationship.location)
           const include = await crud.findByIdAsync(propertyValue.id)
           
           if (include) {

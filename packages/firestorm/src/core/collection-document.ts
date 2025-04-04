@@ -7,6 +7,12 @@ export class CollectionDocumentTuple<T extends FirestormModel> {
 
     private _instance?: T
 
+    /**
+     * 
+     * @param collectionPath 
+     * @param documentId 
+     * @param type 
+     */
     public constructor(
         public readonly collectionPath: string, 
         public readonly documentId: string, 
@@ -50,6 +56,17 @@ export class CollectionDocumentTuples {
 
     private _tuples: CollectionDocumentTuple<FirestormModel>[] = []
 
+    /**
+     * Creates a new empty collection document tuple
+     */
+    public constructor();
+    /**
+     * Creates a new 
+     * @param tuples 
+     */
+    public constructor(tuples?: CollectionDocumentTuple<FirestormModel>);
+    public constructor(tuples?: CollectionDocumentTuple<FirestormModel>[]);
+    public constructor(tuples?: CollectionDocumentTuples);
     public constructor(tuples?: CollectionDocumentTuple<FirestormModel>[] | CollectionDocumentTuples | CollectionDocumentTuple<FirestormModel>) {
 
         if (!tuples) {

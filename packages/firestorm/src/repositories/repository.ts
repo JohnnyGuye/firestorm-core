@@ -4,9 +4,9 @@ import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, bu
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
-import { CrudRepository, getCrudRepositoryGenerator } from "./crud-repository"
-import { getSingleDocumentRepositoryGenerator, SingleDocumentRepository } from "./single-document-crud-repository"
-import { RepositoryGeneratorFunction } from "./common"
+import { CollectionCrudRepository, createCollectionCrudRepositoryInstantiator } from "./collection-crud-repository"
+import { createDocumentCrudRepositoryInstantiator, DocumentCrudRepository } from "./document-crud-repository"
+import { RepositoryInstantiator } from "./common"
 
 /**
  * A repository is a typed access to a specific collection
@@ -219,7 +219,7 @@ export abstract class Repository<T_model extends IFirestormModel> {
         return klass
     }
 
-    public resolveRelationshipLocation(location: RelationshipLocation): CollectionDocumentTuples {
+    private resolveRelationshipLocation(location: RelationshipLocation): CollectionDocumentTuples {
         switch(location) {
             case 'root':        return new CollectionDocumentTuples()
             case 'sibling':     return new CollectionDocumentTuples(this.parents)
@@ -235,11 +235,11 @@ export abstract class Repository<T_model extends IFirestormModel> {
      * @template T_linked_model Type of the model
      * @param generator Generator function of the repository
      * @param type Type of the model 
-     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @param location The parent collections between the collection of this repository and the root of firestore
      * @returns 
      */
     public getRepositoryFromFunction<R extends Repository<T_linked_model>, T_linked_model extends IFirestormModel>(
-        generator: RepositoryGeneratorFunction<R, T_linked_model>,
+        generator: RepositoryInstantiator<R, T_linked_model>,
         type: Type<T_linked_model>,
         location: RelationshipLocation
     ): R {

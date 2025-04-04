@@ -4,7 +4,6 @@ import { default as environment } from "@environment";
 import { PhasmoEntity, PhasmoGame } from "../models";
 import { GHOST_ENTITIES } from "../models/predefined-entities";
 import { CollectionDocumentTuples } from "@jiway/firestorm-core";
-import { Playground } from "@modules/playgrounds";
 
 const phasmo = environment.firebaseConfigurations.phasmo
 
@@ -31,7 +30,7 @@ export class FirestormService {
   /**
    * Gets the repository containing the entities
    */
-  public get entityRepository() {
+  public get entityRepository() {    
     return this.firestorm.getCrudRepository(PhasmoEntity, this.rootCollection)
   }
 

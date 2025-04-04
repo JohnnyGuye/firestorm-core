@@ -1,6 +1,8 @@
 export * from "./repository"
-export * from "./crud-repository"
-export * from "./single-document-crud-repository"
+export * from "./document-repository"
+export * from "./collection-repository"
+export * from "./document-crud-repository"
+export * from "./collection-crud-repository"
 export * from "./common"
 
 /**

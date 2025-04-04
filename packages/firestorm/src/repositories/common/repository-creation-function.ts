@@ -5,15 +5,15 @@ import { Repository } from "../repository";
 
 /**
  * Type for repository generator function that can be given to firestorm to instantiate a repository
- * @template R The type of repository created
- * @template T The model of the documents in the repository
+ * @template T_Repository The type of repository created
+ * @template T_Model The model of the documents in the repository
  * @param firestore The firestore instance the repository will feed on
  * @param type The type of model of the documents of this repository
  * @param parentCollections The parent collection leading to this repository
  */
-export type RepositoryGeneratorFunction<R extends Repository<T>, T extends IFirestormModel>
+export type RepositoryInstantiator<T_Repository extends Repository<T_Model>, T_Model extends IFirestormModel>
   = (
       firestore: Firestore, 
-      type: Type<T>, 
+      type: Type<T_Model>, 
       parentPath?: CollectionDocumentTuples
-  ) => R;
+  ) => T_Repository;

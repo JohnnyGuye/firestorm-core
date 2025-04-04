@@ -17,19 +17,19 @@ import {
 import { Type } from "../core/type";
 import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
-import { Repository } from "./repository";
-import { RelationshipIncludes, RepositoryGeneratorFunction } from "./common";
+import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { CollectionDocumentTuples, RelationshipLocation } from "../core";
+import { CollectionDocumentTuples } from "../core";
 import { includeResolver } from "./toolkit";
+import { CollectionRepository } from "./collection-repository";
 
 /**
  * Repository with a basic CRUD implementation.
  */
-export class CrudRepository<T_model extends IFirestormModel> extends Repository<T_model> {
+export class CollectionCrudRepository<T_model extends IFirestormModel> extends CollectionRepository<T_model> {
 
     /**
-     * Creates a new {@link CrudRepository} on a model
+     * Creates a new {@link CollectionCrudRepository} on a model
      * @param type Type on which the repository operates
      * @param firestore The instance of firestore this repository connects to
      * @param parents The optional parent collections for repositories of subcollections
@@ -381,44 +381,19 @@ export class CrudRepository<T_model extends IFirestormModel> extends Repository<
 
     //#endregion
 
-    //#region Smthg
-
-    /**
-     * Gets the basic CRUD repository for a model
-     * @template T_linked_model Type of the model
-     * @param type Type of the model
-     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
-     * @returns 
-     */
-        public getCrudRepository<T_linked_model extends IFirestormModel>(
-            type: Type<T_linked_model>, 
-            location: RelationshipLocation
-            ): CrudRepository<T_linked_model> {
-            return this.getRepositoryFromFunction(
-                getCrudRepositoryGenerator(), 
-                type, 
-                location
-            )
-        }
-
-    //#endregion
 }
 
 /**
- * Gets the generator function for a {@link CrudRepository} of model {@link T}
- * @template T The model of the documents.
+ * Gets the generator function for a {@link CollectionCrudRepository} of model {@link T_Model}
+ * @template T_Model The model of the documents.
  * @returns A function that generated a single document repository on the document provided.
  */
-export function getCrudRepositoryGenerator<T extends IFirestormModel>(): RepositoryGeneratorFunction<CrudRepository<T>, T> {
+export function createCollectionCrudRepositoryInstantiator<T_Model extends IFirestormModel>(): RepositoryInstantiator<CollectionCrudRepository<T_Model>, T_Model> {
     return (
         firestore: Firestore, 
-        type: Type<T>, 
+        type: Type<T_Model>, 
         parentPath?: CollectionDocumentTuples
     ) => {
-        return new CrudRepository(type, firestore, parentPath)
+        return new CollectionCrudRepository(type, firestore, parentPath)
     }
 }
-
-
-
-

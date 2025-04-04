@@ -1,23 +1,18 @@
 import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
-import { Repository } from "./repository";
 import { Type } from "../core/type";
 import { createDocumentObservable, DocumentObservable } from "../realtime-listener";
 import { CollectionDocumentTuples } from "../core";
-import { RepositoryGeneratorFunction } from "./common";
+import { RepositoryInstantiator } from "./common";
+import { DocumentRepository } from "./document-repository";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
  */
-export class SingleDocumentRepository<T_model extends IFirestormModel> extends Repository<T_model> {
+export class DocumentCrudRepository<T_model extends IFirestormModel> extends DocumentRepository<T_model> {
   
   /**
-   * Id of the document
-   */
-  public documentId: string = ""
-
-  /**
-   * Creates a new {@link SingleDocumentRepository} on a model
+   * Creates a new {@link DocumentCrudRepository} on a model
    * @param type Type on which the repository operates
    * @param firestore The instance of firestore this repository connects to
    * @param parents The optional parent collections for repositories of subcollections
@@ -104,27 +99,24 @@ export class SingleDocumentRepository<T_model extends IFirestormModel> extends R
    * @returns 
    */
   async existsAsync() {
-    return await this.getAsync() != null
+    return (await this.getAsync()) != null
   }
 
-  private get documentRef() {
-    return doc(this.firestore, this.collectionPath, this.documentId)
-  }
 }
 
 /**
- * Gets the generator function for a {@link SingleDocumentRepository} of model {@link T}
+ * Gets the generator function for a {@link DocumentCrudRepository} of model {@link T}
  * @template T Model of the document tracked.
  * @param documentId The id of the document that the generated repository should track.
  * @returns A function that generated a single document repository on the document provided.
  */
-export function getSingleDocumentRepositoryGenerator<T extends IFirestormModel>(documentId: string): RepositoryGeneratorFunction<SingleDocumentRepository<T>, T> {
+export function createDocumentCrudRepositoryInstantiator<T extends IFirestormModel>(documentId: string): RepositoryInstantiator<DocumentCrudRepository<T>, T> {
   return (
       firestore: Firestore, 
       type: Type<T>, 
       parentPath?: CollectionDocumentTuples
   ) => {
-      const repo = new SingleDocumentRepository(type, firestore, parentPath)
+      const repo = new DocumentCrudRepository(type, firestore, parentPath)
       repo.documentId = documentId
       return repo
   }
