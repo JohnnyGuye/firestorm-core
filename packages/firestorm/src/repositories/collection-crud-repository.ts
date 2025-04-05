@@ -349,7 +349,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * 
      * Trying to delete a document that doesn't exist silently fails.
      * 
-     * This doesn't typecheck the model. It only types check that you provided an id
+     * This doesn't typecheck the model. It only checks that you provided an id
      * 
      * @param models Models with the id of the documents to delete 
      */

@@ -14,6 +14,7 @@
     "clean:firestorm": "npm run clean --workspace=packages/firestorm",
     "build:firestorm": "npm run build --workspace=packages/firestorm",
     "build:showcase": "npm run build --workspace=packages/showcase",
+    "test": "npm run test --workspace=packages/firestorm",
     "build": "npm run build --workspaces",
     "build:doc": "npm run doc:build --workspace=packages/firestorm",
     "watch:firestorm": "npm run watch --workspace=packages/firestorm",
@@ -42,6 +43,6 @@
   },
   "homepage": "https://github.com/JohnnyGuye/firestorm-core#readme",
   "devDependencies": {
-    "mocha": "^11.1.0"
+    "tsx": "^4.19.3"
   }
 }

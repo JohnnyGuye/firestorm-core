@@ -12,6 +12,7 @@
     "moduleResolution": "node",
     "stripInternal": true,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "target": "esnext",
     "baseUrl": ".",
