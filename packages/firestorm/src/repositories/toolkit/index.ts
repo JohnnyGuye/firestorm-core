@@ -31,7 +31,7 @@ export function includeResolver<T_model extends FirestormModel, P extends Partia
       if (isToOneRelationshipMetadata(relationship) && propertyValue instanceof ToOneRelationship && propertyValue.id ) {
           
           const crud = repository.getRepositoryFromFunction(createCollectionCrudRepositoryInstantiator(), propertyValue.type, relationship.location)
-          const include = await crud.findByIdAsync(propertyValue.id)
+          const include = await crud.getByIdAsync(propertyValue.id)
           
           if (include) {
               propertyValue.setModel(include)

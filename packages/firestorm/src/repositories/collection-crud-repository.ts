@@ -113,7 +113,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * @param id Id of the item to find
      * @returns A promise containing either the item retrieved or null if not found
      */
-    async findByIdAsync(id: string, includes?: RelationshipIncludes<T_model>): Promise<T_model | null> {
+    async getByIdAsync(id: string, includes?: RelationshipIncludes<T_model>): Promise<T_model | null> {
 
         const documentSnapshot: DocumentSnapshot = await getDoc(this.getDocumentRef(id))
 
@@ -147,12 +147,12 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
 
     /**
      * Check if a document with this id already exists in the database
-     * @see findByIdAsync It's doing findById under the hood so it's almost always preferable to use the other. It's just a convenience
+     * @see getByIdAsync It's doing findById under the hood so it's almost always preferable to use the other. It's just a convenience
      * @param id Id of the item to check the existency
      * @returns A promise returning true if an item with this id exists in the collection
      */
     async existsAsync(id: string): Promise<boolean> {
-        return await this.findByIdAsync(id) != null
+        return await this.getByIdAsync(id) != null
     }
 
     /**
@@ -279,7 +279,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * Gets all the items of a collection
      * @returns A promise containing all the items in the collection
      */
-    async findAllAsync(includes?: RelationshipIncludes<T_model>): Promise<T_model[]> {
+    async getAllAsync(includes?: RelationshipIncludes<T_model>): Promise<T_model[]> {
 
         const querySnapshot: QuerySnapshot = await getDocs(this.collectionRef)
 
@@ -375,7 +375,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * 
      */
     async deleteAllAsync() {
-        const modelsToDelete = await this.findAllAsync()
+        const modelsToDelete = await this.getAllAsync()
         this.deleteMultipleAsync(modelsToDelete)
     }
 
