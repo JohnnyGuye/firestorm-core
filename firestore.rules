@@ -19,9 +19,16 @@ service cloud.firestore {
       	allow write: if true;
       }
     }
+
+    match /playgrounds/message_app {
+
+      allow read: if true;
+      allow write: if true;
+
+    }
     
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
     
   }
