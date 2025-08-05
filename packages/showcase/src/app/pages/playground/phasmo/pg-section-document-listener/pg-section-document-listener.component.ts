@@ -52,7 +52,7 @@ export class PgSectionDocumentListenerComponent extends PlaygroundSection {
   constructor() {
     super()
     this.entityRepository
-      .findAllAsync()
+      .getAllAsync()
       .then(entities => this.entities = entities)
   }
 
@@ -62,7 +62,7 @@ export class PgSectionDocumentListenerComponent extends PlaygroundSection {
 
   get snapshots() {
     return this._snapshots.map(value => {
-      return value.document
+      return value.model
     })
   }
 

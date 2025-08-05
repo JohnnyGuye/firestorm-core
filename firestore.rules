@@ -18,6 +18,12 @@ service cloud.firestore {
       	allow read: if true;
       	allow write: if true;
       }
+
+      match /achievements/{achievement_id} {
+        allow read: if true;
+        allow write: if true;
+      }
+      
     }
 
     match /playgrounds/message_app {

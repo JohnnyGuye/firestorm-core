@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { MatButton } from "@angular/material/button";
-import { FirestormService } from "@modules/phasmophobia";
-import { GHOST_ENTITIES } from "@modules/phasmophobia/models/predefined-entities";
+import { PhasmoOrmService } from "@modules/phasmophobia";
+
 
 type RefreshState = 'pristine' | 'refreshed' | 'refreshing'
 
@@ -14,16 +14,18 @@ type RefreshState = 'pristine' | 'refreshed' | 'refreshing'
 })
 export class DbtoolsPage {
  
-  private firestormService = inject(FirestormService)
+  private phasmoOrmService = inject(PhasmoOrmService)
 
   public refreshState: RefreshState = 'pristine'
 
-  async refreshEntities() {
+  async refreshStaticDatas() {
     this.refreshState = 'refreshing'
-    await this.firestormService.entityRepository.deleteAllAsync()
-    await this.firestormService.entityRepository.createMultipleAsync(...GHOST_ENTITIES)
+
+    await this.phasmoOrmService.initStaticDatas()
+
     this.refreshState = 'refreshed'
   }
+
 
   get canRefresh() {
     return this.refreshState == 'pristine'

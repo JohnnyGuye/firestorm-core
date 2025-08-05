@@ -1,9 +1,9 @@
 import { inject } from "@angular/core";
-import { FirestormService } from "@modules/phasmophobia";
+import { PhasmoOrmService } from "@modules/phasmophobia";
 
 export class PlaygroundSection {
 
-  protected firestormService = inject(FirestormService)
+  protected firestormService = inject(PhasmoOrmService)
 
   protected get entityRepository() { return this.firestormService.entityRepository }
 

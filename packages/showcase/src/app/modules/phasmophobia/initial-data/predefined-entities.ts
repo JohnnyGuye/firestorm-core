@@ -1,4 +1,4 @@
-import { PhasmoEntity } from "./entity"
+import { PhasmoEntity } from "../models/entity"
 
 function createEntity(modify: (entity: PhasmoEntity)=> void): PhasmoEntity {
   const entity = new PhasmoEntity()

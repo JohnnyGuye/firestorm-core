@@ -40,7 +40,7 @@ export class PgSectionFindIncludeComponent extends PlaygroundSection {
 
   async find() {
     const id = this.randomGameRepository.documentId
-    const game = await this.gameRepository.findByIdAsync(id, { ghostEntity: true })
+    const game = await this.gameRepository.getByIdAsync(id, { ghostEntity: true })
     this.game = game
   }
 

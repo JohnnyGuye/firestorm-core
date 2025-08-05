@@ -1,11 +1,10 @@
 import { Component, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
-import { FirestormService } from "@modules/phasmophobia";
-import { PhasmoEntity, PhasmoGame } from "@modules/phasmophobia/models";
+import { PhasmoOrmService } from "@modules/phasmophobia";
+import { PhasmoEntity } from "@modules/phasmophobia/models";
 import { MarkdownModule } from "ngx-markdown";
 import { PlaygroundModelMarkdownComponent } from "@components/playground-model-markdown";
 import { PlaygroundSectionComponent } from "@components/playground-section";
-import { ExplicitAggregationQuery, Query } from "@jiway/firestorm-core";
 import { PlaygroundPlainObjectMarkdownComponent } from "../../components/playground-plain-object-markdown/playground-plain-object-markdown.component";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { PgSectionAggregateQueryComponent } from "./phasmo/pg-section-aggregate-query/pg-section-aggregate-query.component";
@@ -29,7 +28,7 @@ import { PgSectionFindIncludeComponent } from "./phasmo/pg-section-find-include/
 })
 export class PlaygroundPage {
 
-  private firestormSrv = inject(FirestormService)
+  private firestormSrv = inject(PhasmoOrmService)
 
   constructor() {}
 
@@ -42,9 +41,13 @@ export class PlaygroundPage {
 
   public aggregatedEntities: any = {}
 
+  public rewriteDb() {
+    this.firestormSrv.initStaticDatas()
+  }
+
   public async retrieveEntities() {
     
-    const entities = await this.firestormSrv.entityRepository.findAllAsync()
+    const entities = await this.firestormSrv.entityRepository.getAllAsync()
     this.retrievedEntities = entities
 
   }
