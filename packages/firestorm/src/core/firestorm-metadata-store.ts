@@ -1,6 +1,14 @@
 import { AlreadyExistingMetadatasError, NotFoundMetadataError } from "../errors";
+import { ForwardRefAction, ForwardRef } from "./forwardref";
 import { FirestormMetadata } from "./model-metadata";
 import { Type } from "./type";
+
+interface ForwardRefAwaiter<T = any> {
+
+  ref: ForwardRef<T>
+  action: ForwardRefAction<T>
+
+}
 
 /**
  * Class containing all the metadatas stored in firestorm
@@ -9,6 +17,8 @@ export class FirestormMetadataStore {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly typeMetadatas = new Map<Type<any>, FirestormMetadata<any>>
+
+  private forwardRefQueue: ForwardRefAwaiter[] = []
 
   /**
    * Checks if a specific type as metadatas associated
@@ -50,6 +60,40 @@ export class FirestormMetadataStore {
     return this.tryGetMetadatas(type) || this.createMetadatas(type)
   }
 
+  public registerForwardRef<T>(forwardRef: ForwardRef<T>, action: ForwardRefAction<T>) {
+    this.forwardRefQueue.push({
+      ref: forwardRef,
+      action: action
+    })
+    this.tryExhaustRefs()
+  }
+
+  private tryExhaustRefs() {
+
+    while(this.tryResolveRefs()) {}
+
+  }
+
+  private tryResolveRefs() {
+    
+    let resolvedAtLeastOne = false
+
+    const stillInQueue = 
+      this.forwardRefQueue
+        .filter((awaiter) => {
+          const type = awaiter.ref()
+          if (type === undefined) return true
+
+          awaiter.action(type)
+          resolvedAtLeastOne = true
+          return false
+        })
+            
+    this.forwardRefQueue = stillInQueue
+    
+    return resolvedAtLeastOne
+  }
+
   /**
    * Create metadatas for a type.
    * If it already exists, it will throw.
@@ -74,8 +118,10 @@ export class FirestormMetadataStore {
    * @returns The metadatas of the new registered type or null if already registered
    */
   private tryCreateMetadatas<T>(type: Type<T>) {
-    if (this.hasMetadatas(type)) return null
 
+    // this.tryExhaustRefs()
+    if (this.hasMetadatas(type)) return null
+    
     const metadata: FirestormMetadata<T> = new FirestormMetadata(type)
     
     // Extract the properties
@@ -83,8 +129,10 @@ export class FirestormMetadataStore {
     for (const key of Object.getOwnPropertyNames(instantiatedObject)) {
       metadata.addProperty(key)
     }
-
+    
     this.typeMetadatas.set(type, metadata)
+    
+    this.tryExhaustRefs()
 
     return metadata
   }

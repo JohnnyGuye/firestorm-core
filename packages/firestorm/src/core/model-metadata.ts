@@ -94,6 +94,17 @@ export class FirestormMetadata<T_model> {
 
   }
 
+  public addToManyRelationship<T_target_model extends FirestormModel>(
+    propertyName: string,
+    targetType: Type<T_target_model>,
+    location: RelationshipLocation
+  ) {
+    
+    const md = this.getOrCreatePropertyMetadata(propertyName)
+    md.setToManyRelationship(targetType, location)
+
+  }
+  
   /**
    * Adds a converter for a property from the model to the document
    * @param propertyName The name of the property in the model

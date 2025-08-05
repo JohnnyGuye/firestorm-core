@@ -72,16 +72,16 @@
     "doc": "docs",
     "test": "tests"
   },
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/cjs/src/index.js",
+  "module": "./dist/esm/src/index.js",
   "types": "./dist/types/src/index.d.ts",
   "sideEffects": true,
   "exports": {
     ".": {
       "types": "./dist/types/src/index.d.ts",
-      "node": "./dist/cjs/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./dist/esm/index.js"
+      "node": "./dist/cjs/src/index.js",
+      "require": "./dist/cjs/src/index.js",
+      "default": "./dist/esm/src/index.js"
     },
     "./package.json": "./package.json"
   },

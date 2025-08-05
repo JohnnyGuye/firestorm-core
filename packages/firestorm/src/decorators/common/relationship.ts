@@ -11,3 +11,13 @@ export interface ToOneOptions<T_target_model extends FirestormModel> {
   
 }
 
+/**
+ * Options for the to many decorator
+ */
+export interface ToManyOptions<T_target_model extends FirestormModel> {
+
+  target: Type<T_target_model>
+
+  location: RelationshipLocation
+
+}

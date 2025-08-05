@@ -1,8 +1,8 @@
-import { ToOneRelationship  } from "../decorators"
+import { ToOneRelationship, ToManyRelationship  } from "../decorators"
 import { FirestoreDocumentField } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { logWarn } from "./logging"
-import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata } from "./relationship"
+import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata, ToManyRelationshipMetadata } from "./relationship"
 import { pascalToSnakeCase } from "./string-manipulation"
 import { Type } from "./type"
 
@@ -73,6 +73,30 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     }) as DocumentToModelFieldConverter<T_property_type>
 
     this.toDocumentConverter = ((model: ToOneRelationship<T_target_model>) => model.id || null) as ModelToDocumentFieldConverter<T_property_type>
+
+  }
+
+    /**
+   * Sets this field as being a ToMany relationship
+   * @param targetType 
+   * @param location 
+   */
+  public setToManyRelationship<T_target_model extends FirestormModel>(
+    targetType: Type<T_target_model>, 
+    location: RelationshipLocation
+  ) {
+
+    const toManyRel: ToManyRelationshipMetadata<T_target_model> = { targetType, location, kind: 'to-many' }
+    this.relationship = toManyRel
+
+    this.toModelConverter = () => { throw new Error("Not implemented") }
+    this.toDocumentConverter = () => { throw new Error("Not implemented")}
+    
+    // this.toModelConverter = ((field: FirestoreDocumentField) => {
+    //   return new ToManyRelationship(targetType)
+    // }) as DocumentToModelFieldConverter<T_property_type>
+
+    // this.toDocumentConverter = ((model: ToManyRelationship<T_target_model>) => model.id || null) as ModelToDocumentFieldConverter<T_property_type>
 
   }
 
