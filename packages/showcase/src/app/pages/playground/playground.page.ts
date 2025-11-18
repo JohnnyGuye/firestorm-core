@@ -10,6 +10,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { PgSectionAggregateQueryComponent } from "./phasmo/pg-section-aggregate-query/pg-section-aggregate-query.component";
 import { PgSectionDocumentListenerComponent } from "./phasmo/pg-section-document-listener/pg-section-document-listener.component";
 import { PgSectionFindIncludeComponent } from "./phasmo/pg-section-find-include/pg-section-find-include.component";
+import { PgSectionAchievementsComponent } from "./phasmo/pg-section-achievements";
 
 @Component({
   standalone: true,
@@ -23,7 +24,8 @@ import { PgSectionFindIncludeComponent } from "./phasmo/pg-section-find-include/
     MatExpansionModule,
     PgSectionAggregateQueryComponent,
     PgSectionDocumentListenerComponent,
-    PgSectionFindIncludeComponent
+    PgSectionFindIncludeComponent,
+    PgSectionAchievementsComponent
 ]
 })
 export class PlaygroundPage {
@@ -42,7 +44,7 @@ export class PlaygroundPage {
   public aggregatedEntities: any = {}
 
   public rewriteDb() {
-    this.firestormSrv.initStaticDatas()
+    this.firestormSrv.initDatas()
   }
 
   public async retrieveEntities() {

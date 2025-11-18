@@ -21,7 +21,7 @@ export class DbtoolsPage {
   async refreshStaticDatas() {
     this.refreshState = 'refreshing'
 
-    await this.phasmoOrmService.initStaticDatas()
+    await this.phasmoOrmService.initDatas()
 
     this.refreshState = 'refreshed'
   }

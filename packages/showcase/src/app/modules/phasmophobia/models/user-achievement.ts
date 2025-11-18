@@ -10,7 +10,7 @@ export class UserAchievement {
     public id: string = ""
 
     @DateType()
-    public acquisitionDate: string = ""
+    public acquisitionDate: Date = new Date()
 
     // @ToOne({ target: User, location: 'root' })
     public userId: string = ""

@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { CollectionDocumentTuple, Firestorm } from "@jiway/firestorm-core"
 import { default as environment } from "@environment";
-import { Achievement, PhasmoEntity, PhasmoGame } from "../models";
+import { Achievement, PhasmoEntity, PhasmoGame, User, UserAchievement } from "../models";
 import { GHOST_ENTITIES, ACHIEVEMENTS } from "../initial-data";
 import { CollectionDocumentTuples } from "@jiway/firestorm-core";
+import { generateInt, generateName, getRandomInArray } from "@modules/random";
 
 const phasmo = environment.firebaseConfigurations.phasmo
 
@@ -56,16 +57,92 @@ export class PhasmoOrmService {
     return this.firestorm.getCrudRepository(Achievement, this.rootCollection)
   }
 
-  public async initStaticDatas() {
+  public get usersRepository() {
+    return this.firestorm.getCrudRepository(User, this.rootCollection)
+  }
 
+  public async initDatas() {
+
+    await this.initStaticDatasAsync()
+
+  }
+
+  private async initStaticDatasAsync() {
+    
     await this.achievementsRepository.deleteAllAsync()
     await this.achievementsRepository.createMultipleAsync(...ACHIEVEMENTS)
     
     await this.refreshEntitiesAsync()
+    await this.generateBasicUsersAsync()
+    
   }
 
   private async refreshEntitiesAsync() {
     await this.entityRepository.deleteAllAsync()
     await this.entityRepository.createMultipleAsync(...GHOST_ENTITIES)
   }
+
+  private async generateBasicUsersAsync() {
+
+    this.usersRepository.deleteAllAsync()
+
+    const achievements = await this.achievementsRepository.getAllAsync()
+
+    const userCount = 3
+    const users: User[] = []
+    for (let i = 0; i < userCount; i++) {
+      
+      const user = this.generateRandomUser()
+      users.push(user)
+      
+    }
+
+    await this.usersRepository.createMultipleAsync(...users)
+
+    for (let user of users) {
+
+      const aCount = generateInt(3) + 2
+
+      const uas = []
+
+      for (let i = 0; i < aCount; i++) {
+        
+        const ua = this.generateRandomUserAchievements(user, achievements)
+        uas.push(ua)
+
+      }
+
+      const achievementCrud = 
+        this.firestorm
+          .getCrudRepository(
+            UserAchievement, 
+            new CollectionDocumentTuples(
+              new CollectionDocumentTuple("users", user.id)
+            )
+          )
+
+      await achievementCrud.createMultipleAsync(...uas)
+
+    }
+
+  }
+
+  private generateRandomUser() {
+
+    const user = new User()
+    user.nickname = generateName()
+
+    return user
+  }
+
+  private generateRandomUserAchievements(user: User, achievements: Achievement[]) {
+
+    const achUser = new UserAchievement()
+    achUser.achievementId.setModel(getRandomInArray(achievements))
+    achUser.acquisitionDate = new Date()
+    achUser.userId = user.id
+
+    return achUser
+  }
+
 }

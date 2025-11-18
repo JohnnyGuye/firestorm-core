@@ -23,6 +23,17 @@ service cloud.firestore {
         allow read: if true;
         allow write: if true;
       }
+
+      match /users/{user_id} {
+        allow read: if true;
+        allow write: if true;
+
+        match /achievements/{achievement_id} {
+          allow read: if true;
+          allow write: if true;
+        }
+        
+      }
       
     }
 
