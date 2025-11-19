@@ -17,5 +17,8 @@
     <a mat-button [routerLink]="nodeLink(node)">{{node.name}}</a>
   </mat-tree-node>
 </mat-tree>
+<div><a mat-button [routerLink]="'playground'">Playground</a></div>
 
-<a mat-button [routerLink]="'playground'">Playground</a>
+@if (isLocal) {
+  <div><a mat-button [routerLink]="'tests'">Tests</a></div>
+}

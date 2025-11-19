@@ -1,4 +1,5 @@
-import { Route, Routes, UrlMatchResult, UrlSegment, UrlSegmentGroup } from '@angular/router';
+import { CanMatchFn, Route, Routes, UrlMatchResult, UrlSegment, UrlSegmentGroup } from '@angular/router';
+import { isLocalGuard } from '@guards';
 
 
 function docMatcher(segments: UrlSegment[], group: UrlSegmentGroup, route: Route): UrlMatchResult | null {
@@ -15,6 +16,8 @@ function docMatcher(segments: UrlSegment[], group: UrlSegmentGroup, route: Route
 
   return result
 }
+
+
 
 export const routes: Routes = [
   {
@@ -37,5 +40,12 @@ export const routes: Routes = [
     matcher: docMatcher,
     title: 'Doc',
     loadComponent: () => import('./pages/markdown-doc').then(m => m.MarkdownDocPage)
+  },
+  {
+    title: 'Tests',
+    path: 'tests',
+    pathMatch: 'full',
+    canMatch: [isLocalGuard()],
+    loadComponent: () => import('./pages/tests').then(m => m.TestsPage)
   }
 ];
