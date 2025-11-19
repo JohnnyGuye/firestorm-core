@@ -14,7 +14,7 @@ const VALID_FIREBASE_CONFIG = {
 describe('Firestorm instanciation', () => {
 
     afterEach(() => {
-        for (let app of getApps()) {
+        for (const app of getApps()) {
             deleteApp(app)
         }
     })

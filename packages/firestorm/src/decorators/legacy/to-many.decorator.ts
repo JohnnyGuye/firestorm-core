@@ -5,6 +5,11 @@ import { ToManyOptions } from "../common/relationship"
 import { ToManyRelationship } from "../../core/relationship/to-many";
 export { ToManyRelationship } from "../../core/relationship/to-many";
 
+/**
+ * Decorator for properties or field taht reference multiple documents
+ * @param options 
+ * @returns 
+ */
 export function ToMany
     <
     T_model extends FirestormModel & Record<K, ToManyRelationship<T_target_model>>,

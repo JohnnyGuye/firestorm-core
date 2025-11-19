@@ -1,13 +1,15 @@
 import { FirestoreDocument, FirestoreDocumentField } from "./firestore-document"
 import { Type } from "./type"
 
+export type FirestormId = string
+
 /**
  * Minimal requirements for a firestorm model
  */
 export interface IFirestormModel {
 
     /** Unique if of the document in this collection */
-    id: string | null
+    id: FirestormId | null
     
 }
 
@@ -17,7 +19,7 @@ export interface IFirestormModel {
 export interface IMandatoryFirestormModel extends IFirestormModel {
    
     /** @inheritdoc */
-    id: string
+    id: FirestormId
 
 }
 /** Alias of {@link IFirestormModel} */
@@ -31,14 +33,14 @@ export type MandatoryFirestormModel = IMandatoryFirestormModel
  * @param modelOrId Model or id 
  * @returns An id
  */
-export function resolveId(modelOrId: IMandatoryFirestormModel | string): string;
+export function resolveId(modelOrId: IMandatoryFirestormModel | FirestormId): string;
 /**
  * Take a firestorm model or an id and gets the id
  * @param modelOrId Model or id 
  * @returns An id
  */
-export function resolveId(modelOrId: IFirestormModel | string): string | null;
-export function resolveId(modelOrId: IFirestormModel | string) {
+export function resolveId(modelOrId: IFirestormModel | FirestormId): string | null;
+export function resolveId(modelOrId: IFirestormModel | FirestormId) {
     if (modelOrId === null) return null;
     if (typeof modelOrId === 'string') return modelOrId
     return modelOrId.id
@@ -51,7 +53,7 @@ export function resolveId(modelOrId: IFirestormModel | string) {
  * @returns An instance of the model (same as given if it was already an instance)
  */
 export function resolveInstance<T extends IFirestormModel>(
-    idOrModel: T | string, 
+    idOrModel: T | FirestormId, 
     type: Type<T>
     ): T {
   

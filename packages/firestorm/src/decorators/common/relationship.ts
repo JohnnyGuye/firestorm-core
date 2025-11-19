@@ -1,3 +1,4 @@
+import { Query } from "../../query"
 import { FirestormModel, RelationshipLocation, Type } from "../../core"
 
 /**
@@ -19,5 +20,7 @@ export interface ToManyOptions<T_target_model extends FirestormModel> {
   target: Type<T_target_model>
 
   location: RelationshipLocation
+
+  query?: Query
 
 }

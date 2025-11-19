@@ -17,6 +17,12 @@ export declare interface Type<T> extends Function {
     new (...args: any[]): T;
 }
 
+/**
+ * Duck types an object by checking if it has a field named fieldName
+ * @param object The object to test
+ * @param fieldName The name of the field to check
+ * @returns 
+ */
 export function isIn<K extends string>(object: unknown, fieldName: K): object is Record<K, any> {
     if (object === null || object === undefined || typeof object !== 'object') return false
     return fieldName in object
