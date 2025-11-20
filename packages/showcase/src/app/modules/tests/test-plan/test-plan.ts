@@ -1,13 +1,7 @@
-import { Test, TestGroup, TestPackage } from "./tests" 
+import { Test, TestGroup, TestPackage } from "../tests" 
+import { TestState } from "./state";
 
-export enum TestState {
 
-    Idle,
-    Failed,
-    Running,
-    Success
-
-}
 
 export class TestResult {
 
@@ -21,7 +15,7 @@ export class TestResult {
 
 export interface ITester {
 
-    run(): void;
+    run(): Promise<void>;
 
     reset(): void;
 
@@ -44,13 +38,13 @@ export class UnitTester implements ITester {
         return this._test.description
     }
 
-    public run() {
+    public async run() {
 
         this.reset()
         this._state = TestState.Running
 
         try {
-            this._test.test()
+            await this._test.test()
             this._state = TestState.Success
         }
         catch(err) {
@@ -83,15 +77,18 @@ export class GroupTester implements ITester {
     constructor(testGroup: TestGroup) {
 
         this._test = testGroup
-        this.testers = testGroup.tests.map(t => {
-            if (t instanceof Test) {
-                return new UnitTester(t)
-            } else if (t instanceof TestGroup) {
-                return new GroupTester(t)
-            } else {
-                throw new Error("Unsupported test")
-            }
-        })
+        this.testers = 
+            testGroup
+                .tests
+                .map(t => {
+                    if (t instanceof Test) {
+                        return new UnitTester(t)
+                    } else if (t instanceof TestGroup) {
+                        return new GroupTester(t)
+                    } else {
+                        throw new Error("Unsupported test")
+                    }
+                })
 
     }
 
@@ -103,9 +100,10 @@ export class GroupTester implements ITester {
         return this._test.description
     }
 
-    public run() {
+    public async run() {
+        this.reset()
         for (let tester of this.testers) {
-            tester.run()
+            await tester.run()
         }
     }
 

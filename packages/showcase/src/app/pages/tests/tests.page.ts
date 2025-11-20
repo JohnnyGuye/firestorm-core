@@ -2,14 +2,22 @@ import { Component } from "@angular/core";
 import { MAIN_TEST_PLAN } from "@testplans";
 import { MatTreeModule } from "@angular/material/tree";
 import { MatIcon } from "@angular/material/icon";
-import { GroupTester, ITester, TestGroup } from "@modules/tests";
+import { GroupTester, ITester } from "@modules/tests";
+import { MatButton, MatIconButton } from "@angular/material/button";
+import { TestStateComponent } from "@components/test-state-tag";
 
 @Component({
     standalone: true,
     templateUrl: 'tests.page.html',
+    styleUrls: [
+        "tests.page.scss"
+    ],
     imports: [
     MatTreeModule,
-    MatIcon
+    MatIcon,
+    MatButton,
+    TestStateComponent,
+    MatIconButton
 ]
 })
 export class TestsPage {
@@ -29,5 +37,17 @@ export class TestsPage {
         }
 
         return false
+    }
+
+    get testState() {
+        return this.testPlan.state
+    }
+
+    run() {
+        this.testPlan.run()
+    }
+
+    reset() {
+        this.testPlan.reset()
     }
 }

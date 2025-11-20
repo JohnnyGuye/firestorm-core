@@ -1,21 +1,75 @@
-<h1>Tests</h1>
+<section class="container is-fluid">
 
-<mat-tree #tree [dataSource]="testPlan.root.testers" [childrenAccessor]="childrenAccessor">
-  <!-- This is the tree node template for leaf nodes -->
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-    <!-- use a disabled button to provide padding for tree leaf -->
-    <button mat-icon-button disabled></button>
-    {{node.name}}
-  </mat-tree-node>
-  <!-- This is the tree node template for expandable nodes -->
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodeToggle
-                 [cdkTreeNodeTypeaheadLabel]="node.name">
-    <button mat-icon-button matTreeNodeToggle
-            [attr.aria-label]="'Toggle ' + node.name">
-      <mat-icon class="mat-icon notranslate mat-icon-rtl-mirror material-icons mat-ligature-font mat-icon-no-color">
-        {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-      </mat-icon>
-    </button>
-    {{node.name}}
-  </mat-tree-node>
-</mat-tree>
+    <h1>Tests</h1>
+    
+    <div>
+        
+        <firestorm-test-state-tag [state]="testState"></firestorm-test-state-tag>
+    
+        <button mat-button (click)="run()">
+            Run
+        </button>
+        
+        <button mat-button (click)="reset()" [disabled]="false">
+            Reset
+        </button>
+    
+    </div>
+    
+    <mat-tree #tree [dataSource]="testPlan.root.testers" [childrenAccessor]="childrenAccessor">
+      
+      <!-- LEAF NODES -->
+
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+        
+        <div class="test-line">
+       
+          <div class="start">
+            <mat-icon class="mat-icon notranslate mat-icon-rtl-mirror material-icons mat-ligature-font mat-icon-no-color"></mat-icon>
+          </div>
+
+          <div class="middle">
+            {{node.name}}
+          </div>
+
+          <div class="end">
+            <firestorm-test-state-tag [state]="node.state"></firestorm-test-state-tag>
+          </div>
+
+        </div>
+
+      </mat-tree-node>
+
+      <!-- EXPANDABLE NODES -->
+
+      <mat-tree-node 
+        *matTreeNodeDef="let node;when: hasChild" 
+        matTreeNodePadding 
+        matTreeNodeToggle
+        [cdkTreeNodeTypeaheadLabel]="node.name">
+    
+        <div class="test-line">
+       
+          <div class="start">
+            <mat-icon 
+              matTreeNodeToggle 
+              class="mat-icon notranslate mat-icon-rtl-mirror material-icons mat-ligature-font mat-icon-no-color">
+              {{tree.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </div>
+
+          <div class="middle">
+            {{node.name}}
+          </div>
+
+          <div class="end">
+            <firestorm-test-state-tag [state]="node.state"></firestorm-test-state-tag>
+          </div>
+
+        </div>
+        
+      </mat-tree-node>
+      
+    </mat-tree>
+
+</section>

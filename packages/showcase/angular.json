@@ -41,7 +41,9 @@
               "@angular/material/prebuilt-themes/cyan-orange.css",
               "prismjs/themes/prism-okaidia.css",
               "prismjs/plugins/line-numbers/prism-line-numbers.css",
-              "src/styles.scss"
+              "src/styles/styles.scss",
+              "src/styles/bulma/root.scss",
+              "src/styles/bulma/tag.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": ["../../node_modules"]

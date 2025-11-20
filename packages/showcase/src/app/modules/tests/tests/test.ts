@@ -1,4 +1,4 @@
-export type TestFn = () => void
+export type AsyncTestFn = () => Promise<void>
 
 export interface ITest {
 
@@ -13,11 +13,11 @@ export class Test implements ITest {
 
     public readonly description: string
 
-    public readonly test: TestFn
+    public readonly test: AsyncTestFn
 
-    constructor(name: string, test: TestFn);
-    constructor(name: string, description: string, test: TestFn);
-    constructor(name: string, descriptionOrTest: TestFn | string, test?: TestFn) {
+    constructor(name: string, test: AsyncTestFn);
+    constructor(name: string, description: string, test: AsyncTestFn);
+    constructor(name: string, descriptionOrTest: AsyncTestFn | string, test?: AsyncTestFn) {
 
         this.name = name
 
