@@ -50,6 +50,7 @@ export class UnitTester implements ITester {
         catch(err) {
             this._result = new TestResult(err)
             this._state = TestState.Failed
+            console.error(err)
         }
 
     }
@@ -103,6 +104,9 @@ export class GroupTester implements ITester {
     public async run() {
         this.reset()
         for (let tester of this.testers) {
+            for (let before of this._test.beforeEachTests) {
+                await before()
+            }
             await tester.run()
         }
     }

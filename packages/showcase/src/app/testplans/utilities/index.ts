@@ -1,10 +1,17 @@
 import { default as environment } from "@environment";
 import { Firestorm } from "@jiway/firestorm-core";
+import { generateName } from "@modules/random";
+import { Person } from "@testplans/models";
+
+
+let firestorm: Firestorm | undefined = undefined
 
 export function getFirestorm() {
 
+    if (firestorm) return firestorm
+
     const phasmo = environment.firebaseConfigurations.phasmo
-    const firestorm = new Firestorm()
+    firestorm = new Firestorm()
     firestorm.connect(phasmo)
     
 
@@ -14,4 +21,15 @@ export function getFirestorm() {
     }
 
     return firestorm
+}
+
+export function getRandomPerson() {
+
+    const name = generateName().split(" ")
+
+    const p = new Person()
+    p.name = name[0]
+    p.surname = name[1]
+    
+    return p
 }

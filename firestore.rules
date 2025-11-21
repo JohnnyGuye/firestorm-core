@@ -37,6 +37,20 @@ service cloud.firestore {
       
     }
 
+    match /playgrounds/unit_test {
+
+      allow read: if true;
+      allow write: if true;
+
+      match /persons/{person_id} {
+
+        allow read: if true;
+        allow write: if true;
+
+      }
+      
+    }
+
     match /playgrounds/message_app {
 
       allow read: if true;
