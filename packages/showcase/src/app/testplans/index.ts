@@ -75,9 +75,98 @@ export const MAIN_TEST_PLAN = new TestPlan(
                         const ps = await personRepo.createMultipleAsync(p1, p2, p3)
 
                         expect(ps).toBeOfLength(3)
-                        
+
                     }
                 )
+            )
+            .addTest(
+                "Check existency",
+                async () => {
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+
+                    const p = getRandomPerson()
+
+                    await personRepo.createAsync(p)
+
+                    const pExist = await personRepo.existsAsync(p.id)
+                    const pDoesntExist = await personRepo.existsAsync("not_registered_id")
+
+                    expect(pExist).toBeTrue()
+                    expect(pExist).toBe(pExist)
+                    expect(pDoesntExist).toBeFalse()
+                }
+            )
+            .addTest(
+                "Read all",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    const p1 = getRandomPerson()
+                    const p2 = getRandomPerson()
+                    const p3 = getRandomPerson()
+
+                    await personRepo.createMultipleAsync(p1, p2, p3)
+                    const ps = await personRepo.getAllAsync()
+
+                    expect(ps).toBeOfLength(3)
+
+                }
+            )
+            .addTest(
+                "Read one",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    const p1 = getRandomPerson()
+                    const p2 = getRandomPerson()
+                    const p3 = getRandomPerson()
+
+                    await personRepo.createMultipleAsync(p1, p2, p3)
+                    const ps = await personRepo.getByIdAsync(p2.id)
+
+                    expect(ps).toBe(p2)
+                    expect(ps).toNotBe(p1)
+                    expect(ps).toNotBe(p3)
+
+                }
+            )
+            .addTest(
+                "Update",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    const p = new Person()
+                    
+                    p.name = "Firstname"
+                    p.surname = "Surname"
+                    
+                    const pComp = new Person()
+                    pComp.name = "Firstname"
+                    pComp.surname = "Surname"
+
+                    expect(p).toBe(pComp)
+
+                    await personRepo.createAsync(p)
+                    
+                    expect(p).toNotBe(pComp)
+
+                    await personRepo.updateAsync({ id: p.id, name: "Changed name"})
+                    
+                    pComp.id = p.id
+                    pComp.name = "Changed name"
+
+                    const pUpdated = await personRepo.getByIdAsync(p.id)
+                    
+                    expect(pUpdated).toBe(pComp)
+
+                }
             )
     ]
 )

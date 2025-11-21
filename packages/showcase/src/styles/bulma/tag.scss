@@ -48,7 +48,7 @@
   display: inline-flex;
   font-size: var(--bulma-size-small);
   height: 2em;
-  justify-content: center;
+  justify-content: space-between;
   line-height: 1.5;
   padding-left: 0.75em;
   padding-right: 0.75em;
@@ -231,4 +231,15 @@ a.tag:active,
 button.tag:active,
 .tag.is-hoverable:active {
   --bulma-tag-background-l-delta: var(--bulma-tag-active-background-l-delta);
+}
+
+.tag.has-w-10 {
+  width: 8em;
+}
+
+.tag.has-animated-colors {
+  transition: 
+    color 0.25s,
+    background-color 0.25s
+    ;
 }

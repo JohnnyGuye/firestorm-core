@@ -7,6 +7,13 @@ export interface ITest {
 
 }
 
+export function isTest(value: unknown): value is ITest {
+    return typeof value === "object"
+        && !!value
+        && "name" in value && typeof value.name === "string"
+        && "description" in value && typeof value.description === "string"
+}
+
 export class Test implements ITest {
 
     public readonly name: string

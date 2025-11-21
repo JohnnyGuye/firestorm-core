@@ -50,3 +50,17 @@ export class IncorrectArrayLengthError extends TestError {
         super(source, `The array was expected to be of length ${expectedLength} but is of length ${source.length} `)
     }
 }
+
+export class DisimilarObjectsError extends TestError {
+
+    constructor(source: any, public readonly oth: any) {
+        super(source, `The objects are dissimilar`)
+    }
+}
+
+export class SimilarObjectsError extends TestError {
+
+    constructor(source: any, public readonly oth: any) {
+        super(source, `The objects are similar`)
+    }
+}

@@ -61,3 +61,10 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 markdown pre {
   font-size: 0.75rem;
 }
+
+.icon {
+  width: 16px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
