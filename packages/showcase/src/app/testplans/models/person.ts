@@ -14,5 +14,11 @@ export class Person {
     role: UserRole = 'reader'
 
     privileges: Privilege[] = []
+
+    age: number = 25
+
+    get isAdult() {
+        return this.age >= 21
+    }
     
 }

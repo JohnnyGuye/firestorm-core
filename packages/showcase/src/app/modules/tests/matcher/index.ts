@@ -64,6 +64,22 @@ class Expect {
         }
     }
 
+    async toThrowAsync() {
+        if (typeof this.object !== "function") {
+            throw new Error("Must be a function")
+        }
+
+        try 
+        {
+            await this.object()
+        } 
+        catch(err) {
+            return    
+        }
+
+        throw new Error("Must throw")
+    }
+
     
 }
 function deepEquals(lhs: unknown, rhs: unknown): boolean {

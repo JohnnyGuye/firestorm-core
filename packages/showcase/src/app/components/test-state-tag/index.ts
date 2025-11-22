@@ -20,10 +20,10 @@ export enum TestStateComponentMode {
             <span class="icon">
             @switch (state) {
                 @case (TestState.Idle) {
-                    <i class="fa-solid fa-hourglass"></i>
+                    <i class="fa-solid fa-stop"></i>
                 }
                 @case (TestState.Failed) {
-                    <i class="fa-solid fa-stop"></i>
+                    <i class="fa-solid fa-exclamation fa-shake"></i>
                 }
                 @case (TestState.Running) {
                     <i class="fa-solid fa-spinner fa-spin-pulse"></i>

@@ -20,67 +20,57 @@ export const MAIN_TEST_PLAN = new TestPlan(
                 const personRepo = getFirestorm().getCrudRepository(Person, UNIT_TEST_DB_ROOT)
                 await personRepo.deleteAllAsync()
             })
-            .addTest(
-                new Test(
-                    "Create one", 
-                    async () => {
-                        
-                        const fOrm = getFirestorm()
-                        const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
-                        
-                        const p = new Person()
-                        p.name = "John"
-                        p.surname = "Doe"
+            .addTest("Create one", 
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    const p = new Person()
+                    p.name = "John"
+                    p.surname = "Doe"
 
-                        const p2 = await personRepo.createAsync(p)
+                    const p2 = await personRepo.createAsync(p)
 
-                        expect(p).toShareReferenceWith(p2)
-                        expect(p.id).toNotBeNull()
-                    }
-                )
+                    expect(p).toShareReferenceWith(p2)
+                    expect(p.id).toNotBeNull()
+                }
             )
-            .addTest(
-                new Test(
-                    "Create one with given id", 
-                    async () => {
-                        
-                        const fOrm = getFirestorm()
-                        const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
-                        
-                        const p = new Person()
-                        p.id = "fixed_id"
-                        p.name = "John"
-                        p.surname = "Doe"
+            .addTest("Create one with given id", 
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    const p = new Person()
+                    p.id = "fixed_id"
+                    p.name = "John"
+                    p.surname = "Doe"
 
-                        const p2 = await personRepo.createAsync(p)
+                    const p2 = await personRepo.createAsync(p)
 
-                        expect(p).toShareReferenceWith(p2)
-                        expect(p.id).toNotBeNull()
-                        expect(p.id).toEqual("fixed_id")
-                    }
-                )
+                    expect(p).toShareReferenceWith(p2)
+                    expect(p.id).toNotBeNull()
+                    expect(p.id).toEqual("fixed_id")
+                }
             )
-            .addTest(
-                new Test(
-                    "Create multiple", 
-                    async () => {
-                        
-                        const fOrm = getFirestorm()
-                        const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
-                        
-                        const p1 = getRandomPerson()
-                        const p2 = getRandomPerson()
-                        const p3 = getRandomPerson()
+            .addTest("Create multiple", 
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    const p1 = getRandomPerson()
+                    const p2 = getRandomPerson()
+                    const p3 = getRandomPerson()
 
-                        const ps = await personRepo.createMultipleAsync(p1, p2, p3)
+                    const ps = await personRepo.createMultipleAsync(p1, p2, p3)
 
-                        expect(ps).toBeOfLength(3)
+                    expect(ps).toBeOfLength(3)
 
-                    }
-                )
+                }
             )
-            .addTest(
-                "Check existency",
+            .addTest("Check existency",
                 async () => {
                     const fOrm = getFirestorm()
                     const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
@@ -97,8 +87,7 @@ export const MAIN_TEST_PLAN = new TestPlan(
                     expect(pDoesntExist).toBeFalse()
                 }
             )
-            .addTest(
-                "Read all",
+            .addTest("Read all",
                 async () => {
                     
                     const fOrm = getFirestorm()
@@ -115,8 +104,7 @@ export const MAIN_TEST_PLAN = new TestPlan(
 
                 }
             )
-            .addTest(
-                "Read one",
+            .addTest("Read one",
                 async () => {
                     
                     const fOrm = getFirestorm()
@@ -135,8 +123,7 @@ export const MAIN_TEST_PLAN = new TestPlan(
 
                 }
             )
-            .addTest(
-                "Update",
+            .addTest("Update existing",
                 async () => {
                     
                     const fOrm = getFirestorm()
@@ -166,6 +153,101 @@ export const MAIN_TEST_PLAN = new TestPlan(
                     
                     expect(pUpdated).toBe(pComp)
 
+                }
+            )
+            .addTest("Update throws on non existing",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+                    
+                    await expect(
+                        async () => { 
+                            await personRepo.updateAsync({ id: "non existing", name: "Changed name"}) 
+                        })
+                        .toThrowAsync()
+                }
+            )
+            .addTest("Aggregate",
+                async () => {
+
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+
+                    const ps = []
+                    for (let i = 0; i < 5; i++) {
+                        const p = getRandomPerson()
+                        p.age = 20 + i
+                        ps.push(p)
+                    }
+
+                    await personRepo.createMultipleAsync(...ps)
+
+                    const aggRes = await personRepo.aggregateAsync({
+                        amountOfPeople: { verb: 'count' },
+                        averageAgeOfPeople: { verb: 'average', field: 'age' },
+                        sumAgeOfPeople: { verb: 'sum', field: 'age' }
+                    })
+
+                    const aggExpected = {
+                        amountOfPeople: 5,
+                        averageAgeOfPeople: 22,
+                        sumAgeOfPeople: 110
+                    }
+
+                    expect(aggRes).toBe(aggExpected)
+                    
+                }
+            )
+            .addTest("Delete one",
+                async () => {
+
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+
+                    const ps = []
+                    for (let i = 0; i < 5; i++) {
+                        const p = getRandomPerson()
+                        ps.push(p)
+                    }
+                    await personRepo.createMultipleAsync(...ps)
+
+                    const countBeforeDelete = await personRepo.aggregateAsync({ count: { verb: 'count' }})
+
+                    await personRepo.deleteAsync(ps[2].id)
+
+                    await personRepo.deleteAsync(ps[3])
+
+                    const countAfterDelete = await personRepo.aggregateAsync({ count: { verb: 'count' }})
+
+                    expect(countBeforeDelete.count).toEqual(countAfterDelete.count + 2)
+                }
+            )
+            .addTest("Delete multiple",
+                async () => {
+
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+
+                    const ps = []
+                    for (let i = 0; i < 5; i++) {
+                        const p = getRandomPerson()
+                        ps.push(p)
+                    }
+                    await personRepo.createMultipleAsync(...ps)
+
+                    const countBeforeDelete = await personRepo.aggregateAsync({ count: { verb: 'count' }})
+
+                    await personRepo.deleteMultipleAsync([ps[2].id, ps[3].id])
+
+                    const countAfterDelete = await personRepo.aggregateAsync({ count: { verb: 'count' }})
+
+                    await personRepo.deleteMultipleAsync([ps[0].id, ps[1].id])
+
+                    const countAfterSecondDelete = await personRepo.aggregateAsync({ count: { verb: 'count' }})
+
+                    expect(countBeforeDelete.count).toEqual(countAfterDelete.count + 2)
+                    expect(countBeforeDelete.count).toEqual(countAfterSecondDelete.count + 4)
                 }
             )
     ]

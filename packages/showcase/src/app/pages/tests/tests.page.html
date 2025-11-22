@@ -63,7 +63,10 @@
           </div>
 
           <div class="end">
-            <firestorm-test-state-tag [state]="node.state"></firestorm-test-state-tag>
+            <div class="tags">
+              <span class="tag">{{node.successfulChildrenCount}}/{{node.directChildrenCount}}</span>
+              <firestorm-test-state-tag [state]="node.state"></firestorm-test-state-tag>
+            </div>
           </div>
 
         </div>

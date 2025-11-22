@@ -135,6 +135,14 @@ export class GroupTester implements ITester {
         return TestState.Idle
     }
 
+    get successfulChildrenCount() {
+        return this.testers.filter(t => t.state == TestState.Success).length
+    }
+
+    get directChildrenCount() {
+        return this.testers.length
+    }
+
     private get states() {
         return this.testers.map(t => t.state)
     }
