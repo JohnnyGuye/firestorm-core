@@ -23,7 +23,10 @@ export enum TestStateComponentMode {
                     <i class="fa-solid fa-stop"></i>
                 }
                 @case (TestState.Failed) {
-                    <i class="fa-solid fa-exclamation fa-shake"></i>
+                    <i class="fa-solid fa-exclamation fa-shake fa-fade"></i>
+                }
+                @case (TestState.Ignored) {
+                    <i class="fa-solid fa-question"></i>
                 }
                 @case (TestState.Running) {
                     <i class="fa-solid fa-spinner fa-spin-pulse"></i>
@@ -56,6 +59,7 @@ export class TestStateComponent {
         switch (this.state) {
             case TestState.Idle: return "is-dark"
             case TestState.Failed: return "is-danger"
+            case TestState.Ignored: return "is-info"
             case TestState.Running: return "is-warning"
             case TestState.Success: return "is-success"            
         }
@@ -65,6 +69,7 @@ export class TestStateComponent {
         switch (this.state) {
             case TestState.Idle:    return "Idle"
             case TestState.Failed:  return "Failure"
+            case TestState.Ignored:  return "Ignored"
             case TestState.Running: return "Running"
             case TestState.Success: return "Success"
         }

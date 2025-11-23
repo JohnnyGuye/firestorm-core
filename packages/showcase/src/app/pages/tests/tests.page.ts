@@ -4,7 +4,7 @@ import { MatTreeModule } from "@angular/material/tree";
 import { MatIcon } from "@angular/material/icon";
 import { GroupTester, ITester } from "@modules/tests";
 import { MatButton, MatIconButton } from "@angular/material/button";
-import { TestStateComponent } from "@components/test-state-tag";
+import { TestStateComponent, TestStateComponentMode } from "@components/test-state-tag";
 
 @Component({
     standalone: true,
@@ -21,6 +21,8 @@ import { TestStateComponent } from "@components/test-state-tag";
 ]
 })
 export class TestsPage {
+
+    TestStateComponentMode = TestStateComponentMode
 
     testPlan = MAIN_TEST_PLAN
 

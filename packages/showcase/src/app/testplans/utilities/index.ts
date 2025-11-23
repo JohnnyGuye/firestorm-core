@@ -33,3 +33,11 @@ export function getRandomPerson() {
     
     return p
 }
+
+export function* getRandomPeople(count: number) {
+
+    for (let i = 0; i < count; i++) {
+        yield getRandomPerson()
+    }
+
+}

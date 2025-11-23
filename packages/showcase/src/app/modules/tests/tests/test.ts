@@ -2,9 +2,27 @@ export type AsyncTestFn = () => Promise<void>
 
 export interface ITest {
 
+    /**
+     * Name of the test
+     */
     name: string
+
+    /**
+     * Optional description
+     */
     description: string
 
+    /**
+     * If true, the test is not run
+     */
+    ignore: boolean
+
+}
+
+export interface TestOptions {
+
+    ignore?: boolean 
+    
 }
 
 export function isTest(value: unknown): value is ITest {
@@ -19,6 +37,8 @@ export class Test implements ITest {
     public readonly name: string
 
     public readonly description: string
+
+    public ignore: boolean = false
 
     public readonly test: AsyncTestFn
 
@@ -41,6 +61,11 @@ export class Test implements ITest {
         }
 
         throw new Error("No constructor corresponds to these parameters")
+    }
+
+    setIgnore(value: boolean = true) {
+        this.ignore = value
+        return this
     }
 
 }

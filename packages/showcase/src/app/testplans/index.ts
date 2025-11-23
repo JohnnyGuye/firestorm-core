@@ -1,9 +1,10 @@
-import { CollectionDocumentTuple, CollectionDocumentTuples } from "@jiway/firestorm-core";
+import { CollectionDocumentTuple, CollectionDocumentTuples, FirestormId, Query } from "@jiway/firestorm-core";
 import { Test, TestGroup, TestPlan } from "@modules/tests"
 import { expect } from "@modules/tests/matcher"
-import { getFirestorm, getRandomPerson } from "./utilities";
+import { getFirestorm, getRandomPeople, getRandomPerson } from "./utilities";
 
-import { Person } from "./models";
+import { Person, sortByRank } from "./models";
+import { ArcanaCard, PREDEFINED_ARCANAS } from "./models";
 
 
 
@@ -16,7 +17,13 @@ export const MAIN_TEST_PLAN = new TestPlan(
             async () => {}
         ),
         new TestGroup("CRUD repo", "")
-            .beforeEachTest(async () => {
+            .addBeforeAllTest(async () => {
+                const arcanaRepo = getFirestorm().getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+                await arcanaRepo.deleteAllAsync()
+                await arcanaRepo.createMultipleAsync(...PREDEFINED_ARCANAS)
+
+            })
+            .addBeforeEachTest(async () => {
                 const personRepo = getFirestorm().getCrudRepository(Person, UNIT_TEST_DB_ROOT)
                 await personRepo.deleteAllAsync()
             })
@@ -248,6 +255,281 @@ export const MAIN_TEST_PLAN = new TestPlan(
 
                     expect(countBeforeDelete.count).toEqual(countAfterDelete.count + 2)
                     expect(countBeforeDelete.count).toEqual(countAfterSecondDelete.count + 4)
+                }
+            )
+            .addTest("Delete all",
+                async () => {
+
+                    const fOrm = getFirestorm()
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+
+                    const ps = []
+                    for (let i = 0; i < 5; i++) {
+                        const p = getRandomPerson()
+                        ps.push(p)
+                    }
+
+                    await personRepo.createMultipleAsync(...ps)
+                    
+                    {
+                        const all = await personRepo.getAllAsync()
+                        
+                        expect(all).toBeOfLength(5)
+                    }
+
+                    await personRepo.deleteAllAsync()
+
+                    {
+                        const all = await personRepo.getAllAsync()
+    
+                        expect(all).toBeOfLength(0)
+                    }
+                }
+            )
+            .addTest("Listen add change",
+                async () => {
+                    
+                    let failureTo: any
+                    let insertionInterval: any
+                    let subscription: any
+
+                    try {
+                        
+                        await new Promise<void>(
+                            async (resolve, reject) => {
+    
+                                const fOrm = getFirestorm();
+                                const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT);
+    
+                                const listener = personRepo.listen();
+    
+                                subscription = listener.subscribe({
+                                    next: (x_1) => {
+    
+                                        if (x_1.count >= 5) {
+                                            resolve()
+                                        }
+    
+                                        if (!x_1.isInitial) {
+                                            if (x_1.docChanges.length != 1) {
+                                                reject(new Error("Wrong amount of changes"))
+                                            }
+        
+                                            if (x_1.docChanges[0].type != 'added') {
+                                                reject(new Error("Should only be additions"))
+                                            }
+                                        }
+                                    }
+                                });
+    
+                                failureTo = setTimeout(() => { reject(new Error("Time Out")); }, 1000);
+    
+                                insertionInterval = setInterval(async () => {
+                                    
+                                    const p = await personRepo.createAsync(getRandomPerson())
+                                    
+                                }, 100)
+    
+                            }
+                        );
+
+                    } finally {
+
+                        subscription.unsubscribe();
+                        clearTimeout(failureTo);
+                        clearInterval(insertionInterval)
+
+                    }
+
+
+                }
+            )
+            .addTest("Listen on query add change",
+                async () => {
+                    
+                    let failureTo: any
+                    let insertionInterval: any
+                    let subscription: any
+
+                    const fOrm = getFirestorm();
+                    const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT);
+
+                    const TIME_ALLOCATED_BY_PEOPLE = 50
+                    const PEOPLE_TO_GENERATE_COUNT = 6
+                    const MAX_TO = TIME_ALLOCATED_BY_PEOPLE * PEOPLE_TO_GENERATE_COUNT * 2
+
+                    try {
+                        
+                        await new Promise<void>(
+                            async (resolve, reject) => {
+    
+
+                                const listener = personRepo.listen(new Query().where("age", ">=", 70));
+    
+                                subscription = listener.subscribe({
+                                    next: (x_1) => {
+    
+                                        if (x_1.count >= PEOPLE_TO_GENERATE_COUNT) {
+                                            resolve()
+                                        }
+    
+                                        if (!x_1.isInitial) {
+                                            if (x_1.docChanges.length != 1) {
+                                                reject(new Error("Wrong amount of changes"))
+                                            }
+        
+                                            if (x_1.docChanges[0].type != 'added') {
+                                                reject(new Error("Should only be additions"))
+                                            }
+                                        }
+                                    }
+                                });
+    
+                                failureTo = setTimeout(() => { reject(new Error("Time Out")); }, MAX_TO);
+    
+                                insertionInterval = setInterval(async () => {
+                                    
+                                    const youngP = getRandomPerson()
+                                    youngP.age = 30
+
+                                    const oldP = getRandomPerson()
+                                    oldP.age = 75
+
+                                    await personRepo.createMultipleAsync(youngP, oldP)
+                                    
+                                }, TIME_ALLOCATED_BY_PEOPLE)
+    
+                            }
+                        );
+
+                    } finally {
+
+                        subscription.unsubscribe();
+                        clearTimeout(failureTo);
+                        clearInterval(insertionInterval)
+
+                    }
+
+                    const everyone = await personRepo.getAllAsync()
+                    expect(everyone).toBeOfLength(PEOPLE_TO_GENERATE_COUNT * 2)
+
+                }
+            )
+            .addTest("Randomizer base check",
+                async () => {
+
+                    const fOrm = getFirestorm()
+                    const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+
+                    const pullsRecords = new Map<FirestormId, number>()
+
+                    const arcanaCount = (await arcanaRepo.aggregateAsync({ count: { verb: 'count' }})).count
+
+                    const pulls = 100
+                    let misses = 0
+                    for (let i = 0; i < pulls; i++) {
+                        
+                        const p = await arcanaRepo.getRandomAsync()
+                        if (!p) {
+                            console.warn("It missed")
+                            misses += 1
+                            continue
+                        }
+
+                        pullsRecords.set(p.id, (pullsRecords.get(p.id) || 0) + 1)
+
+                    }
+
+                    // Check if we pulled at least a third of the cards
+                    expect(arcanaCount / 3).toBeLesserThan(pullsRecords.size)
+                    
+                },
+                { ignore: true }
+            )
+            .addTest("Randomizer quality check",
+                async () => {
+
+                    const fOrm = getFirestorm()
+                    const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+
+                    const pullsRecords = new Map<FirestormId, number>()
+
+                    const arcanaCount = (await arcanaRepo.aggregateAsync({ count: { verb: 'count' }})).count
+
+                    const pulls = 1000
+                    let misses = 0
+                    for (let i = 0; i < pulls; i++) {
+                        
+                        const p = await arcanaRepo.getRandomAsync()
+                        if (!p) {
+                            console.warn("It missed")
+                            misses += 1
+                            continue
+                        }
+
+                        pullsRecords.set(p.id, (pullsRecords.get(p.id) || 0) + 1)
+
+                    }
+
+                    // If at least one card is never pulled so the random isn't satisfactory
+                    expect(pullsRecords.size).toEqual(arcanaCount)
+                    
+                    const expectedMeanPullCount = pulls / arcanaCount
+                    const meanOfSquaredPulls = [...pullsRecords.values()].reduce((pv, cv) => cv * cv + pv, 0) / arcanaCount
+
+                    const variance = 
+                        meanOfSquaredPulls
+                        - expectedMeanPullCount * expectedMeanPullCount
+
+                    console.warn(expectedMeanPullCount, meanOfSquaredPulls, variance, misses, pullsRecords)
+                    expect(variance).toBeLesserThan(10000)
+                },
+                { ignore: true }
+            )
+            .addTest("Query equality",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+
+                    const allArcanas = await arcanaRepo.getAllAsync()
+                    const oneCostArcanas = await arcanaRepo.queryAsync(new Query().where("cost", "==", 1))
+
+                    const filteredOneCostArcanas = allArcanas.filter(a => a.cost == 1)
+
+                    expect(oneCostArcanas.sort(sortByRank)).toBe(filteredOneCostArcanas.sort(sortByRank))
+
+                }
+            )
+            .addTest("Query inequality",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+
+                    const allArcanas = await arcanaRepo.getAllAsync()
+                    const notOneCostArcanas = await arcanaRepo.queryAsync(new Query().where("cost", "!=", 1))
+
+                    const filteredNotOneCostArcanas = allArcanas.filter(a => a.cost != 1)
+
+                    expect(notOneCostArcanas.sort(sortByRank)).toBe(filteredNotOneCostArcanas.sort(sortByRank))
+
+                }
+            )
+            .addTest("Query inequality",
+                async () => {
+                    
+                    const fOrm = getFirestorm()
+                    const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+
+                    // const allArcanas = await arcanaRepo.getAllAsync()
+                    // const notOneCostArcanas = await arcanaRepo.queryAsync(new Query().where("cost", "!=", 1))
+
+                    // const filteredNotOneCostArcanas = allArcanas.filter(a => a.cost != 1)
+
+                    // console.warn(filteredNotOneCostArcanas, notOneCostArcanas)
+                    // expect(notOneCostArcanas.sort(sortByRank)).toBe(filteredNotOneCostArcanas.sort(sortByRank))
+
                 }
             )
     ]

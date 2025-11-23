@@ -64,6 +64,16 @@ class Expect {
         }
     }
 
+    toBeLesserThan(value: number) {
+        if (typeof this.object !== "number") {
+            throw new Error("Not testing a number")
+        }
+
+        if (this.object >= value) {
+            throw new Error(`The number ${this.object} is not lesser than ${value}`)
+        }
+    }
+
     async toThrowAsync() {
         if (typeof this.object !== "function") {
             throw new Error("Must be a function")
@@ -102,7 +112,28 @@ function deepEquals(lhs: unknown, rhs: unknown): boolean {
         case "object": 
         {
             if (typeof rhs !== 'object') return false
+
+            // The objects are arrays
+            if (lhs instanceof Array && rhs instanceof Array) {
+                if (rhs.length != lhs.length) {
+                    return false
+                }
+
+                for (let i = 0; i < rhs.length; i++) {
+                    const l = lhs[i]
+                    const r = rhs[i]
+                    if (!deepEquals(l, r)) return false
+                }
+
+                return true
+            }
+
+            // Only one object is an array
+            if (lhs instanceof Array || rhs instanceof Array) {
+                return false
+            }
             
+            // Both objects are indeed objects
             for (let propName of Object.getOwnPropertyNames(lhs)) {
 
                 if (!(propName in lhs)) return false
@@ -110,6 +141,7 @@ function deepEquals(lhs: unknown, rhs: unknown): boolean {
 
                 if (!deepEquals((lhs as any)[propName], (rhs as any)[propName])) return false
             }
+            
             return true;
         }
         default: 

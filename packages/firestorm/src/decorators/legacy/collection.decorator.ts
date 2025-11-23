@@ -6,7 +6,7 @@ import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 import { ClassDecoratorReturn } from "./decorator-utilities"
 
 /**
- * Options for the collection decorator
+ * Full options for the collection decorator
  */
 export interface ICollectionOptions {
   
@@ -14,6 +14,12 @@ export interface ICollectionOptions {
   collection?: string
 
 }
+
+/**
+ * Options for the collection decorator
+ */
+export type CollectionOptions 
+  = 'string' | ICollectionOptions
 
 /**
  * Class decorator for a model.
@@ -26,12 +32,18 @@ export function Collection<T extends FirestormModel>(): ClassDecoratorReturn<T>;
 /**
  * Class decorator for a model.
  * 
+ * @param collection Path to this collection in firestore
+ */
+export function Collection<T extends FirestormModel>(collection: string): ClassDecoratorReturn<T>;
+/**
+ * Class decorator for a model.
+ * 
  * This model's default local collection path can be specified through the options.
  * 
  * @param options Options of the collection
  */
-export function Collection<T extends FirestormModel>(options: ICollectionOptions): ClassDecoratorReturn<T>;
-export function Collection<T extends FirestormModel>(options?: ICollectionOptions): ClassDecoratorReturn<T> {
+export function Collection<T extends FirestormModel>(options: CollectionOptions): ClassDecoratorReturn<T>;
+export function Collection<T extends FirestormModel>(options?: CollectionOptions | string): ClassDecoratorReturn<T> {
   return (constructor: Type<T>) => {
     
     // Storage
@@ -39,7 +51,12 @@ export function Collection<T extends FirestormModel>(options?: ICollectionOption
     
     // Name of the collection
     let collectionName: string
-    if (options && options.collection) { // Explicit naming
+
+    if (typeof options === "string") {
+      
+      collectionName = options
+
+    } else if (options && options.collection) { // Explicit naming
 
       collectionName = options.collection
       

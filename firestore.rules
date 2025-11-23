@@ -48,6 +48,13 @@ service cloud.firestore {
         allow write: if true;
 
       }
+
+      match /arcana_cards/{person_id} {
+
+        allow read: if true;
+        allow write: if true;
+
+      }
       
     }
 
