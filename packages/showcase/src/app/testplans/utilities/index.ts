@@ -1,8 +1,9 @@
 import { default as environment } from "@environment";
-import { Firestorm } from "@jiway/firestorm-core";
+import { CollectionDocumentTuple, CollectionDocumentTuples, Firestorm } from "@jiway/firestorm-core";
 import { generateName } from "@modules/random";
 import { Person } from "@testplans/models";
 
+export const UNIT_TEST_DB_ROOT = new CollectionDocumentTuples([new CollectionDocumentTuple<any>("playgrounds", "unit_test")])
 
 let firestorm: Firestorm | undefined = undefined
 
