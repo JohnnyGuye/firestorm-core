@@ -219,38 +219,6 @@ export abstract class QueryBuildBlock implements IQueryBuildBlock {
   }
 }
 
-/**
- * Initial query block of a query.
- */
-export class StartBlock 
-  extends QueryBuildBlock
-  implements ICanPrecedeWhere, ICanPrecedeOrderBy, ICanPrecedeLimit {
-
-  /** @inheritdoc */
-  where(
-    field: QueryClauseField,
-    operator: WhereClauseOperator, 
-    value: WhereClauseValue
-  ): WhereBlock {
-    return this.next = new WhereBlock(field, operator, value)
-  }
-
-  /** @inheritdoc */
-  orderBy(
-    field: QueryClauseField,
-    direction: OrderClauseDirection
-  ) {
-    return this.next = new OrderByBlock(field, direction)
-  }
-
-  /** @inheritdoc */
-  limit(limit: LimitClauseLimit, from: LimitClauseDirection = 'start') {
-    return this.next = new LimitBlock(limit, from)
-  }
-
-  protected toConstraint() { return null }
-
-}
 
 /**
  * Where clause query block that restricts the query to documents matching the query

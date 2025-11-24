@@ -247,6 +247,8 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * 
      * It relies on the presence of the field "id" in the document so it won't work if that is not the case.
      * 
+     * It's also absolutely bonker if there are not enough documents in the collection as it relies on id of the documents being relatively evenly distributed.
+     * 
      * @returns A random element of the collection or null if no elements.
      */
     async getRandomAsync(): Promise<T_model | null> {
