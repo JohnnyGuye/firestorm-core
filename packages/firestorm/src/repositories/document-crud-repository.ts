@@ -1,4 +1,4 @@
-import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, deleteDoc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { Type } from "../core/type";
 import { createDocumentObservable, DocumentObservable } from "../realtime-listener";
@@ -100,6 +100,21 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
    */
   async existsAsync() {
     return (await this.getAsync()) != null
+  }
+
+  /**
+   * Deletes the document in the database.
+   * It doesn't delete its subcollection if any.
+   * 
+   * Trying to delete a document that doesn't exist will just silently fail
+   * 
+   * @returns A promise that returns when the document has been deleted
+   */
+  async deleteAsync() {
+
+    const docRef: DocumentReference = this.documentRef
+    return await deleteDoc(docRef)
+
   }
 
 }
