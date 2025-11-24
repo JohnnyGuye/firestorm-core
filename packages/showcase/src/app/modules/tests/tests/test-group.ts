@@ -20,6 +20,11 @@ export class TestGroup implements ITest {
 
     constructor(public readonly name: string, public readonly description: string = "") {}
 
+    setIgnore(value: boolean = true) {
+        this.ignore = value
+        return this
+    }
+
     addTest(test: ITest): this;
     addTest(name: string, testFn: AsyncTestFn, options?: TestOptions): this; 
     addTest(nameOrTest: ITest | string, testFn?: AsyncTestFn, options?: TestOptions): this {

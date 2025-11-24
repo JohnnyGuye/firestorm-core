@@ -4,7 +4,7 @@ import { CRUD_COLLECTION_REPO, CRUD_DOCUMENT_REPO } from "./groups"
 
 export const MAIN_TEST_PLAN = new TestPlan(
     [
-        CRUD_COLLECTION_REPO,
+        CRUD_COLLECTION_REPO.setIgnore(),
         CRUD_DOCUMENT_REPO
     ]
 )

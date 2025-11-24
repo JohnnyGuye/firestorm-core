@@ -55,6 +55,15 @@ service cloud.firestore {
         allow write: if true;
 
       }
+
+      
+      match /configurations/{config_name} {
+
+        allow read: if true;
+        allow write: if true;
+        allow delete: if true;
+
+      }
       
     }
 
