@@ -41,11 +41,11 @@ export type LimitClauseLimit = number
 export type LimitClauseDirection = 'start' | 'end'
 
 /**
- * Start for the Start-at Clause
+ * Start for the Start-at Clause (1-indexed)
  */
 export type StartAtClauseStart = number
 
 /**
- * End for the End-at Clause
+ * End for the End-at Clause (1-indexed)
  */
 export type EndAtClauseEnd = number

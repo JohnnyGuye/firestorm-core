@@ -37,14 +37,14 @@ export interface ICanPrecedeStartAt {
   
   /**
    * Appends a start-at clause to the query
-   * @param start Index of the document in the global query from which to start
+   * @param start Index of the document in the global query from which to start (1-indexed)
    */
   startAt(start: StartAtClauseStart): StartAtBlock;
 
   /**
    * Appends a start-at, end-at and limit block to the query to retrieve a portion of the request
    * @param pageLength Length of the page
-   * @param pageIndex Index of the page
+   * @param pageIndex Index of the page (0-indexed)
    */
   paginate(pageLength: number, pageIndex: number): LimitBlock;
   
@@ -56,6 +56,6 @@ export interface ICanPrecedeStartAt {
    * @param pageIndex Index of the page
    */
 export function paginate(block: ICanPrecedeStartAt, pageLength: number, pageIndex: number): LimitBlock {
-    const start = pageLength * pageIndex
+    const start = pageLength * pageIndex + 1
     return block.startAt(start).limit(pageLength)
 }

@@ -516,13 +516,24 @@ export const MAIN_TEST_PLAN = new TestPlan(
 
                 }
             )
-            .addTest("Query inequality",
+            .addTest("Query pagination",
                 async () => {
                     
                     const fOrm = getFirestorm()
                     const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
 
-                    // const allArcanas = await arcanaRepo.getAllAsync()
+                    const allArcanas = (await arcanaRepo.getAllAsync()).sort(sortByRank)
+
+                    const PAGE_SIZE = 3
+                    for (let pageIndex = 0; (pageIndex * PAGE_SIZE) < allArcanas.length; pageIndex++) {
+
+                        const queriedPageArcanas = await arcanaRepo.queryAsync(new Query().orderBy("rank", "ascending").paginate(PAGE_SIZE, pageIndex))
+                        const localArcanas = allArcanas.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE)
+
+                        console.log(queriedPageArcanas, localArcanas)
+                        expect(queriedPageArcanas).toBe(localArcanas)
+                    }
+
                     // const notOneCostArcanas = await arcanaRepo.queryAsync(new Query().where("cost", "!=", 1))
 
                     // const filteredNotOneCostArcanas = allArcanas.filter(a => a.cost != 1)
