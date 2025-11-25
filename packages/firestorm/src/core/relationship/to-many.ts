@@ -45,7 +45,11 @@ export class ToManyRelationship<T_target extends FirestormModel> {
     }
 
     /**
-     * Adds a model to the relationship
+     * Adds a model to the relationship.
+     * 
+     * It adds the model's id to the list of ids tracked by the relationship. 
+     * If you want to assign a model without changing the list, use {@link assignModel}
+     * 
      * @param model Model to add
      * @returns this
      */
@@ -64,6 +68,10 @@ export class ToManyRelationship<T_target extends FirestormModel> {
 
     /**
      * Adds multiple models to the relationship
+     * 
+     * It adds the models' ids to the list of ids tracked by the relationship. 
+     * If you want to assign the models without changing the list, use {@link assignModels}
+     * 
      * @param models Models to add
      * @returns this
      */
@@ -77,8 +85,70 @@ export class ToManyRelationship<T_target extends FirestormModel> {
     }
 
     /**
+     * Assigns a model to the relationship if its id is tracked.
+     * 
+     * It only assigns a model if this model's id is already in the list of tracked ids.
+     * If you want to add the model to the tracking, use {@link addModel}
+     * 
+     * @param model Model to assign
+     * @returns this
+     */
+    public assignModel(model: T_target) {
+        
+        if (!model.id) {
+            logWarn("You cannot assign an object that doesn't have a valid id. This will not be added", model)
+            return this
+        }
+
+        const uids = new Set(this._ids)
+        if (!uids.has(model.id)) {
+            logWarn(`The id ${model.id} is not part of the ids tracked by this relationship. It will not be added.`)
+            return this
+        }
+
+        this._models.set(model.id, model)
+
+        return this
+    }
+
+    /**
+     * Assigns models to the relationship if their ids are tracked.
+     * 
+     * It only assigns a model if this model's id is already in the list of tracked ids.
+     * If you want to add the model to the tracking, use {@link addModels}
+     * 
+     * @param models Models to assign
+     * @returns this
+     */
+    public assignModels(models: Iterable<T_target>) {
+
+        const uids = new Set(this._ids)
+        
+        for (let model of models) {
+
+            if (!model.id) {
+                logWarn("You cannot assign an object that doesn't have a valid id. This will not be added", model)
+                return this
+            }
+    
+            if (!uids.has(model.id)) {
+                logWarn(`The id ${model.id} is not part of the ids tracked by this relationship. It will not be added.`)
+                return this
+            }
+
+            this._models.set(model.id, model)
+
+        }
+
+
+        return this
+    }
+
+    /**
      * Sets the models of the relationship.
      * The models must have an id.
+     * 
+     * It clears the relationship of any previous id tracking.
      * 
      * @param models Models to set
      */
