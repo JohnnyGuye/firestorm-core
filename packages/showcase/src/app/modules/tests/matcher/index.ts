@@ -74,6 +74,22 @@ class Expect {
         }
     }
 
+    toHaveTheField(fieldName: string) {
+        if (typeof this.object == "object" && fieldName in this.object) {
+            return
+        }
+
+        throw new Error(`This object doesn't have the field "${fieldName}"`)
+    }
+
+    toNotHaveTheField(fieldName: string) {
+        if (typeof this.object == "object" && !(fieldName in this.object)) {
+            return
+        }
+
+        throw new Error(`This object does have the field "${fieldName}"`)
+    }
+
     async toThrowAsync() {
         if (typeof this.object !== "function") {
             throw new Error("Must be a function")

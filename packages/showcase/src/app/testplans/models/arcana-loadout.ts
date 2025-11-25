@@ -1,4 +1,4 @@
-import { Collection, DateType, Ignore, ToMany, ToManyRelationship, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
+import { Collection, DateType, Ignore, MapTo, ToMany, ToManyRelationship, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
 import { Person } from "./person";
 import { ArcanaCard } from "./arcana-card";
 
@@ -17,10 +17,13 @@ export class ArcanaLoadout {
     owner = new ToOneRelationship(Person)
 
     @DateType()
-    createAt: Date = new Date()
+    createdAt: Date = new Date()
 
     @Ignore()
     notPersistedData: boolean = false
+
+    @MapTo("shortened_field")
+    fieldWithANameThatIsLongAndIWantSomethingShorter: string = ""
 
 
     // get totalCost() {

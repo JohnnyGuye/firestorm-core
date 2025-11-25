@@ -54,12 +54,12 @@ export default new TestGroup("Decorators")
     .addBeforeEachTest(async () => {
         await getArcanaLoadoutRepo().deleteAllAsync()
     })
-    .addTest("Collection",
+    .addTest("@Collection",
         async () => {
             // Automatically passed if any other test passed 
         }
     )
-    .addTest("Ignore",
+    .addTest("@Ignore",
         async () => {
 
             // Check if the documents contains the id
@@ -78,7 +78,7 @@ export default new TestGroup("Decorators")
             expect(al.notPersistedData).toNotBe(retrievedAl?.notPersistedData)
         }
     )
-    .addTest("Date type",
+    .addTest("@DateType",
         async () => {
 
             // Check if the documents contains the id
@@ -86,16 +86,16 @@ export default new TestGroup("Decorators")
             const repo = getArcanaLoadoutRepo()
 
             const al = await generateValidArcanaLoadoutAsync()
-            al.createAt = new Date(2020, 2, 4)
+            al.createdAt = new Date(2020, 2, 4)
 
             await repo.createAsync(al)
 
             const retrievedAl = await repo.getByIdAsync(al.id)
             expect(retrievedAl).toNotBeNull()
-            expect(al.createAt).toBe(retrievedAl!.createAt)
+            expect(al.createdAt).toBe(retrievedAl!.createdAt)
         }
     )
-    .addTest("To one (id storage)", 
+    .addTest("@ToOne (id storage)", 
         async () => {
 
             const repo = getArcanaLoadoutRepo()
@@ -115,7 +115,7 @@ export default new TestGroup("Decorators")
 
         }
     )
-    .addTest("To one (retrieve by include)", 
+    .addTest("@ToOne (retrieve by include)", 
         async () => {
 
             const repo = getArcanaLoadoutRepo()
@@ -134,7 +134,7 @@ export default new TestGroup("Decorators")
 
         }
     )
-    .addTest("To many",
+    .addTest("@ToMany",
         async () => {
 
             const repo = getArcanaLoadoutRepo()
@@ -145,8 +145,37 @@ export default new TestGroup("Decorators")
 
             const retrieveAl = await repo.getByIdAsync(al.id)
 
-            console.log(al, retrieveAl)
             expect(retrieveAl!.cards.ids).toBe(al.cards.ids)
             expect(retrieveAl!.cards.models).toBeOfLength(0)
+        }
+    )
+    .addTest("@ToMany (retrieve by include)",
+        async () => {
+
+            const repo = getArcanaLoadoutRepo()
+
+            const al = await generateValidArcanaLoadoutAsync()
+
+            await repo.createAsync(al)
+
+            const retrieveAl = await repo.getByIdAsync(al.id, { cards: true })
+
+            console.log(al, retrieveAl)
+            expect(retrieveAl!.cards.ids).toBe(al.cards.ids)
+            expect(retrieveAl!.cards.models).toBeOfLength(5)
+        }
+    )
+    .addTest("@MapTo",
+        async () => {
+
+            const repo = getArcanaLoadoutRepo()
+
+            const al = new ArcanaLoadout()
+            const doc = repo.modelToDocument(al)
+
+            expect(doc).toHaveTheField("shortened_field")
+            expect(doc).toNotHaveTheField("fieldWithANameThatIsLongAndIWantSomethingShorter")
+            expect(doc).toNotHaveTheField("field_with_a_name_that_is_long_and_i_want_something_shorter")
+
         }
     )

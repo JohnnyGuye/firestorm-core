@@ -1,7 +1,8 @@
 import { ToManyRelationship, ToOneRelationship } from "../../decorators"
-import { FirestormMetadata, FirestormModel, IFirestormModel, isIn, isToManyRelationshipMetadata, isToOneRelationshipMetadata, RelationshipMetadata } from "../../core"
+import { FirestormMetadata, FirestormModel, IFirestormModel, isIn, isToManyRelationshipMetadata, isToOneRelationshipMetadata, OR_QUERIES_MAXIMUM_DISJONCTIONS, RelationshipMetadata, splitInBatches } from "../../core"
 import { Repository } from "../repository"
 import { RelationshipIncludes } from "../common"
+import { Query } from "../../query"
 import { createCollectionCrudRepositoryInstantiator } from "../collection-crud-repository"
 import { FirestormPropertyMetadataWithRelationship } from "@firestorm/src/core/property-metadatas"
 
@@ -66,12 +67,17 @@ export function includeResolver<T_model extends FirestormModel, P extends Partia
       if (isToManyRelationshipMetadata(relationship) && propertyValue instanceof ToManyRelationship) {
 
         const crud = repository.getRepositoryFromFunction(createCollectionCrudRepositoryInstantiator(), propertyValue.type, relationship.location)
-        const include = await crud.getAllAsync()
 
-        if (include) {
-          propertyValue.setModels(include)
+        const allIds = propertyValue.ids
+        for (let batch of splitInBatches(allIds, OR_QUERIES_MAXIMUM_DISJONCTIONS)) {
+
+          const include = await crud.queryAsync(new Query().where("id", "in", batch))
+          if (include) {
+            propertyValue.assignModels(include)
+          }
+
         }
-
+        
       }
 
     })
