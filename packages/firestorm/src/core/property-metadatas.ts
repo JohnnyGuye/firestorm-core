@@ -1,5 +1,5 @@
 import { ToOneRelationship, ToManyRelationship  } from "../decorators"
-import { FirestoreDocumentField } from "./firestore-document"
+import { FirestoreDocumentField, isStringArrayField } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { logWarn } from "./logging"
 import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata, ToManyRelationshipMetadata } from "./relationship"
@@ -11,13 +11,19 @@ interface SubCollectionMetadatas<T> {
 }
 
 
-
+/**
+ * Class holding informations about how to serialize/deserialize a property of a firestorm model
+ */
 export class FirestormPropertyMetadata<T_property_type = any> {
 
   private _relationship?: RelationshipMetadata<any>
   private _toDocConverter?: ModelToDocumentFieldConverter<T_property_type>
   private _toModelConverter?: DocumentToModelFieldConverter<T_property_type>
 
+  /**
+   * Creates a new property metadata
+   * @param name Name of property
+   */
   constructor(public readonly name: string) {}
 
   /**
@@ -32,6 +38,8 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
   /** Overrides the default field name of the document */
   mappedTo?: string
+
+  subCollection?: SubCollectionMetadatas<T_property_type>
 
   /** 
    * Field in the document mapped to this property 
@@ -65,14 +73,21 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     location: RelationshipLocation
   ) {
 
-    const toOneRel: ToOneRelationshipMetadata<T_target_model> = { targetType, location, kind: 'to-one' }
+    const toOneRel: ToOneRelationshipMetadata<T_target_model> = 
+      { 
+        targetType: targetType, 
+        location: location, 
+        kind: 'to-one' 
+      }
     this.relationship = toOneRel
 
     this.toModelConverter = ((field: FirestoreDocumentField) => {
       return new ToOneRelationship(targetType, typeof field === 'string' ? field : undefined)
     }) as DocumentToModelFieldConverter<T_property_type>
 
-    this.toDocumentConverter = ((model: ToOneRelationship<T_target_model>) => model.id || null) as ModelToDocumentFieldConverter<T_property_type>
+    this.toDocumentConverter = (
+      (model: ToOneRelationship<T_target_model>) => model.id || null
+    ) as ModelToDocumentFieldConverter<T_property_type>
 
   }
 
@@ -86,22 +101,42 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     location: RelationshipLocation
   ) {
 
-    const toManyRel: ToManyRelationshipMetadata<T_target_model> = { targetType, location, kind: 'to-many' }
+    const toManyRel: ToManyRelationshipMetadata<T_target_model> = 
+      { 
+        targetType: targetType, 
+        location: location, 
+        kind: 'to-many' 
+      }
+
     this.relationship = toManyRel
 
-    this.toModelConverter = () => { throw new Error("Not implemented") }
-    this.toDocumentConverter = () => { throw new Error("Not implemented")}
-    
-    // this.toModelConverter = ((field: FirestoreDocumentField) => {
-    //   return new ToManyRelationship(targetType)
-    // }) as DocumentToModelFieldConverter<T_property_type>
 
-    // this.toDocumentConverter = ((model: ToManyRelationship<T_target_model>) => model.id || null) as ModelToDocumentFieldConverter<T_property_type>
+    this.toModelConverter = (
+      (field: FirestoreDocumentField) => {
+      
+        if (isStringArrayField(field)) {
+          return new ToManyRelationship(targetType).addIds(field)
+        }
+
+        return new ToManyRelationship(targetType)
+
+      }
+    ) as DocumentToModelFieldConverter<T_property_type>
+
+    this.toDocumentConverter = (
+      (model: ToManyRelationship<T_target_model>) => {
+        
+        return[...model.ids]
+
+      }
+    ) as ModelToDocumentFieldConverter<T_property_type>
 
   }
 
-  subCollection?: SubCollectionMetadatas<T_property_type>
-
+  
+  /**
+   * Sets the conversion from model to document
+   */
   set toDocumentConverter(value: ModelToDocumentFieldConverter<T_property_type>) {
     if (this._toDocConverter) {
       logWarn(`There is already a doc to model conversion for the ${this.name}. The new conversion will replace it.`)
@@ -109,9 +144,16 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     this._toDocConverter = value
   }
 
-  get toDocumentConverter() { return this._toDocConverter || ((value: T_property_type) => value as FirestoreDocumentField)}
+  /**
+   * Gets the conversion from model to document
+   */
+  get toDocumentConverter() { 
+    return this._toDocConverter || ((value: T_property_type) => value as FirestoreDocumentField)
+  }
   
-
+  /**
+   * Sets the conversion from document to model
+   */
   set toModelConverter(value: DocumentToModelFieldConverter<T_property_type>) {
     if (this._toModelConverter) {
       logWarn(`There is already a doc to model conversion for the ${this.name}. The new conversion will replace it.`)
@@ -119,12 +161,14 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     this._toModelConverter = value
   }
 
+  /**
+   * Gets the conversion from document to model
+   */
   get toModelConverter() { return this._toModelConverter || ((value: FirestoreDocumentField) => value as T_property_type)}
 
   
   /**
-   * Checks the existency of a model to document conversion for this property key
-   * @param key The name of the property in the model
+   * Checks the existency of a model to document conversion for this property   
    * @returns True if a conversion exists, false otherwise.
    */
  get hasConversionToDocument() {
@@ -140,6 +184,9 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     return !!this._toModelConverter
   }
 
+  /**
+   * Checks the existency of a model-to-document or document-to-model conversion for this property
+   */
   get hasConversion() {
     return this.hasConversionToDocument || this.hasConversionToModel
   }
@@ -147,4 +194,5 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 }
 
 export type FirestormPropertyMetadataWithRelationship<T_property_type = any, T_relationship extends FirestormModel = any>
-  = FirestormPropertyMetadata<T_property_type> & Record<'relationship', RelationshipMetadata<T_relationship>>
+  = FirestormPropertyMetadata<T_property_type> 
+  & Record<'relationship', RelationshipMetadata<T_relationship>>

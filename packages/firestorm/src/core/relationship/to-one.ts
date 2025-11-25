@@ -3,7 +3,7 @@ import { FirestormModel } from "../firestorm-model"
 import { Type } from "../type"
 
 /**
- * 
+ * Class holding a reference to an item that can be loaded or not
  */
 export class ToOneRelationship<T_target extends FirestormModel> {
 
