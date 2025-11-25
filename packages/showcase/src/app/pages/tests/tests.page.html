@@ -29,7 +29,8 @@
           </div>
 
           <div class="middle">
-            {{node.name}}
+            <span>{{node.name}}</span>
+            @if (!node.name) { <span class="has-text-grey">Unamed test</span> }
           </div>
 
           <div class="end">

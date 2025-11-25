@@ -32,14 +32,25 @@ export class ToManyRelationship<T_target extends FirestormModel> {
 
     }
 
+    /**
+     * Gets the models currently in the relationship
+     */
     public get models() {
         return this._models.values()
     }
 
+    /**
+     * Gets the ids of the relationship
+     */
     public get ids() {
         return this._models.keys()
     }
 
+    /**
+     * Gets a specific loaded item by its id
+     * @param id 
+     * @returns 
+     */
     public getById(id: FirestormId) {
         return this._models.get(id)
     }

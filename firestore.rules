@@ -56,6 +56,13 @@ service cloud.firestore {
 
       }
 
+      match /arcana_loadouts/{person_id} {
+
+        allow read: if true;
+        allow write: if true;
+
+      }
+
       
       match /configurations/{config_name} {
 

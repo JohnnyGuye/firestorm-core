@@ -100,7 +100,9 @@ function deepEquals(lhs: unknown, rhs: unknown): boolean {
     if (lhs === undefined || rhs === undefined) return false
 
     if (typeof lhs !== typeof rhs) return false
-        
+    
+    if (lhs === rhs) return true;
+
     switch (typeof lhs) {
         case "undefined":   return true // Same value by design
         case "function":    return true // Does not check for functions matching
@@ -131,6 +133,10 @@ function deepEquals(lhs: unknown, rhs: unknown): boolean {
             // Only one object is an array
             if (lhs instanceof Array || rhs instanceof Array) {
                 return false
+            }
+
+            if (lhs instanceof Date && rhs instanceof Date) {
+                return lhs.getTime() == rhs.getTime()
             }
             
             // Both objects are indeed objects
