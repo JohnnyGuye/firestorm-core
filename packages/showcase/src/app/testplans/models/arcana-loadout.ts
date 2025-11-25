@@ -1,5 +1,6 @@
-import { Collection, DateType, Ignore, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
+import { Collection, DateType, Ignore, ToMany, ToManyRelationship, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
 import { Person } from "./person";
+import { ArcanaCard } from "./arcana-card";
 
 @Collection("arcana_loadouts")
 export class ArcanaLoadout {
@@ -9,8 +10,8 @@ export class ArcanaLoadout {
 
     name: string = ""
 
-    // @ToMany({ target: ArcanaCard, location: 'sibling' })
-    // cards = new ToManyRelationship(ArcanaCard)
+    @ToMany({ target: ArcanaCard, location: 'sibling' })
+    cards = new ToManyRelationship(ArcanaCard)
 
     @ToOne({ target: Person, location: 'sibling' })
     owner = new ToOneRelationship(Person)

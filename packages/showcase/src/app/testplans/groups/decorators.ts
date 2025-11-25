@@ -36,7 +36,7 @@ async function generateValidArcanaLoadoutAsync() {
 
     const pickedArcanas = getRandomsInArray(arcanas, 5)
     al.name = generateName()
-    // al.cards.setModels(pickedArcanas)
+    al.cards.setModels(pickedArcanas)
 
     return al
 }
@@ -132,5 +132,21 @@ export default new TestGroup("Decorators")
 
             expect(retrievedAl?.owner.model).toBe(al.owner.model)
 
+        }
+    )
+    .addTest("To many",
+        async () => {
+
+            const repo = getArcanaLoadoutRepo()
+
+            const al = await generateValidArcanaLoadoutAsync()
+
+            await repo.createAsync(al)
+
+            const retrieveAl = await repo.getByIdAsync(al.id)
+
+            console.log(al, retrieveAl)
+            expect(retrieveAl!.cards.ids).toBe(al.cards.ids)
+            expect(retrieveAl!.cards.models).toBeOfLength(0)
         }
     )
