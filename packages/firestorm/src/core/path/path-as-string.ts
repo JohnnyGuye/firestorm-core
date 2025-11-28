@@ -12,6 +12,13 @@ export function buildPath(...segments: string[]) {
     .join("/")
 }
 
+/**
+ * Split the path into segments
+ * @param path 
+ * @returns 
+ */
 export function toSegments(path: string) {
-  return path.split("/")
+  return path
+    .replace(/\\/g,"/")
+    .split("/")
 }

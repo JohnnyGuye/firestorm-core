@@ -1,11 +1,9 @@
 import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, TransactionOptions } from "firebase/firestore"
 
-import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, CollectionDocumentTuples, RelationshipLocation } from "../core"
+import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, CollectionDocumentTuples, RelationshipLocation, PathLike, resolveToPath, Path } from "../core"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
-import { CollectionCrudRepository, createCollectionCrudRepositoryInstantiator } from "./collection-crud-repository"
-import { createDocumentCrudRepositoryInstantiator, DocumentCrudRepository } from "./document-crud-repository"
 import { RepositoryInstantiator } from "./common"
 
 /**
@@ -14,7 +12,7 @@ import { RepositoryInstantiator } from "./common"
 export abstract class Repository<T_model extends IFirestormModel> {
         
     private _type: Type<T_model>
-    protected parents?: CollectionDocumentTuples
+    protected path: Path
     
     /**
      * Instance of firestore this repository uses to reach the DB
@@ -25,17 +23,17 @@ export abstract class Repository<T_model extends IFirestormModel> {
      * Creates a new repository on a model
      * @param type Type on which the repository operates
      * @param firestore The instance of firestore this repository connects to
-     * @param parents The optional parent collections for repositories of subcollections
+     * @param path The optional parent collections for repositories of subcollections
      */
     constructor(
         type: Type<T_model>,
         firestore: Firestore,
-        parents?: CollectionDocumentTuples
+        path?: PathLike
         ) {
         
         this._type = type
         this.firestore = firestore
-        this.parents = parents
+        this.path = resolveToPath(path)
     }
 
     /**
@@ -72,7 +70,7 @@ export abstract class Repository<T_model extends IFirestormModel> {
      * Whether or not this repository is a subcollection or not
      */
     public get isOnSubcollection() {
-        return this.parents?.isSubcollection ?? false
+        return this.path?.isSubcollection ?? false
     }
 
     /**
@@ -81,7 +79,7 @@ export abstract class Repository<T_model extends IFirestormModel> {
     public get collectionPath() {
         const col = this.typeMetadata.collection
         if (!col) throw new Error("No collection provided")
-        return buildPath(this.parents?.path || '', col)
+        return buildPath(this.path?.path || '', col)
     }
 
     /**
@@ -219,13 +217,10 @@ export abstract class Repository<T_model extends IFirestormModel> {
         return klass
     }
 
-    private resolveRelationshipLocation(location: RelationshipLocation): CollectionDocumentTuples {
-        switch(location) {
-            case 'root':        return new CollectionDocumentTuples()
-            case 'sibling':     return new CollectionDocumentTuples(this.parents)
-            default:            return location
-        }
+    private resolveRelationshipLocation(location: RelationshipLocation): Path {
+        return Path.merge(this.path, location)
     }
+
     //#region Linked Repositories
 
     /**

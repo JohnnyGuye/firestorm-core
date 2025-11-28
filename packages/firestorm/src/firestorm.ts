@@ -10,7 +10,7 @@ import { FirestormStorage } from "./storage";
 import { createDocumentCrudRepositoryInstantiator } from "./repositories/document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
-import { CollectionDocumentTuples } from "./core";
+import { CollectionDocumentTuples, PathLike } from "./core";
 
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
@@ -115,12 +115,12 @@ export class Firestorm {
      */
     public getCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
-        parentPath?: CollectionDocumentTuples
+        path?: PathLike
         ) {
         return this.getRepositoryFromFunction(
             createCollectionCrudRepositoryInstantiator(), 
             type, 
-            parentPath
+            path
         )
     }
 
@@ -134,12 +134,12 @@ export class Firestorm {
     public getSingleDocumentCrudRepository<T extends IFirestormModel>(
         type: Type<T>, 
         documentId: string,
-        parentPath?: CollectionDocumentTuples
+        path?: PathLike
         ) {
         return this.getRepositoryFromFunction(
             createDocumentCrudRepositoryInstantiator(documentId),
             type,
-            parentPath
+            path
         )
     }
 
@@ -156,9 +156,9 @@ export class Firestorm {
     public getRepositoryFromFunction<R extends Repository<T>, T extends IFirestormModel>(
         generator: RepositoryInstantiator<R, T>,
         type: Type<T>,
-        parentPath?: CollectionDocumentTuples
+        path?: PathLike
     ) {
-        return generator(this.firestore, type, parentPath)
+        return generator(this.firestore, type, path)
     }
 
     //#endregion

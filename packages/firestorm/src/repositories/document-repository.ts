@@ -1,5 +1,5 @@
 import { doc, Firestore } from "firebase/firestore";
-import { CollectionDocumentTuples, IFirestormModel, Type } from "../core";
+import { IFirestormModel, Path, PathLike, Type } from "../core";
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
 
@@ -23,10 +23,10 @@ export class DocumentRepository<T_model extends IFirestormModel> extends Reposit
   constructor(
     type: Type<T_model>,
     firestore: Firestore,
-    parents?: CollectionDocumentTuples
+    path?: PathLike
     ) {
     
-    super(type, firestore, parents)
+    super(type, firestore, path)
   }
 
   /**
@@ -53,9 +53,9 @@ export function createDocumentRepositoryInstantiator<T extends IFirestormModel>(
   return (
       firestore: Firestore, 
       type: Type<T>, 
-      parentPath?: CollectionDocumentTuples
+      path?: PathLike
   ) => {
-      const repo = new DocumentRepository(type, firestore, parentPath)
+      const repo = new DocumentRepository(type, firestore, path)
       repo.documentId = documentId
       return repo
   }

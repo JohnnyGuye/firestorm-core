@@ -2,7 +2,7 @@ import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, 
 import { IFirestormModel } from "../core/firestorm-model";
 import { Type } from "../core/type";
 import { createDocumentObservable, DocumentObservable } from "../realtime-listener";
-import { CollectionDocumentTuples } from "../core";
+import { CollectionDocumentTuples, PathLike } from "../core";
 import { RepositoryInstantiator } from "./common";
 import { DocumentRepository } from "./document-repository";
 
@@ -15,15 +15,15 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
    * Creates a new {@link DocumentCrudRepository} on a model
    * @param type Type on which the repository operates
    * @param firestore The instance of firestore this repository connects to
-   * @param parents The optional parent collections for repositories of subcollections
+   * @param path The optional parent collections for repositories of subcollections
    */
   constructor(
     type: Type<T_model>,
     firestore: Firestore,
-    parents?: CollectionDocumentTuples
+    path?: PathLike
     ) {
     
-    super(type, firestore, parents)
+    super(type, firestore, path)
   }
 
   /**
@@ -129,9 +129,9 @@ export function createDocumentCrudRepositoryInstantiator<T extends IFirestormMod
   return (
       firestore: Firestore, 
       type: Type<T>, 
-      parentPath?: CollectionDocumentTuples
+      path?: PathLike
   ) => {
-      const repo = new DocumentCrudRepository(type, firestore, parentPath)
+      const repo = new DocumentCrudRepository(type, firestore, path)
       repo.documentId = documentId
       return repo
   }

@@ -1,5 +1,5 @@
 import { Firestore } from "firebase/firestore";
-import { CollectionDocumentTuples, IFirestormModel } from "../../core";
+import { IFirestormModel, PathLike } from "../../core";
 import { Type } from "../../core/type";
 import { Repository } from "../repository";
 
@@ -15,5 +15,5 @@ export type RepositoryInstantiator<T_Repository extends Repository<T_Model>, T_M
   = (
       firestore: Firestore, 
       type: Type<T_Model>, 
-      parentPath?: CollectionDocumentTuples
+      path?: PathLike
   ) => T_Repository;

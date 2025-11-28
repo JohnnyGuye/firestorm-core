@@ -1,15 +1,11 @@
 import { FirestormModel } from "../firestorm-model"
-import { CollectionDocumentTuples } from "../collection-document"
 import { Type } from "../type"
-
+import { PathLike } from "../path"
 
 /**
  * Where to find the referenced document
- * - 'sibling': looks for the collection next to the collection related to this
- * - 'root:' looks for the collection starting from the root
- * - IParentCollectionOptions[]: creates the path to the parent collection
- */
-export type RelationshipLocation = 'root' | 'sibling' | CollectionDocumentTuples
+*/
+export type RelationshipLocation = PathLike
 
 /**
  * Kind of relationship

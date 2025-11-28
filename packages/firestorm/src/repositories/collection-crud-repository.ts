@@ -19,7 +19,7 @@ import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregation
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { CollectionDocumentTuples } from "../core";
+import { CollectionDocumentTuples, PathLike } from "../core";
 import { includeResolver } from "./toolkit";
 import { CollectionRepository } from "./collection-repository";
 
@@ -32,14 +32,14 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * Creates a new {@link CollectionCrudRepository} on a model
      * @param type Type on which the repository operates
      * @param firestore The instance of firestore this repository connects to
-     * @param parents The optional parent collections for repositories of subcollections
+     * @param path The optional parent collections for repositories of subcollections
      */
     constructor(
         type: Type<T_model>, 
         firestore: Firestore, 
-        parents?: CollectionDocumentTuples
+        path?: PathLike
         ) {
-        super(type, firestore, parents)
+        super(type, firestore, path)
     }
     
     //#region Basic CRUD
@@ -394,8 +394,8 @@ export function createCollectionCrudRepositoryInstantiator<T_Model extends IFire
     return (
         firestore: Firestore, 
         type: Type<T_Model>, 
-        parentPath?: CollectionDocumentTuples
+        path?: PathLike
     ) => {
-        return new CollectionCrudRepository(type, firestore, parentPath)
+        return new CollectionCrudRepository(type, firestore, path)
     }
 }

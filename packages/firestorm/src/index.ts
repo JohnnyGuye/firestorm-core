@@ -5,6 +5,6 @@ export * from "./realtime-listener"
 export * from "./decorators/legacy"
 export * from "./storage"
 export * from "./core/firestorm-model"
-export * from "./core/collection-document"
+export * from "./core/path"
 
 export { firestormMetadatasToJson } from "./metadata-storage"
