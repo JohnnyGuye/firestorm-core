@@ -1,5 +1,5 @@
 import { doc, Firestore } from "firebase/firestore";
-import { IFirestormModel, Path, PathLike, Type } from "../core";
+import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../core";
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
 
@@ -34,6 +34,10 @@ export class DocumentRepository<T_model extends IFirestormModel> extends Reposit
    */
   protected get documentRef() {
     return doc(this.firestore, this.collectionPath, this.documentId)
+  }
+
+  protected override resolveRelationshipLocation(location: RelationshipLocation): Path {
+    return Path.merge(this.collectionPath, this.documentId, location)
   }
 
   //#region Linked repositories

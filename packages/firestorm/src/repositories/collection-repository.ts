@@ -1,9 +1,10 @@
 import { Firestore } from "firebase/firestore";
-import { IFirestormModel, PathLike, Type } from "../core";
+import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../core";
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
 
 export class CollectionRepository<T_model extends IFirestormModel> extends Repository<T_model> {
+
 
     /**
      * Creates a new {@link CollectionRepository} on a model
@@ -19,6 +20,10 @@ export class CollectionRepository<T_model extends IFirestormModel> extends Repos
 
         super(type, firestore, path)
 
+    }
+
+    protected override resolveRelationshipLocation(location: RelationshipLocation): Path {
+        return Path.merge(this.collectionPath, location)
     }
         
     // //#region Smthg

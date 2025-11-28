@@ -217,9 +217,10 @@ export abstract class Repository<T_model extends IFirestormModel> {
         return klass
     }
 
-    private resolveRelationshipLocation(location: RelationshipLocation): Path {
-        return Path.merge(this.path, location)
-    }
+    protected abstract resolveRelationshipLocation(location: RelationshipLocation): Path;
+    // private resolveRelationshipLocation(location: RelationshipLocation): Path {
+    //     return Path.merge(this.path, location)
+    // }
 
     //#region Linked Repositories
 
