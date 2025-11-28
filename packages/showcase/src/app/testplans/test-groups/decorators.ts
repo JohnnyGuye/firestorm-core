@@ -4,21 +4,49 @@ import { ArcanaCard, Person, PREDEFINED_ARCANAS } from "@testplans/models";
 import { ArcanaLoadout } from "@testplans/models/arcana-loadout";
 import { getFirestorm, getRandomPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities";
 import { expect } from "@modules/tests/matcher"
+import { createCollectionCrudRepositoryInstantiator, createDocumentCrudRepositoryInstantiator } from "@jiway/firestorm-core";
+import { RunRecap } from "@testplans/models/run-recap";
 
 /*
 ✔️ collection
 ✔️ ignore
+✔️ tomany
+✔️ toone
+✔️ mapto
 ✔️ datetype
 complexetype
-mapto
 subcollection
 subdocument
-tomany
-toone
 */
 
 function getPersonRepo() {
     return getFirestorm().getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+}
+
+function getTestingPerson() {
+
+    const person = new Person()
+    
+    person.id = "__me_as_tester__"
+    person.age = 32
+    person.name = "May"
+    person.surname = "Shelf"
+
+    return person
+}
+
+function getTestingPersonRepo() {
+    const tester = getTestingPerson()
+    return getFirestorm().getSingleDocumentCrudRepository(Person, tester.id, UNIT_TEST_DB_ROOT)
+}
+
+function getRunrecapRepoOfTestingPerson() {
+    return getTestingPersonRepo()
+        .getRepositoryFromFunction(
+            createCollectionCrudRepositoryInstantiator(),
+            RunRecap,
+            "."
+        )
 }
 
 function getArcanaRepo() {
@@ -176,6 +204,25 @@ export default new TestGroup("Decorators")
             expect(doc).toHaveTheField("shortened_field")
             expect(doc).toNotHaveTheField("fieldWithANameThatIsLongAndIWantSomethingShorter")
             expect(doc).toNotHaveTheField("field_with_a_name_that_is_long_and_i_want_something_shorter")
+
+        }
+    )
+    .addTest("",
+        async () => {
+            
+            const repo = getRunrecapRepoOfTestingPerson()
+
+            console.log(repo.collectionPath)
+        }
+    )
+    .addTest("@ComplexType (explicit option)",
+        async () => {
+
+            
+        }
+    )
+    .addTest("@ComplexType (extended)",
+        async () => {
 
         }
     )

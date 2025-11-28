@@ -10,10 +10,10 @@ export class ArcanaLoadout {
 
     name: string = ""
 
-    @ToMany({ target: ArcanaCard, location: 'sibling' })
+    @ToMany({ target: ArcanaCard, location: '..' })
     cards = new ToManyRelationship(ArcanaCard)
 
-    @ToOne({ target: Person, location: 'sibling' })
+    @ToOne({ target: Person, location: '..' })
     owner = new ToOneRelationship(Person)
 
     @DateType()

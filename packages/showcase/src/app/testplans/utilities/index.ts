@@ -1,7 +1,8 @@
 import { default as environment } from "@environment";
-import { CollectionDocumentTuple, CollectionDocumentTuples, Firestorm } from "@jiway/firestorm-core";
+import { CollectionDocumentTuple, CollectionDocumentTuples, createCollectionCrudRepositoryInstantiator, Firestorm } from "@jiway/firestorm-core";
 import { generateName } from "@modules/random";
 import { Person } from "@testplans/models";
+import { RunRecap } from "@testplans/models/run-recap";
 
 export const UNIT_TEST_DB_ROOT = new CollectionDocumentTuples([new CollectionDocumentTuple<any>("playgrounds", "unit_test")])
 
@@ -41,4 +42,34 @@ export function* getRandomPeople(count: number) {
         yield getRandomPerson()
     }
 
+}
+
+export function getPersonRepo() {
+    return getFirestorm().getCrudRepository(Person, UNIT_TEST_DB_ROOT)
+}
+
+export function getTestingPerson() {
+
+    const person = new Person()
+    
+    person.id = "__me_as_tester__"
+    person.age = 32
+    person.name = "May"
+    person.surname = "Shelf"
+
+    return person
+}
+
+export function getTestingPersonRepo() {
+    const tester = getTestingPerson()
+    return getFirestorm().getSingleDocumentCrudRepository(Person, tester.id, UNIT_TEST_DB_ROOT)
+}
+
+export function getRunrecapRepoOfTestingPerson() {
+    return getTestingPersonRepo()
+        .getRepositoryFromFunction(
+            createCollectionCrudRepositoryInstantiator(),
+            RunRecap,
+            "."
+        )
 }

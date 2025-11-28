@@ -22,6 +22,8 @@ import { TestStateComponent, TestStateComponentMode } from "@components/test-sta
 })
 export class TestsPage {
 
+    private _autoRun: boolean = true
+    
     TestStateComponentMode = TestStateComponentMode
 
     testPlan = MAIN_TEST_PLAN
@@ -39,6 +41,16 @@ export class TestsPage {
         }
 
         return false
+    }
+
+    constructor() {
+        
+        setTimeout(() => {
+            if (this._autoRun) {
+                this.run()
+            }
+        }, 100)
+
     }
 
     get testState() {

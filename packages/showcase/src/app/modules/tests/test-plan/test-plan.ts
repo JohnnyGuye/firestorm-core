@@ -3,12 +3,13 @@ import { GroupTester } from "./group-tester";
 
 export class TestPlan {
 
-    private _rootGroup: GroupTester
+    private _rootGroup: GroupTester    
 
     constructor(tests: TestPackage) {
         const tg = new TestGroup("__root__")
         tg.addTests(tests)
         this._rootGroup = new GroupTester(tg)
+
     }
 
     public get root() {
