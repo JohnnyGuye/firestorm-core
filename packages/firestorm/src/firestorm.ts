@@ -10,7 +10,7 @@ import { FirestormStorage } from "./storage";
 import { createDocumentCrudRepositoryInstantiator } from "./repositories/document-crud-repository";
 import { EmulatorConnectionOptions, mergeOptionsToDefault } from "./emulator";
 import { MissingAppError } from "./errors/missing-app.error";
-import { CollectionDocumentTuples, PathLike } from "./core";
+import { PathLike } from "./core";
 
 export { DEFAULT_EMULATOR_OPTIONS } from "./emulator"
 
@@ -110,7 +110,7 @@ export class Firestorm {
      * Gets the basic CRUD repository for a model
      * @template T Type of the model
      * @param type Type of the model
-     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @param path The path to the collection to get the repository on
      * @returns 
      */
     public getCrudRepository<T extends IFirestormModel>(
@@ -128,7 +128,7 @@ export class Firestorm {
      * Gets the mono document CRUD repository for a model
      * @param type Type of the document model
      * @param documentId Id of the document
-     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @param path The path to the collection to get the repository on
      * @returns 
      */
     public getSingleDocumentCrudRepository<T extends IFirestormModel>(
@@ -150,7 +150,7 @@ export class Firestorm {
      * @template T Type of the model
      * @param generator Generator function of the repository
      * @param type Type of the model 
-     * @param parentCollections The parent collections between the collection of this repository and the root of firestore
+     * @param path The path to the collection to get the repository on
      * @returns 
      */
     public getRepositoryFromFunction<R extends Repository<T>, T extends IFirestormModel>(

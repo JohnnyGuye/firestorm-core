@@ -9,7 +9,7 @@ import { Repository } from "../repository";
  * @template T_Model The model of the documents in the repository
  * @param firestore The firestore instance the repository will feed on
  * @param type The type of model of the documents of this repository
- * @param parentCollections The parent collection leading to this repository
+ * @param path The path leading to this repository
  */
 export type RepositoryInstantiator<T_Repository extends Repository<T_Model>, T_Model extends IFirestormModel>
   = (

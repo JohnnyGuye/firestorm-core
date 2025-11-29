@@ -6,7 +6,12 @@ import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata, 
 import { pascalToSnakeCase } from "./string-manipulation"
 import { Type } from "./type"
 
-interface SubCollectionMetadatas<T> {
+/**
+ * Metadatas specific to a subcollection
+ */
+export interface SubCollectionMetadatas<T> {
+
+  /** Type held by the subcollection */
   type: Type<T>
 }
 
@@ -176,8 +181,7 @@ export class FirestormPropertyMetadata<T_property_type = any> {
   }
 
   /**
-   * Checks the existency of a document to model conversion for this property
-   * @param key The name of the property in the model
+   * Checks the existency of a document to model conversion for this property   
    * @returns True if a conversion exists, false otherwise.
    */
   get hasConversionToModel() {
@@ -193,6 +197,10 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
 }
 
-export type FirestormPropertyMetadataWithRelationship<T_property_type = any, T_relationship extends FirestormModel = any>
+export type FirestormPropertyMetadataWithRelationship
+            <
+              T_property_type = any, 
+              T_relationship extends FirestormModel = any
+            >
   = FirestormPropertyMetadata<T_property_type> 
   & Record<'relationship', RelationshipMetadata<T_relationship>>

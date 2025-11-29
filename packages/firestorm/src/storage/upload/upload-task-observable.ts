@@ -21,7 +21,7 @@ export class UploadTaskObservable extends Observable<UploadTaskEvent> {
   /**
    * Creates an {@link UploadTaskObservable}
    * 
-   * @param subscribe 
+   * @param subscribe Action to perform upon subscription
    */
   protected constructor(subscribe: SubscribeFunction<UploadTaskEvent>) {
     super(subscribe)
@@ -30,9 +30,9 @@ export class UploadTaskObservable extends Observable<UploadTaskEvent> {
   /**
    * Creates an {@link UploadTaskObservable} from an UploadTask from firebase's api
    * @param uploadTaskResolver 
-   * @returns 
+   * @returns Wraps an upload task from firestore into an upload task observable
    */
-  public static fromUploadTask(uploadTaskResolver: () => UploadTask) {
+  public static fromUploadTask(uploadTaskResolver: () => UploadTask): UploadTaskObservable {
 
     return new UploadTaskObservable(
       (observable) => {

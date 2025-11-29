@@ -1,5 +1,6 @@
 /**
  * Describes how a property of a model is gonna be turned in a document.
+ * @deprecated Not ready for use.
  */
 export interface PropertyBluePrint {
 

@@ -8,6 +8,7 @@
     "./src/storage/index.ts",
     "./src/core/index.ts",
     "./src/errors/index.ts",
+    "./src/emulator/index.ts"
   ],
   "sortEntryPoints": false,
   "excludeReferences": true,

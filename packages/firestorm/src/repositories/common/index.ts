@@ -1,2 +1,2 @@
-export * from "./repository-creation-function"
+export * from "./repository-instantiator"
 export * from "./relationship"

@@ -13,7 +13,7 @@ export class CollectionRepository<T_model extends IFirestormModel> extends Repos
      * Creates a new {@link CollectionRepository} on a model
      * @param type Type on which the repository operates
      * @param firestore The instance of firestore this repository connects to
-     * @param parents The optional parent collections for repositories of subcollections
+     * @param path The optional path to the collection of the document. If not provided, it default to root.
      */
     constructor(
         type: Type<T_model>, 
