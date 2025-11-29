@@ -31,7 +31,7 @@ export class StartAtBlock
 }
 
 /**
- * Discribes a query block that can create a start at clause as its following block
+ * Describes a query block that can create a start at clause as its following block
  */
 export interface ICanPrecedeStartAt {
   

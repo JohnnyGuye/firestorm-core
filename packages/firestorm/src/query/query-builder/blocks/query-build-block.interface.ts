@@ -1,7 +1,7 @@
 import { QueryConstraint } from "firebase/firestore";
 
 /**
- * Discribes the minimal requirements for a query block
+ * Describes the minimal requirements for a query block
  */
 export interface IQueryBuildBlock {
 

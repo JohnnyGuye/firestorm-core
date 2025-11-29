@@ -30,7 +30,7 @@ export class LimitBlock extends QueryBuildBlock {
 }
 
 /**
- * Discribes a query block that can create a limit clause as its following block
+ * Describes a query block that can create a limit clause as its following block
  */
 export interface ICanPrecedeLimit {
 

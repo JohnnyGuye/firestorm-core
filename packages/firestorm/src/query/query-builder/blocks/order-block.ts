@@ -74,7 +74,7 @@ export class OrderByBlock
 
 
 /**
- * Discribes a query block that can create an order by clause as its following block
+ * Describes a query block that can create an order by clause as its following block
  */
 export interface ICanPrecedeOrderBy {
 

@@ -31,7 +31,7 @@ export class EndAtBlock
 }
 
 /**
- * Discribes a query block that can create an end-at clause as its following block
+ * Describes a query block that can create an end-at clause as its following block
  */
 export interface ICanPrecedeEndAt {
   

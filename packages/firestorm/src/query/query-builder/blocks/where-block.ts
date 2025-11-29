@@ -72,7 +72,7 @@ export class WhereBlock
 }
 
 /**
- * Discribes a query block that can create a where clause as its following block
+ * Describes a query block that can create a where clause as its following block
  */
 export interface ICanPrecedeWhere {
 

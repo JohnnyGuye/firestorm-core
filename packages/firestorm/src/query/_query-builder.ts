@@ -40,7 +40,7 @@ export const inequalityOperators: WhereClauseOperator[] = ['<', '<=', '!=', 'not
 export type InequalityOperators = typeof inequalityOperators[number]
 
 /**
- * Discribes the minimal requirements for a query block
+ * Describes the minimal requirements for a query block
  */
 export interface IQueryBuildBlock {
 
@@ -75,7 +75,7 @@ export function isQueryBuildBlock(value: unknown): value is IQueryBuildBlock  {
 }
 
 /**
- * Discribes a query block that can create a where clause as its following block
+ * Describes a query block that can create a where clause as its following block
  */
 export interface ICanPrecedeWhere {
 
@@ -91,7 +91,7 @@ export interface ICanPrecedeWhere {
 }
 
 /**
- * Discribes a query block that can create an order by clause as its following block
+ * Describes a query block that can create an order by clause as its following block
  */
 export interface ICanPrecedeOrderBy {
 
@@ -106,7 +106,7 @@ export interface ICanPrecedeOrderBy {
 }
 
 /**
- * Discribes a query block that can create a limit clause as its following block
+ * Describes a query block that can create a limit clause as its following block
  */
 export interface ICanPrecedeLimit {
 
