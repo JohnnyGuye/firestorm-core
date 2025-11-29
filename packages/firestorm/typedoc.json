@@ -30,7 +30,7 @@
   "useFirstParagraphOfCommentAsSummary": true,
   "requiredToBeDocumented": [
     "Project",
-    "Module",
+    // "Module",
     "Namespace",
     "Enum",
     "EnumMember",
@@ -47,7 +47,7 @@
     "Reference"
   ],
   "validation": {
-    "notDocumented": false,
+    "notDocumented": true,
     "invalidLink": false,
     "unusedMergeModuleWith": true,
     "notExported": true

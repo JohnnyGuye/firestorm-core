@@ -28,11 +28,26 @@ export function isIn<K extends string>(object: unknown, fieldName: K): object is
     return fieldName in object
 }
 
-export function hasFieldOfType<T,const K extends string>(value: unknown, fieldName: K, type: Type<T>): value is Record<K, T> {
+/**
+ * Checks if the given host object has a property or field with a given name containing an value of a given type
+ * 
+ * /!\ It doesn't support non object types.
+ * 
+ * @template T Expected type of the value in the property/field
+ * @template K Litteral of the field/property name
+ * 
+ * @param host Host object to test
+ * @param fieldName Name of the property or field to test
+ * @param type Expected type of the value in the property/field
+ * @returns 
+ */
+export function hasFieldOfType<T,const K extends string>(host: unknown, fieldName: K, type: Type<T>): host is Record<K, T> {
 
-    if (!value) return false
-    if (typeof value != 'object') return false
-    const valueAny = value as any
+    if (!host) return false
+
+    if (typeof host != 'object') return false
+
+    const valueAny = host as any
     if (!(fieldName in valueAny)) return false
     
     return valueAny[fieldName] instanceof type

@@ -3,15 +3,18 @@ import { FirestormModel } from "../firestorm-model"
 import { Type } from "../type"
 import { buildPath } from "./path-as-string"
 
+/**
+ * @deprecated Prefer {@link Path}
+ */
 export class CollectionDocumentTuple<T extends FirestormModel> {
 
     private _instance?: T
 
     /**
-     * 
-     * @param collectionPath 
-     * @param documentId 
-     * @param type 
+     * @deprecated
+     * @param collectionPath Segment of the collection
+     * @param documentId Id of the document
+     * @param type Expected type of the document
      */
     public constructor(
         public readonly collectionPath: string, 
@@ -21,16 +24,25 @@ export class CollectionDocumentTuple<T extends FirestormModel> {
 
     }
 
+    /**
+     * Instance of the model
+     */
     get modelInstance() {
+
         if (!this.type) return null
+
         if (!this._instance) {
             const model = new this.type
             model.id = this.documentId
             this._instance = model
         }
+
         return this._instance
     }
 
+    /**
+     * Path represented by the tuple
+     */
     get path() {
         return buildPath(this.collectionPath, this.documentId)
     }

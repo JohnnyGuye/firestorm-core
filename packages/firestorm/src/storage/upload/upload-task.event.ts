@@ -123,6 +123,9 @@ export class UploadTaskCompleteEvent implements UploadTaskEvent {
 
 }
 
+/**
+ * Event of a merge upload task
+ */
 export interface MergedUploadTaskEvent extends UploadTaskEvent {
 
   /**
@@ -148,7 +151,10 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
     return this._byteTransferred
   }
   
-  /** @inheritdoc */
+  /**
+   * @inheritdoc 
+   * @param value Amount of bytes already transferred to set
+   * */
   protected set bytesTransferred(value: number) {
     this._byteTransferred = value
   }
@@ -163,7 +169,10 @@ abstract class AbstractMergedUploadTaskEvent implements MergedUploadTaskEvent {
     return this._totalBytes
   }
   
-  /** @inheritdoc */
+  /** 
+   * @inheritdoc
+   * @param value Amount of bytes to transfer in total to set
+   * */
   protected set totalBytes(value: number) {
     this._totalBytes = value
   }
@@ -248,6 +257,9 @@ export class MergedUploadTaskChangeEvent extends AbstractMergedUploadTaskEvent {
 
 }
 
+/**
+ * Merge event raised when the upload task is completed
+ */
 export class MergedUploadTaskCompleteEvent extends AbstractMergedUploadTaskEvent {
 
   /**

@@ -7,23 +7,26 @@ import { Type } from "../type"
  */
 export class ToOneRelationship<T_target extends FirestormModel> {
 
-  private _id?: string
+  /**
+   * 
+   */
+  private _id: string | null = null
   private _model?: T_target
 
   /**
-   * 
+   * Creates a ToOneRelationship
    * @param type Type of the model
    * @param id Id of the linked model
    */
   constructor(public readonly type: Type<T_target>, id?: string) {
-    this._id = id
+    this._id = id || null
     this._model = undefined
   }
 
   /**
    * Gets the id of the document for this relationship.
    */
-  public get id() {
+  public get id() : string | null {
     return this._id
   }
 
@@ -32,10 +35,13 @@ export class ToOneRelationship<T_target extends FirestormModel> {
    * 
    * If there is a model already loaded and the newid makes the relationship invalid, 
    * it will remove the model aswell.
+   * 
+   * @param newId Id to assign.
    */
-  public set id(newId: string | undefined) {
+  public set id(newId: string | null | undefined) {
 
-    if (!newId) newId = undefined
+    if (!newId) newId = null
+
     this._id = newId
     if (this.invalid) {
       this._model = undefined
@@ -81,6 +87,11 @@ export class ToOneRelationship<T_target extends FirestormModel> {
     return this.id === this.model?.id
   }
 
+  /**
+   * Whether or not the id and the model are mismatched.
+   * 
+   * @see valid
+   */
   public get invalid() {
     return !this.valid
   }

@@ -1,4 +1,4 @@
-import { endAt } from "firebase/firestore"
+import { endAt, endBefore } from "firebase/firestore"
 import { QueryBuildBlock } from "./query-build-block"
 import { EndAtClauseEnd, LimitClauseDirection, LimitClauseLimit } from "../params";
 import { ICanPrecedeLimit, LimitBlock } from "./limit-block";
@@ -6,14 +6,21 @@ import { ICanPrecedeLimit, LimitBlock } from "./limit-block";
 /**
  * End-at query block that gives an ending document index for the query
  * 
- * Mutually explusive with {@link StartAtBlock}
+ * Mutually exclusive with {@link StartAtBlock}
  */
 export class EndAtBlock 
   extends QueryBuildBlock
   implements ICanPrecedeLimit {
 
+  /**
+   * End-at query block that gives an ending document index for the query
+   * 
+   * @param end Index of the last document in the query (1-indexed)
+   * @param included If true, the last document is in the result set, if false, it ends before this index
+   */
   constructor(
-    public readonly end: EndAtClauseEnd
+    public readonly end: EndAtClauseEnd,
+    public readonly included: boolean = true
   ) {
     super()
   }
@@ -25,7 +32,7 @@ export class EndAtBlock
 
   /** @inheritdoc */
   toConstraint() {
-    return endAt(this.end)
+    return this.included ? endAt(this.end) : endBefore(this.end)
   }
 
 }

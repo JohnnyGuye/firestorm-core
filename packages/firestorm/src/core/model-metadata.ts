@@ -2,15 +2,9 @@ import { FirestoreDocument } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { isIn, Type } from "./type"
 import { FirestormPropertyMetadata, FirestormPropertyMetadataWithRelationship } from "./property-metadatas"
-import { PropertyBluePrint } from "./property-blueprint"
 import { RelationshipLocation } from "./relationship"
 
-
-
-
-interface SubCollectionMetadas {
-  propertyName: string
-}
+import { PropertyBluePrint } from "./property-blueprint"
 
 /**
  * Metadatas linked to a type that holds information:
@@ -45,6 +39,9 @@ export class FirestormMetadata<T_model> {
     return propertyMetadatas
   }
 
+  /**
+   * Gets the metadatas of the property with relationship.
+   */
   public get relationshipMetadatas() {
     return [...this._propertyMetadatas.values().filter(value => value.relationship)] as FirestormPropertyMetadataWithRelationship[]
   }
@@ -78,12 +75,21 @@ export class FirestormMetadata<T_model> {
   /**
    * Marks a field as being a subcollection
    * @param propertyName The name of the property of the subcollection
+   * @param type Type of the model of the subcollection
    */
   public addSubCollection<T>(propertyName: string, type: Type<T>): void {
     this.getOrCreatePropertyMetadata(propertyName).subCollection = { type: type }
   }
 
-
+  /**
+   * Adds a ToOne relationship
+   * 
+   * @template T_target_model Type of the target of the relationship
+   * 
+   * @param propertyName The name of the property that has a relationship
+   * @param targetType Type of the target of the relationship
+   * @param location Location of the relationship
+   */
   public addToOneRelationship<T_target_model extends FirestormModel>(
     propertyName: string, 
     targetType: Type<T_target_model>,
@@ -94,6 +100,15 @@ export class FirestormMetadata<T_model> {
 
   }
 
+  /**
+   * Adds a ToMany relationship
+   * 
+   * @template T_target_model Type of the target of the relationship
+   * 
+   * @param propertyName The name of the property that has a relationship
+   * @param targetType Type of the target of the relationship
+   * @param location Location of the relationship
+   */
   public addToManyRelationship<T_target_model extends FirestormModel>(
     propertyName: string,
     targetType: Type<T_target_model>,

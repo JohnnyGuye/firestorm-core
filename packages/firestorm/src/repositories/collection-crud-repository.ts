@@ -111,6 +111,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
     /**
      * Tries to find an item by its id in the database
      * @param id Id of the item to find
+     * @param includes Optional params for querying linked documents.
      * @returns A promise containing either the item retrieved or null if not found
      */
     async getByIdAsync(id: string, includes?: RelationshipIncludes<T_model>): Promise<T_model | null> {
@@ -158,6 +159,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
     /**
      * Queries a collection of items
      * @param firestormQuery Query
+     * @param includes Optional params for querying linked documents.
      * @returns A promise on the items that are results of the query
      */
     async queryAsync(firestormQuery: Query | IQueryBuildBlock, includes?: RelationshipIncludes<T_model>): Promise<T_model[]>{
@@ -247,7 +249,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * 
      * It relies on the presence of the field "id" in the document so it won't work if that is not the case.
      * 
-     * It's also absolutely bonker if there are not enough documents in the collection as it relies on id of the documents being relatively evenly distributed.
+     * It's also absolutely bonkers if there are not enough documents in the collection as it relies on id of the documents being relatively evenly distributed.
      * 
      * @returns A random element of the collection or null if no elements.
      */
@@ -279,6 +281,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
 
     /**
      * Gets all the items of a collection
+     * @param includes Optional params for querying linked documents.
      * @returns A promise containing all the items in the collection
      */
     async getAllAsync(includes?: RelationshipIncludes<T_model>): Promise<T_model[]> {

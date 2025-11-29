@@ -1,6 +1,9 @@
 import { FirestoreDocument, FirestoreDocumentField } from "./firestore-document"
 import { Type } from "./type"
 
+/**
+ * Type of a Firestorm Id
+ */
 export type FirestormId = string
 
 /**

@@ -1,4 +1,4 @@
-import { startAt } from "firebase/firestore"
+import { startAfter, startAt } from "firebase/firestore"
 import { QueryBuildBlock } from "./query-build-block"
 import { LimitClauseDirection, LimitClauseLimit, StartAtClauseStart } from "../params";
 import { ICanPrecedeLimit, LimitBlock } from "./limit-block";
@@ -6,14 +6,21 @@ import { ICanPrecedeLimit, LimitBlock } from "./limit-block";
 /**
  * Start-at query block that gives a starting document index for the query
  * 
- * Mutually explusive with {@link EndAtBlock}
+ * Mutually exclusive with {@link EndAtBlock}
  */
 export class StartAtBlock 
   extends QueryBuildBlock
   implements ICanPrecedeLimit {
 
+  /**
+   * Start-at query block that gives a starting document index for the query
+   * 
+   * @param start Index of the first document in the query (1-indexed)
+   * @param included If true, the first document is in the result set, if false, it starts after this index
+   */
   constructor(
-    public readonly start: StartAtClauseStart
+    public readonly start: StartAtClauseStart,
+    public readonly included: boolean = true
   ) {
     super()
   }
@@ -25,7 +32,7 @@ export class StartAtBlock
   
   /** @inheritdoc */
   toConstraint() {
-    return startAt(this.start)
+    return this.included ? startAt(this.start) : startAfter(this.start)
   }
 
 }
@@ -52,6 +59,7 @@ export interface ICanPrecedeStartAt {
 
   /**
    * Appends a start-at and a limit block to the query to retrieve a portion of the request
+   * @param block Block after which you want to paginate
    * @param pageLength Length of the page
    * @param pageIndex Index of the page
    */

@@ -13,6 +13,7 @@ export interface SubCollectionMetadatas<T> {
 
   /** Type held by the subcollection */
   type: Type<T>
+  
 }
 
 
@@ -27,6 +28,7 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
   /**
    * Creates a new property metadata
+   * 
    * @param name Name of property
    */
   constructor(public readonly name: string) {}
@@ -44,6 +46,9 @@ export class FirestormPropertyMetadata<T_property_type = any> {
   /** Overrides the default field name of the document */
   mappedTo?: string
 
+  /**
+   * Metadatas about the subcollection if it's mapped to one
+   */
   subCollection?: SubCollectionMetadatas<T_property_type>
 
   /** 
@@ -61,6 +66,10 @@ export class FirestormPropertyMetadata<T_property_type = any> {
     return this._relationship
   }
 
+  /**
+   * Sets the relationship this field covers
+   * @param value New value of the relationship
+   */
   private set relationship(value: RelationshipMetadata<any> | undefined) {
     if (this._relationship) {
       logWarn(`You replaced a previous ${this._relationship.kind} relationship on the field ${this.name} for a ${value?.kind}`)
@@ -69,14 +78,17 @@ export class FirestormPropertyMetadata<T_property_type = any> {
   }
 
   /**
-   * Sets this field as being a ToOne relationship
-   * @param targetType 
-   * @param location 
+   * Sets this field as being a ToOne relationship.
+   * 
+   * @template T_target_model Type of the target model
+   * 
+   * @param targetType Type of the target
+   * @param location Location of target
    */
   public setToOneRelationship<T_target_model extends FirestormModel>(
     targetType: Type<T_target_model>, 
     location: RelationshipLocation
-  ) {
+  ): void {
 
     const toOneRel: ToOneRelationshipMetadata<T_target_model> = 
       { 
@@ -98,13 +110,16 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
     /**
    * Sets this field as being a ToMany relationship
-   * @param targetType 
-   * @param location 
+   * 
+   * @template T_target_model Type of the target model
+   * 
+   * @param targetType Type of the target
+   * @param location Location of target
    */
   public setToManyRelationship<T_target_model extends FirestormModel>(
     targetType: Type<T_target_model>, 
     location: RelationshipLocation
-  ) {
+  ): void {
 
     const toManyRel: ToManyRelationshipMetadata<T_target_model> = 
       { 
@@ -141,6 +156,7 @@ export class FirestormPropertyMetadata<T_property_type = any> {
   
   /**
    * Sets the conversion from model to document
+   * @param value Converter to set
    */
   set toDocumentConverter(value: ModelToDocumentFieldConverter<T_property_type>) {
     if (this._toDocConverter) {
@@ -158,6 +174,8 @@ export class FirestormPropertyMetadata<T_property_type = any> {
   
   /**
    * Sets the conversion from document to model
+   * 
+   * @param value Converter to set
    */
   set toModelConverter(value: DocumentToModelFieldConverter<T_property_type>) {
     if (this._toModelConverter) {
@@ -197,6 +215,9 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
 }
 
+/**
+ * Specialized type of FirestormPropertyMetadata that has a relationship 
+ */
 export type FirestormPropertyMetadataWithRelationship
             <
               T_property_type = any, 

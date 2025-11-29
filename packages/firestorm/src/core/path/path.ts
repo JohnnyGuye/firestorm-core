@@ -2,20 +2,22 @@ import { PathLike } from "."
 import { CollectionDocumentTuples } from "./collection-document-tuples"
 import { buildPath, toSegments } from "./path-as-string"
 
-
+/**
+ * Special path segments
+ */
 export const SpecialSegments = Object.freeze({
+    /** signifies root. If a segment is exactly this, it will discard previous segments. */
     root: '~',
+    /** signifies 'same level' */
     sibling: '.',
+    /** signifies 'parent level' */
     parent: '..'
 })
 
 /**
  * Holds a more details version of a path information
  * 
- * Some segments have special meanings :
- * - '~' : signifies root. If a segment is exactly this, it will discard previous segments.
- * - '.' : signifies 'same level'. 
- * - '..': signifies 'parent level'
+ * Some segments have special meanings listed in {@link SpecialSegments}
  */
 export class Path {
 
@@ -25,7 +27,7 @@ export class Path {
     private constructor() {}
 
     /**
-     * String the representing the path
+     * String representing the path
      */
     get path() {
         return this._path
@@ -73,11 +75,18 @@ export class Path {
         return this.isCollection && !this.isRoot
     }
 
-
+    /** 
+     * Rebuilds the path from the individual segments
+     */
     private rebuildPath() {
         this._path = buildPath(...this._segments)
     }
 
+    /**
+     * Build a Path object from its string representation
+     * @param pathString String representation of the path
+     * @returns The path 
+     */
     public static fromString(pathString: string) {
         
         const p = new Path()
@@ -88,14 +97,32 @@ export class Path {
         return p
     }
 
+    /**
+     * Build a Path object from its segmented representation
+     * @param segments Segmented representation of the path
+     * @returns The path 
+     */
     public static fromSegments(segments: string[]) {
         return this.fromString(buildPath(...segments))
     }
 
-    public static fromCollectionDocumentTuples(tuple: CollectionDocumentTuples) {
-        return this.fromString(tuple.path)
+    /**
+     * Build a Path object from its CollectionDocumentTuples representation.
+     * 
+     * @deprecated The CollectionDocumentTuples is no longer maintained or even supported.
+     * 
+     * @param tuples CollectionDocumentTuples representation of the path
+     * @returns The path 
+     */
+    public static fromCollectionDocumentTuples(tuples: CollectionDocumentTuples) {
+        return this.fromString(tuples.path)
     }
 
+    /**
+     * Converts the given object to path
+     * @param pathLike Object to convert
+     * @returns The path built
+     */
     public static fromPathLike(pathLike: PathLike | undefined): Path {
 
         if (pathLike === undefined || pathLike === null) {
@@ -107,7 +134,7 @@ export class Path {
         }
 
         if (pathLike instanceof Path) {
-            return pathLike
+            return Path.fromString(pathLike.path)
         }
 
         if (pathLike instanceof CollectionDocumentTuples) {
@@ -118,6 +145,11 @@ export class Path {
 
     }
 
+    /**
+     * Merges multiple path into one
+     * @param pathLikes List of paths to merge.
+     * @returns The merged paths
+     */
     public static merge(...pathLikes: PathLike[]) {
 
         const paths = pathLikes.map(Path.fromPathLike)
@@ -146,7 +178,6 @@ export class Path {
 
 
         }
-        console.log(segments, normalizedSegments)
 
         return Path.fromSegments(normalizedSegments)
     }

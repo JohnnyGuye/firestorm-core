@@ -29,7 +29,7 @@ export class UploadTaskObservable extends Observable<UploadTaskEvent> {
 
   /**
    * Creates an {@link UploadTaskObservable} from an UploadTask from firebase's api
-   * @param uploadTaskResolver 
+   * @param uploadTaskResolver Resolver of the upload task
    * @returns Wraps an upload task from firestore into an upload task observable
    */
   public static fromUploadTask(uploadTaskResolver: () => UploadTask): UploadTaskObservable {

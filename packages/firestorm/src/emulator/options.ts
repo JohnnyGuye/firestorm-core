@@ -15,6 +15,9 @@ export interface BaseEmulatorConnectionOptions {
  * Options for connection to the firestore emulator
  */
 export interface FirestoreEmulatorConnectionOptions extends BaseEmulatorConnectionOptions {
+  /**
+   * Fake user token to be connected as a specific user
+   */
   readonly mockUserToken?: FirestoreEmulatorMockTokenOptions | string | undefined
 }
 
@@ -22,6 +25,9 @@ export interface FirestoreEmulatorConnectionOptions extends BaseEmulatorConnecti
  * Options for connection to the storage emulator
  */
 export interface StoreEmulatorConnectionOptions extends BaseEmulatorConnectionOptions {
+  /**
+   * Fake user token to be connected as a specific user
+   */
   readonly mockUserToken?: StorageEmulatorMockTokenOptions | string | undefined
 }
 

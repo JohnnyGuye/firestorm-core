@@ -1,6 +1,6 @@
 import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, TransactionOptions } from "firebase/firestore"
 
-import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, CollectionDocumentTuples, RelationshipLocation, PathLike, resolveToPath, Path } from "../core"
+import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, RelationshipLocation, PathLike, resolveToPath, Path } from "../core"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
@@ -12,6 +12,10 @@ import { RepositoryInstantiator } from "./common"
 export abstract class Repository<T_model extends IFirestormModel> {
         
     private _type: Type<T_model>
+
+    /**
+     * Path of the repository
+     */
     protected path: Path
     
     /**
@@ -218,8 +222,8 @@ export abstract class Repository<T_model extends IFirestormModel> {
     }
 
     /**
-     * Build a path to a new ressource using the information of the repository and a way to 
-     * @param location 
+     * Build a path to a new ressource using the information of the repository and a way to locate the other resource
+     * @param location Location of the other resource relative to this.
      */
     protected abstract resolveRelationshipLocation(location: RelationshipLocation): Path;
 

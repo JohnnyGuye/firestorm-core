@@ -34,8 +34,12 @@ export interface RelationshipMetadata<T_model extends FirestormModel> {
  */
 export interface ToOneRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
 
+  /** @inheritdoc */
   kind: 'to-one'
 
+  /**
+   * Location of the relationship
+   */
   location: RelationshipLocation
 
 }
@@ -45,22 +49,40 @@ export interface ToOneRelationshipMetadata<T extends FirestormModel> extends Rel
  */
 export interface ToManyRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
 
+  /** @inheritdoc */
   kind: 'to-many'
 
+  /**
+   * Location of the relationship
+   */
   location: RelationshipLocation
 
 }
 
-export function isToOneRelationshipMetadata<T extends FirestormModel>(md?: RelationshipMetadata<T>): md is ToOneRelationshipMetadata<T> {
-  if (!md) return false
-  if (md.kind !== 'to-one') return false
+/**
+ * Duck types metadata to check if it's a ToOneRelationshipMetadata
+ * @template T Type of the model hosted by the metadata
+ * @param metadata Metadata to test
+ * @returns True if the metadata is a ToOneRelationshipMetadata
+ */
+export function isToOneRelationshipMetadata<T extends FirestormModel>(metadata?: RelationshipMetadata<T>): metadata is ToOneRelationshipMetadata<T> {
+  
+  if (!metadata) return false
+  if (metadata.kind !== 'to-one') return false
 
   return true
 }
 
-export function isToManyRelationshipMetadata<T extends FirestormModel>(md?: RelationshipMetadata<T>): md is ToManyRelationshipMetadata<T> {
-  if (!md) return false
-  if (md.kind !== 'to-many') return false
+/**
+ * Duck types metadata to check if it's a ToManyRelationshipMetadata
+ * @template T Type of the model hosted by the metadata
+ * @param metadata Metadata to test
+ * @returns True if the metadata is a ToManyRelationshipMetadata
+ */
+export function isToManyRelationshipMetadata<T extends FirestormModel>(metadata?: RelationshipMetadata<T>): metadata is ToManyRelationshipMetadata<T> {
+  
+  if (!metadata) return false
+  if (metadata.kind !== 'to-many') return false
 
   return true
 }

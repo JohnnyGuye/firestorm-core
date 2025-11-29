@@ -60,6 +60,14 @@ export class FirestormMetadataStore {
     return this.tryGetMetadatas(type) || this.createMetadatas(type)
   }
 
+  /**
+   * Registers a forward ref.
+   * 
+   * It is used when two models have references for one another and needs a delayed resolution
+   * 
+   * @param forwardRef Resolver of the type reference
+   * @param action Action to perform when resolved.
+   */
   public registerForwardRef<T>(forwardRef: ForwardRef<T>, action: ForwardRefAction<T>) {
     this.forwardRefQueue.push({
       ref: forwardRef,
@@ -68,12 +76,22 @@ export class FirestormMetadataStore {
     this.tryExhaustRefs()
   }
 
+  /** 
+   * Tries to resolve all the refs.
+  */
   private tryExhaustRefs() {
 
     while(this.tryResolveRefs()) {}
 
   }
 
+  /**
+   * Tries to resolve all the refs in order of integration with exactly one attempt per ref.
+   * 
+   * Removes the ref when resolved
+   * 
+   * @returns True if at least one ref has been resolved
+   */
   private tryResolveRefs() {
     
     let resolvedAtLeastOne = false
@@ -81,11 +99,13 @@ export class FirestormMetadataStore {
     const stillInQueue = 
       this.forwardRefQueue
         .filter((awaiter) => {
+
           const type = awaiter.ref()
           if (type === undefined) return true
 
           awaiter.action(type)
           resolvedAtLeastOne = true
+
           return false
         })
             
