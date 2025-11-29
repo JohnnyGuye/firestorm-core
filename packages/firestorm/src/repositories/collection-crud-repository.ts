@@ -19,7 +19,7 @@ import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregation
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { CollectionDocumentTuples, PathLike } from "../core";
+import { PathLike } from "../core";
 import { includeResolver } from "./toolkit";
 import { CollectionRepository } from "./collection-repository";
 

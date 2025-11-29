@@ -3,8 +3,11 @@ import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
 
+/**
+ * Base repository for a collection
+ * @template T_model Model of the collection
+ */
 export class CollectionRepository<T_model extends IFirestormModel> extends Repository<T_model> {
-
 
     /**
      * Creates a new {@link CollectionRepository} on a model
@@ -22,31 +25,10 @@ export class CollectionRepository<T_model extends IFirestormModel> extends Repos
 
     }
 
+    /** @inheritdoc */
     protected override resolveRelationshipLocation(location: RelationshipLocation): Path {
         return Path.merge(this.collectionPath, location)
     }
-        
-    // //#region Smthg
-
-    // /**
-    //  * Gets the basic CRUD repository for a model
-    //  * @template T_linked_model Type of the model
-    //  * @param type Type of the model
-    //  * @param location 
-    //  * @returns 
-    //  */
-    // public getCrudRepository<T_linked_model extends IFirestormModel>(
-    //     type: Type<T_linked_model>, 
-    //     location: RelationshipLocation
-    //     ): CrudRepository<T_linked_model> {
-    //     return this.getRepositoryFromFunction(
-    //         getCrudRepositoryGenerator(), 
-    //         type, 
-    //         location
-    //     )
-    // }
-
-    // //#endregion
 
 }
 

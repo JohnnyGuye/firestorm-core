@@ -217,21 +217,20 @@ export abstract class Repository<T_model extends IFirestormModel> {
         return klass
     }
 
+    /**
+     * Build a path to a new ressource using the information of the repository and a way to 
+     * @param location 
+     */
     protected abstract resolveRelationshipLocation(location: RelationshipLocation): Path;
-    // private resolveRelationshipLocation(location: RelationshipLocation): Path {
-    //     return Path.merge(this.path, location)
-    // }
-
-    //#region Linked Repositories
 
     /**
      * Creates a repository using a generator function
      * 
      * @template R Type of the repository
-     * @template T_linked_model Type of the model
+     * @template T_linked_model Type of the model of the new repo
      * @param generator Generator function of the repository
      * @param type Type of the model 
-     * @param location The parent collections between the collection of this repository and the root of firestore
+     * @param location The path to the collection or document to get a repository on
      * @returns 
      */
     public getRepositoryFromFunction<R extends Repository<T_linked_model>, T_linked_model extends IFirestormModel>(
@@ -241,8 +240,6 @@ export abstract class Repository<T_model extends IFirestormModel> {
     ): R {
         return generator(this.firestore, type, this.resolveRelationshipLocation(location))
     }
-
-    //#endregion
 
     /**
      * Converts a document to a model (if the id is not in the document, it is lost in the process)
