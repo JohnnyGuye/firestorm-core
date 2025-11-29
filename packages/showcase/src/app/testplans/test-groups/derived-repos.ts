@@ -23,7 +23,7 @@ export default new TestGroup("Derived repositories")
             expect(path).toBe("path/away/from/root/arcana_cards")
         }
     )
-    .addTest("Crud repo from single document",
+    .addTest("Crud repo from single document (generic method)",
         async () => {
             const tester = getTestingPerson()
             const repo = 
@@ -39,3 +39,26 @@ export default new TestGroup("Derived repositories")
             expect(repo.collectionPath).toBe(expected_path)
         }
     )
+    .addTest("Crud repo from single document (specific method)",
+            async () => {
+            const tester = getTestingPerson()
+            const expected_path = "playgrounds/unit_test/persons/__me_as_tester__/run_recaps"
+            {
+                const repo = 
+                    getFirestorm()
+                        .getSingleDocumentCrudRepository(Person, tester.id, UNIT_TEST_DB_ROOT)
+                        .getCollectionCrudRepository(RunRecap, ".")
+    
+                expect(repo.collectionPath).toBe(expected_path)
+            }
+
+            {
+                const repo = 
+                    getFirestorm()
+                        .getSingleDocumentCrudRepository(Person, tester.id, UNIT_TEST_DB_ROOT)
+                        .getCollectionCrudRepository(RunRecap)
+    
+                expect(repo.collectionPath).toBe(expected_path)
+            }
+
+    })
