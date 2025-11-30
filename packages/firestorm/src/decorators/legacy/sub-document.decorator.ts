@@ -1,4 +1,4 @@
-import { FirestormMetadataStore, FirestormModel, Type } from "../../core"
+import { FirestormMetadataStore, FirestormModel, pascalToSnakeCase, Type } from "../../core"
 import { SubDocument } from "../common/sub-collection.decorator"
 import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 
@@ -68,7 +68,7 @@ function storeToMedata
   md.addIgnoredProperty(propertyName)
 
   const submd = storage.getOrCreateMetadatas(type)
-  submd.collection = collection || propertyName
+  submd.collection = collection || submd.collection || pascalToSnakeCase(propertyName)
 }
 
 
