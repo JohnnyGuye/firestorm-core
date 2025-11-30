@@ -3,7 +3,7 @@ import { MAIN_TEST_PLAN } from "@testplans";
 import { MatTreeModule } from "@angular/material/tree";
 import { MatIcon } from "@angular/material/icon";
 import { GroupTester, ITester } from "@modules/tests";
-import { MatButton, MatIconButton } from "@angular/material/button";
+import { MatButton } from "@angular/material/button";
 import { TestStateComponent, TestStateComponentMode } from "@components/test-state-tag";
 
 @Component({
@@ -16,8 +16,7 @@ import { TestStateComponent, TestStateComponentMode } from "@components/test-sta
     MatTreeModule,
     MatIcon,
     MatButton,
-    TestStateComponent,
-    MatIconButton
+    TestStateComponent
 ]
 })
 export class TestsPage {

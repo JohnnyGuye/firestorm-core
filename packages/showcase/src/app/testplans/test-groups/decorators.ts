@@ -1,11 +1,11 @@
-import { generateName, getRandomInArray, getRandomsInArray } from "@modules/random";
+import { generateName, getRandomsInArray } from "@modules/random";
 import { TestGroup } from "@modules/tests";
-import { ArcanaCard, Person, PREDEFINED_ARCANAS } from "@testplans/models";
+import { ArcanaCard, Person, Player, PREDEFINED_ARCANAS } from "@testplans/models";
 import { ArcanaLoadout } from "@testplans/models/arcana-loadout";
-import { getFirestorm, getRandomPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities";
+import { getFirestorm, getPersonRepo, getRandomPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities";
 import { expect } from "@modules/tests/matcher"
-import { createCollectionCrudRepositoryInstantiator, createDocumentCrudRepositoryInstantiator } from "@jiway/firestorm-core";
 import { RunRecap } from "@testplans/models/run-recap";
+import { Timespan } from "@testplans/models/time-span";
 
 /*
 ✔️ collection
@@ -14,40 +14,10 @@ import { RunRecap } from "@testplans/models/run-recap";
 ✔️ toone
 ✔️ mapto
 ✔️ datetype
-complexetype
+✔️ complexetype
 subcollection
 subdocument
 */
-
-function getPersonRepo() {
-    return getFirestorm().getCrudRepository(Person, UNIT_TEST_DB_ROOT)
-}
-
-function getTestingPerson() {
-
-    const person = new Person()
-    
-    person.id = "__me_as_tester__"
-    person.age = 32
-    person.name = "May"
-    person.surname = "Shelf"
-
-    return person
-}
-
-function getTestingPersonRepo() {
-    const tester = getTestingPerson()
-    return getFirestorm().getSingleDocumentCrudRepository(Person, tester.id, UNIT_TEST_DB_ROOT)
-}
-
-function getRunrecapRepoOfTestingPerson() {
-    return getTestingPersonRepo()
-        .getRepositoryFromFunction(
-            createCollectionCrudRepositoryInstantiator(),
-            RunRecap,
-            "."
-        )
-}
 
 function getArcanaRepo() {
     return getFirestorm().getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
@@ -67,6 +37,25 @@ async function generateValidArcanaLoadoutAsync() {
     al.cards.setModels(pickedArcanas)
 
     return al
+}
+
+function getTestingPlayer() {
+    const p = new Player()
+
+    p.id = "_predefined_testing_player_id_"
+    p.pseudo = "TheOriginalTester"
+
+    return p
+}
+
+function getTestingPlayerRepo() {
+    const p = getTestingPlayer()
+    return getFirestorm()
+        .getSingleDocumentCrudRepository(Player, p.id, UNIT_TEST_DB_ROOT)
+}
+
+function getTestingPlayerRecapsRepo() {
+    return getTestingPlayerRepo().getCollectionCrudRepository(RunRecap)
 }
 
 export default new TestGroup("Decorators")
@@ -119,6 +108,7 @@ export default new TestGroup("Decorators")
             await repo.createAsync(al)
 
             const retrievedAl = await repo.getByIdAsync(al.id)
+
             expect(retrievedAl).toNotBeNull()
             expect(al.createdAt).toBe(retrievedAl!.createdAt)
         }
@@ -207,21 +197,45 @@ export default new TestGroup("Decorators")
 
         }
     )
-    .addTest("",
-        async () => {
-            
-            const repo = getRunrecapRepoOfTestingPerson()
-
-            console.log(repo.collectionPath)
-        }
-    )
     .addTest("@ComplexType (explicit option)",
         async () => {
+            
+            const repo = getTestingPlayerRecapsRepo()
 
+            const rr = new RunRecap()
+
+            rr.duration = new Timespan(400 * 1000)
+            rr.finishedAt = new Date(2020, 3, 7, 18, 12, 11, 137)
+            rr.pauseDuration = new Timespan(122 * 1000)
+
+            await repo.createAsync(rr)
+
+            const retrieved = await repo.getByIdAsync(rr.id)
+
+            expect(rr.duration.getTime()).toBe(retrieved?.duration.getTime())
             
         }
     )
     .addTest("@ComplexType (extended)",
+        async () => {
+            
+            const repo = getTestingPlayerRecapsRepo()
+
+            const rr = new RunRecap()
+
+            rr.duration = new Timespan(400 * 1000)
+            rr.finishedAt = new Date(2020, 3, 7, 18, 12, 11, 137)
+            rr.pauseDuration = new Timespan(122 * 1000)
+
+            await repo.createAsync(rr)
+
+            const retrieved = await repo.getByIdAsync(rr.id)
+
+            expect(rr.pauseDuration.getTime()).toBe(retrieved?.pauseDuration.getTime())
+
+        }
+    )
+    .addTest("@SubCollection",
         async () => {
 
         }

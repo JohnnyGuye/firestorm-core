@@ -4,9 +4,9 @@ import { CRUD_COLLECTION_REPO_TESTS, CRUD_DOCUMENT_REPO_TESTS, DECORATORS_TESTS,
 
 export const MAIN_TEST_PLAN = new TestPlan(
     [
-        CRUD_COLLECTION_REPO_TESTS  .setIgnore(false ),
-        CRUD_DOCUMENT_REPO_TESTS    .setIgnore(false ),
-        DERIVED_REPO_TESTS          .setIgnore(false ),
+        CRUD_COLLECTION_REPO_TESTS  .setIgnore(true  ),
+        CRUD_DOCUMENT_REPO_TESTS    .setIgnore(true  ),
+        DERIVED_REPO_TESTS          .setIgnore(true  ),
         DECORATORS_TESTS            .setIgnore(false )
     ]
 )

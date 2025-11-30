@@ -49,6 +49,20 @@ service cloud.firestore {
 
       }
 
+      match /players/{player_id} {
+
+        allow read: if true;
+        allow write: if true;
+
+        match /run_recaps/{rr_id} {
+        
+          allow read: if true;
+          allow write: if true;
+
+        }
+
+      }
+
       match /arcana_cards/{person_id} {
 
         allow read: if true;
