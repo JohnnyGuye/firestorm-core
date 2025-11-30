@@ -9,6 +9,7 @@ export class Player {
 
     pseudo: string = ""
 
-    // @SubCollection({ type: RunRecap})
-    // runRecaps = undefined
+    @SubCollection({ type: RunRecap })
+    runRecaps: RunRecap[] = []
+    
 }

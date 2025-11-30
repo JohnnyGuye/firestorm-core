@@ -6,6 +6,9 @@ import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 import { SubCollection } from "../common/sub-collection.decorator"
 export { SubCollection as ISubCollection } from "../common/sub-collection.decorator"
 
+/**
+ * Base mandatory infos for all variations of options of the SubCollection decorator
+ */
 interface ISubCollectionOptionsBase {
     
   /** Path in firestore to the collection from the parent collection */
@@ -14,7 +17,7 @@ interface ISubCollectionOptionsBase {
 }
 
 /**
- * Options when the type isn't ready at the time of declaration
+ * SubCollection decorator's options when the type isn't ready at the time of declaration
  */
 export interface ISubCollectionOptionsLazy<T extends IFirestormModel> extends ISubCollectionOptionsBase {
   
@@ -23,6 +26,9 @@ export interface ISubCollectionOptionsLazy<T extends IFirestormModel> extends IS
 
 }
 
+/**
+ * SubCollection decorator's options
+ */
 export interface ISubCollectionOptionsEager<T extends IFirestormModel> extends ISubCollectionOptionsBase {
 
   /** Type of the model assosciated */
@@ -38,19 +44,31 @@ export type ISubCollectionOptions<T extends IFirestormModel>
   = ISubCollectionOptionsEager<T> 
   | ISubCollectionOptionsLazy<T>
 
+
+
+
 function storeToMedata
-<
-  T_model extends FirestormModel & Record<K, SubCollection<T_target_model>>,
-  T_target_model extends IFirestormModel,
-  K extends string
-  >(object: T_model, propertyName: string, type: Type<T_target_model>, collection?: string) {
+  <
+    T_model extends FirestormModel & Record<K, SubCollection<T_target_model>>,
+    T_target_model extends IFirestormModel,
+    K extends string
+  >
+  (
+    object: T_model, 
+    propertyName: string, 
+    type: Type<T_target_model>, 
+    collection?: string
+  ) {
     
   const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
   const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
+
   md.addSubCollection(propertyName, type)
+  md.addIgnoredProperty(propertyName)
 
   const submd = storage.getOrCreateMetadatas(type)
   submd.collection = collection || propertyName
+  
 }
 
 /**
@@ -78,17 +96,11 @@ export function SubCollection<
     return (object: T_model, propertyName: K) => {      
 
       storeToMedata(object, propertyName, options.type, options.collection)
-      // const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
-      // md.addSubCollection(propertyName, type)
-  
-      // const submd = storage.getOrCreateMetadatas(type)
-      // submd.collection = options.collection || propertyName
   
     }
 
   } else if ("forwardRef" in options) {
-    
-    console.warn("Forward refs are not implemented yet")
+        
     return (object: T_model, propertyName: K) => {
 
       storage.registerForwardRef(
@@ -100,11 +112,9 @@ export function SubCollection<
 
     }
 
-  } else {
-
-    throw new Error("Not implemented")
-
   }
+
+  throw new Error("Not implemented")
 
 }
 

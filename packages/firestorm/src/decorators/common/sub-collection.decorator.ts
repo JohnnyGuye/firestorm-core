@@ -6,3 +6,10 @@ import { FirestormModel, IdModelDictionary } from "../../core/firestorm-model"
  * Use it in conjonctions with the decorator SubCollection for clean type checking.
  */
 export type SubCollection<T extends FirestormModel> = T | IdModelDictionary<T> | T[]
+
+/**
+ * Explicit interface for subdocuments.
+ * 
+ * Use it in conjonctions with the decorator SubDocument for clean type checking.
+ */
+export type SubDocument<T extends FirestormModel> = T | null | undefined

@@ -82,6 +82,15 @@ export class FirestormMetadata<T_model> {
   }
 
   /**
+   * Marks a field as being a subdocument
+   * @param propertyName The name of the property of the subdocument
+   * @param type Type of the model of the subdocument
+   */
+  public addSubDocument<T>(propertyName: string, type: Type<T>): void {
+    this.getOrCreatePropertyMetadata(propertyName).subDocument = { type: type }
+  }
+
+  /**
    * Adds a ToOne relationship
    * 
    * @template T_target_model Type of the target of the relationship

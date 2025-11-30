@@ -16,6 +16,16 @@ export interface SubCollectionMetadatas<T> {
   
 }
 
+/**
+ * Metadatas specific to a subdocument
+ */
+export interface SubDocumentMetadatas<T> {
+
+  /** Type held by the subdocument */
+  type: Type<T>
+
+}
+
 
 /**
  * Class holding informations about how to serialize/deserialize a property of a firestorm model
@@ -50,6 +60,11 @@ export class FirestormPropertyMetadata<T_property_type = any> {
    * Metadatas about the subcollection if it's mapped to one
    */
   subCollection?: SubCollectionMetadatas<T_property_type>
+
+  /**
+   * Metadatas about the subdocument if it's mapped to one
+   */
+  subDocument?: SubDocumentMetadatas<T_property_type>
 
   /** 
    * Field in the document mapped to this property 

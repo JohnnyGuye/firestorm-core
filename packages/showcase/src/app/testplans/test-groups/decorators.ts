@@ -235,8 +235,25 @@ export default new TestGroup("Decorators")
 
         }
     )
-    .addTest("@SubCollection",
+    .addTest("@SubCollection (in collection repo)",
         async () => {
+            
+            const p = getTestingPlayer()
+            
+            const repo = 
+                getFirestorm()
+                    .getCrudRepository(Player, UNIT_TEST_DB_ROOT)
+
+            const playerWithRuns = await repo.getByIdAsync(p.id, { runRecaps: true })
+        }
+    )
+    .addTest("@SubCollection (in document repo)",
+        async () => {
+
+            const repo = getTestingPlayerRepo()
+
+            // const repo = getPlayer
+            // const playerWithRuns = await repo.getAsync({ runRecaps: true })
 
         }
     )
