@@ -2,9 +2,10 @@ import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, 
 import { IFirestormModel } from "../core/firestorm-model";
 import { Type } from "../core/type";
 import { createDocumentObservable, DocumentObservable } from "../realtime-listener";
-import { CollectionDocumentTuples, PathLike } from "../core";
-import { RepositoryInstantiator } from "./common";
+import { PathLike } from "../core";
+import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { DocumentRepository } from "./document-repository";
+import { includeResolver } from "./toolkit";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
@@ -73,14 +74,20 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
    * 
    * @returns A promise containing either the item retrieved or null if it doesn't exist
    */
-  async getAsync() {
+  async getAsync(includes?: RelationshipIncludes<T_model> ) {
 
     const docRef: DocumentReference = this.documentRef
     const documentSnapshot: DocumentSnapshot = await getDoc(docRef)
 
     if (!documentSnapshot.exists()) return null
     
-    return this.firestoreDocumentSnapshotToModel(documentSnapshot)
+    const model = this.firestoreDocumentSnapshotToModel(documentSnapshot)
+
+    if (!includes) return model
+
+    await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
+
+    return model
   }
 
   /**

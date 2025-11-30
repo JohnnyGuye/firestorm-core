@@ -125,24 +125,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         if (!includes) return model
 
         await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
-        // for (let pmd of this.typeMetadata.relationshipMetadatas) {
 
-        //     const pName = pmd.name
-        //     const relationship = pmd.relationship
-
-        //     if (!hasFieldOfType(model, pName, ToOneRelationship)) continue
-        //     const relProp = model[pName]
-        //     if (isToOneRelationshipMetadata(relationship) && relProp instanceof ToOneRelationship && relProp.id ) {
-                
-        //         const cdt = this.resolveRelationshipLocation(relationship.location)
-        //         const crud = getCrudRepositoryGenerator()(this.firestore, relProp.type, cdt)
-        //         const include = await crud.findByIdAsync(relProp.id)
-        //         if (include) {
-        //             relProp.setModel(include)
-        //         }
-
-        //     }
-        // }
         return model
     }
 
