@@ -1,5 +1,4 @@
 import { PathLike } from "."
-import { CollectionDocumentTuples } from "./collection-document-tuples"
 import { buildPath, toSegments } from "./path-as-string"
 
 /**
@@ -104,18 +103,6 @@ export class Path {
      */
     public static fromSegments(segments: string[]) {
         return this.fromString(buildPath(...segments))
-    }
-
-    /**
-     * Build a Path object from its CollectionDocumentTuples representation.
-     * 
-     * @deprecated The CollectionDocumentTuples is no longer maintained or even supported.
-     * 
-     * @param tuples CollectionDocumentTuples representation of the path
-     * @returns The path 
-     */
-    public static fromCollectionDocumentTuples(tuples: CollectionDocumentTuples) {
-        return this.fromString(tuples.path)
     }
 
     /**

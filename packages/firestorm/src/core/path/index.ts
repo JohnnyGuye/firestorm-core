@@ -1,9 +1,6 @@
-import { CollectionDocumentTuples } from "./collection-document-tuples"
 import { Path } from "./path"
 
 export * from "./path-as-string"
-export * from "./collection-document-tuple"
-export * from "./collection-document-tuples"
 export * from "./path"
 
 /**

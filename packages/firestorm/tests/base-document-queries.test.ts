@@ -1,4 +1,4 @@
-import { CollectionDocumentTuple, CollectionDocumentTuples, Firestorm } from "../src"
+import { Firestorm } from "../src"
 import { Conversation } from "./models"
 import { VALID_FIREBASE_CONFIG } from "./utility"
 
