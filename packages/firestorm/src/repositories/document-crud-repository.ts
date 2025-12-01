@@ -72,6 +72,8 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
   /**
    * Gets the document of this repository
    * 
+   * @param includes Optional params for querying linked documents.
+   * 
    * @returns A promise containing either the item retrieved or null if it doesn't exist
    */
   async getAsync(includes?: RelationshipIncludes<T_model> ) {
