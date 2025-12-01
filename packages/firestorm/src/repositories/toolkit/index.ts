@@ -1,11 +1,23 @@
 import { ToManyRelationship, ToOneRelationship } from "../../decorators"
-import { FirestormMetadata, FirestormModel, IFirestormModel, isCollectionRelationshipMetadata, isDocumentRelationshipMetadata, isIn, isToManyRelationshipMetadata, isToOneRelationshipMetadata, OR_QUERIES_MAXIMUM_DISJONCTIONS, RelationshipMetadata, splitInBatches } from "../../core"
+import { 
+  FirestormMetadata, 
+  FirestormModel, 
+  IFirestormModel, 
+  isCollectionRelationshipMetadata, 
+  isDocumentRelationshipMetadata, 
+  isIn, 
+  isToManyRelationshipMetadata, 
+  isToOneRelationshipMetadata, 
+  OR_QUERIES_MAXIMUM_DISJONCTIONS, 
+  RelationshipMetadata, 
+  splitInBatches,
+  FirestormPropertyMetadataWithRelationship 
+} from "../../core"
 import { Repository } from "../repository"
 import { RelationshipIncludes } from "../common"
 import { Query } from "../../query"
 import { createCollectionCrudRepositoryInstantiator } from "../collection-crud-repository"
-import { FirestormPropertyMetadataWithRelationship } from "@firestorm/src/core/property-metadatas"
-import { FIRESTORM_METADATA_STORAGE } from "@firestorm/src/metadata-storage"
+import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
 
 interface RelationshipInfos<T extends IFirestormModel, U> {
 

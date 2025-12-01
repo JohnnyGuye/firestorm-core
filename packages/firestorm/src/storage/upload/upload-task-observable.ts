@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { UploadTaskChangeEvent, UploadTaskCompleteEvent, UploadTaskEvent } from "./upload-task.event";
 import { UploadTask, UploadTaskSnapshot, getDownloadURL } from "firebase/storage";
-import { SubscribeFunction } from "@firestorm/src/core/observable";
+import { SubscribeFunction } from "../../core/observable";
 
 
 /**
