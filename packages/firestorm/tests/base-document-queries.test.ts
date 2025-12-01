@@ -5,7 +5,7 @@ import { VALID_FIREBASE_CONFIG } from "./utility"
 describe("Ladadim", () => {
     
     const firestorm = new Firestorm()
-    const rootCollection = new CollectionDocumentTuples(new CollectionDocumentTuple("playgrounds", "message_app"))
+    const rootCollection = ["playgrounds", "message_app"]
 
     beforeAll(() => {
         firestorm.connect(VALID_FIREBASE_CONFIG)

@@ -67,9 +67,19 @@ export default new TestGroup("Decorators")
         
         const personRepo = fOrm.getCrudRepository(Person, UNIT_TEST_DB_ROOT)
         await personRepo.deleteAllAsync()
+
+        
     })
     .addBeforeEachTest(async () => {
         await getArcanaLoadoutRepo().deleteAllAsync()
+
+        const fOrm = getFirestorm()
+        const p = getTestingPlayer()
+        const playerRepo = fOrm.getCrudRepository(Player, UNIT_TEST_DB_ROOT)
+        await playerRepo.deleteAllAsync()
+    
+        const recapRepo = fOrm.getCrudRepository(RunRecap, [UNIT_TEST_DB_ROOT.path, "players", p.id])
+        await recapRepo.deleteAllAsync()
     })
     .addTest("@Collection",
         async () => {
@@ -203,6 +213,7 @@ export default new TestGroup("Decorators")
             const repo = getTestingPlayerRecapsRepo()
 
             const rr = new RunRecap()
+            console.log(rr, repo.collectionPath)
 
             rr.duration = new Timespan(400 * 1000)
             rr.finishedAt = new Date(2020, 3, 7, 18, 12, 11, 137)
@@ -211,6 +222,7 @@ export default new TestGroup("Decorators")
             await repo.createAsync(rr)
 
             const retrieved = await repo.getByIdAsync(rr.id)
+
 
             expect(rr.duration.getTime()).toBe(retrieved?.duration.getTime())
             
@@ -244,16 +256,47 @@ export default new TestGroup("Decorators")
                 getFirestorm()
                     .getCrudRepository(Player, UNIT_TEST_DB_ROOT)
 
+            const recapRepo =
+                getFirestorm()
+                    .getCrudRepository(RunRecap, [UNIT_TEST_DB_ROOT.path, "players", p.id])
+
+            const r1 = (() => {
+                const rr = new RunRecap()
+
+                rr.duration = new Timespan(400 * 1000)
+                rr.finishedAt = new Date(2020, 3, 7, 18, 12, 11, 137)
+                rr.pauseDuration = new Timespan(122 * 1000)
+
+                return rr
+            })()
+
+            const r2 = (() => {
+                const rr = new RunRecap()
+
+                rr.duration = new Timespan(300 * 1000)
+                rr.finishedAt = new Date(2020, 3, 7, 18, 16, 18, 137)
+                rr.pauseDuration = new Timespan(92 * 1000)
+
+                return rr
+            })()
+
+            await repo.createAsync(p)
+
+            const rs = await recapRepo.createMultipleAsync(r1, r2)
+
             const playerWithRuns = await repo.getByIdAsync(p.id, { runRecaps: true })
+            console.log(playerWithRuns)
+
+            expect(playerWithRuns?.runRecaps).toBeOfLength(2)
         }
     )
-    .addTest("@SubCollection (in document repo)",
-        async () => {
+    // .addTest("@SubCollection (in document repo)",
+    //     async () => {
 
-            const repo = getTestingPlayerRepo()
+    //         const repo = getTestingPlayerRepo()
 
-            // const repo = getPlayer
-            // const playerWithRuns = await repo.getAsync({ runRecaps: true })
+    //         // const repo = getPlayer
+    //         // const playerWithRuns = await repo.getAsync({ runRecaps: true })
 
-        }
-    )
+    //     }
+    // )

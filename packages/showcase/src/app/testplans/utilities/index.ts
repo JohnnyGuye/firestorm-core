@@ -1,10 +1,10 @@
 import { default as environment } from "@environment";
-import { CollectionDocumentTuple, CollectionDocumentTuples, createCollectionCrudRepositoryInstantiator, Firestorm } from "@jiway/firestorm-core";
+import { createCollectionCrudRepositoryInstantiator, Firestorm, Path } from "@jiway/firestorm-core";
 import { generateName } from "@modules/random";
 import { Person } from "@testplans/models";
 import { RunRecap } from "@testplans/models/run-recap";
 
-export const UNIT_TEST_DB_ROOT = new CollectionDocumentTuples([new CollectionDocumentTuple<any>("playgrounds", "unit_test")])
+export const UNIT_TEST_DB_ROOT = Path.fromSegments(["playgrounds", "unit_test"])
 
 let firestorm: Firestorm | undefined = undefined
 

@@ -11,8 +11,8 @@ export * from "./path"
  */
 export type PathLike 
     = string 
+    | string[]
     | Path
-    | CollectionDocumentTuples
 
 /**
  * Converts the given object to path.
@@ -36,8 +36,8 @@ export function resolveToPath(pathLike: PathLike | undefined) {
         return pathLike
     }
 
-    if (pathLike instanceof CollectionDocumentTuples) {
-        return Path.fromString(pathLike.path)
+    if (pathLike instanceof Array) {
+        return Path.fromSegments(pathLike)
     }
 
     throw new Error("Not supported path")

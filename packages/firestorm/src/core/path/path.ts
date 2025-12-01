@@ -137,8 +137,8 @@ export class Path {
             return Path.fromString(pathLike.path)
         }
 
-        if (pathLike instanceof CollectionDocumentTuples) {
-            return Path.fromString(pathLike.path)
+        if (pathLike instanceof Array) {
+            return Path.fromSegments(pathLike)
         }
 
         throw new Error("Not supported path")

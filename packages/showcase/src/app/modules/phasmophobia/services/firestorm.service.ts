@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { CollectionDocumentTuple, Firestorm } from "@jiway/firestorm-core"
+import { Firestorm } from "@jiway/firestorm-core"
 import { default as environment } from "@environment";
 import { Achievement, PhasmoEntity, PhasmoGame, User, UserAchievement } from "../models";
 import { GHOST_ENTITIES, ACHIEVEMENTS } from "../initial-data";
-import { CollectionDocumentTuples } from "@jiway/firestorm-core";
 import { generateInt, generateName, getRandomInArray } from "@modules/random";
 
 const phasmo = environment.firebaseConfigurations.phasmo
@@ -12,9 +11,7 @@ const phasmo = environment.firebaseConfigurations.phasmo
 export class PhasmoOrmService {
 
   private firestorm: Firestorm
-  private rootCollection = new CollectionDocumentTuples(
-    [new CollectionDocumentTuple<any>("playgrounds", "phasmophobia")]
-  )
+  private rootCollection = ["playgrounds", "phasmophobia"]
 
   constructor() {
 
@@ -116,9 +113,7 @@ export class PhasmoOrmService {
         this.firestorm
           .getCrudRepository(
             UserAchievement, 
-            new CollectionDocumentTuples(
-              new CollectionDocumentTuple("users", user.id)
-            )
+            ["users", user.id]
           )
 
       await achievementCrud.createMultipleAsync(...uas)
