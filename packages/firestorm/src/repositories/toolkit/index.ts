@@ -1,16 +1,19 @@
 import { ToManyRelationship, ToOneRelationship } from "../../decorators"
-import { FirestormMetadata, FirestormModel, IFirestormModel, isIn, isToManyRelationshipMetadata, isToOneRelationshipMetadata, OR_QUERIES_MAXIMUM_DISJONCTIONS, RelationshipMetadata, splitInBatches } from "../../core"
+import { FirestormMetadata, FirestormModel, IFirestormModel, isCollectionRelationshipMetadata, isDocumentRelationshipMetadata, isIn, isToManyRelationshipMetadata, isToOneRelationshipMetadata, OR_QUERIES_MAXIMUM_DISJONCTIONS, RelationshipMetadata, splitInBatches } from "../../core"
 import { Repository } from "../repository"
 import { RelationshipIncludes } from "../common"
 import { Query } from "../../query"
 import { createCollectionCrudRepositoryInstantiator } from "../collection-crud-repository"
 import { FirestormPropertyMetadataWithRelationship } from "@firestorm/src/core/property-metadatas"
+import { FIRESTORM_METADATA_STORAGE } from "@firestorm/src/metadata-storage"
 
 interface RelationshipInfos<T extends IFirestormModel, U> {
 
   relationship: RelationshipMetadata<T>
 
   propertyValue: U
+
+  propertySetter: (value: any) => void
 
 }
 
@@ -20,16 +23,22 @@ function extractRelationshipInfos<P extends Partial<FirestormModel>>(model: P) {
 
     const pName = metadata.name
     if (!isIn(model, pName)) {
-      return { 
+      return {
         relationship: metadata.relationship, 
-        propertyValue: undefined 
+        propertyValue: undefined,
+        propertySetter: (value) => {
+          (model as any)[pName] = value
+        }
       }
     }
 
     const propertyValue = (model as any)[pName]
-    return {
+    return {      
       relationship: metadata.relationship,
-      propertyValue: propertyValue
+      propertyValue: propertyValue,
+      propertySetter: (value) => {
+        (model as any)[pName] = value
+      }
     }
 
   }
@@ -38,7 +47,7 @@ function extractRelationshipInfos<P extends Partial<FirestormModel>>(model: P) {
 
 export function includeResolver<T_model extends FirestormModel, P extends Partial<T_model>>(
   includes: RelationshipIncludes<T_model>,
-  model: P, 
+  model: P,
   modelMetadatas: FirestormMetadata<T_model>, 
   repository: Repository<T_model>
 ) {
@@ -49,7 +58,43 @@ export function includeResolver<T_model extends FirestormModel, P extends Partia
       return (md.name in includes) && (includes as any)[md.name]
     })
     .map(extractRelationshipInfos(model))
-    .map(async ({relationship, propertyValue}) => {
+    .map(async ({relationship, propertyValue, propertySetter}) => {
+
+      console.warn(relationship, propertyValue)
+
+      if (isCollectionRelationshipMetadata(relationship)) {
+
+        const md = FIRESTORM_METADATA_STORAGE.getOrCreateMetadatas(relationship.targetType)
+        const collection = md.collection
+        if (!collection) {
+          console.warn("No collection associated with this metadata ", relationship.targetType.name)
+          return
+        }
+        const crud = repository.getRepositoryFromFunction(createCollectionCrudRepositoryInstantiator(), relationship.targetType, collection)
+        const result = await crud.getAllAsync();
+        
+        propertySetter(result)
+
+        return
+        
+      }
+
+      if (isDocumentRelationshipMetadata(relationship)) {
+
+        const md = FIRESTORM_METADATA_STORAGE.getOrCreateMetadatas(relationship.targetType)
+        const collection = md.collection
+        if (!collection) {
+          console.warn("No collection associated with this metadata ", relationship.targetType.name)
+          return
+        }
+        const crud = repository.getRepositoryFromFunction(createCollectionCrudRepositoryInstantiator(), relationship.targetType, collection)
+        const result = await crud.getByIdAsync(relationship.documentId);
+        
+        propertySetter(result)
+
+        return
+        
+      }
       
       if (!propertyValue) return
       
@@ -61,6 +106,8 @@ export function includeResolver<T_model extends FirestormModel, P extends Partia
           if (include) {
               propertyValue.setModel(include)
           }
+
+          return
   
       }
 
@@ -77,6 +124,8 @@ export function includeResolver<T_model extends FirestormModel, P extends Partia
           }
 
         }
+
+        return
         
       }
 

@@ -10,7 +10,11 @@ export type RelationshipLocation = PathLike
 /**
  * Kind of relationship
  */
-export type RelationshipKind = 'to-one' | 'to-many' | 'sub'
+export type RelationshipKind 
+  = 'to-one' 
+  | 'to-many' 
+  | 'document' 
+  | 'collection' 
 
 /**
  * Relationship metadata
@@ -59,6 +63,20 @@ export interface ToManyRelationshipMetadata<T extends FirestormModel> extends Re
 
 }
 
+export interface ToDocumentRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
+
+  kind: 'document'
+
+  documentId: string
+
+}
+
+export interface ToCollectionRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
+  
+  kind: 'collection'
+
+}
+
 /**
  * Duck types metadata to check if it's a ToOneRelationshipMetadata
  * @template T Type of the model hosted by the metadata
@@ -83,6 +101,34 @@ export function isToManyRelationshipMetadata<T extends FirestormModel>(metadata?
   
   if (!metadata) return false
   if (metadata.kind !== 'to-many') return false
+
+  return true
+}
+
+/**
+ * Duck types metadata to check if it's a ToDocumentRelationshipMetadata
+ * @template T Type of the model hosted by the metadata
+ * @param metadata Metadata to test
+ * @returns True if the metadata is a ToDocumentRelationshipMetadata
+ */
+export function isDocumentRelationshipMetadata<T extends FirestormModel>(metadata?: RelationshipMetadata<T>): metadata is ToDocumentRelationshipMetadata<T> {
+  
+  if (!metadata) return false
+  if (metadata.kind !== 'document') return false
+
+  return true
+}
+
+/**
+ * Duck types metadata to check if it's a ToCollectionRelationshipMetadata
+ * @template T Type of the model hosted by the metadata
+ * @param metadata Metadata to test
+ * @returns True if the metadata is a ToCollectionRelationshipMetadata
+ */
+export function isCollectionRelationshipMetadata<T extends FirestormModel>(metadata?: RelationshipMetadata<T>): metadata is ToCollectionRelationshipMetadata<T> {
+  
+  if (!metadata) return false
+  if (metadata.kind !== 'collection') return false
 
   return true
 }

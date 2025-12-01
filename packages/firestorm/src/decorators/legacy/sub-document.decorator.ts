@@ -64,7 +64,7 @@ function storeToMedata
   const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
   const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
   
-  md.addSubDocument(propertyName, type)
+  md.addDocumentRelationship(propertyName, type, documentId)
   md.addIgnoredProperty(propertyName)
 
   const submd = storage.getOrCreateMetadatas(type)

@@ -43,7 +43,11 @@ export class FirestormMetadata<T_model> {
    * Gets the metadatas of the property with relationship.
    */
   public get relationshipMetadatas() {
-    return [...this._propertyMetadatas.values().filter(value => value.relationship)] as FirestormPropertyMetadataWithRelationship[]
+    return [
+      ...this._propertyMetadatas
+        .values()
+        .filter(value => value.relationship)
+      ] as FirestormPropertyMetadataWithRelationship[]
   }
 
   /**
@@ -73,24 +77,6 @@ export class FirestormMetadata<T_model> {
   }
 
   /**
-   * Marks a field as being a subcollection
-   * @param propertyName The name of the property of the subcollection
-   * @param type Type of the model of the subcollection
-   */
-  public addSubCollection<T>(propertyName: string, type: Type<T>): void {
-    this.getOrCreatePropertyMetadata(propertyName).subCollection = { type: type }
-  }
-
-  /**
-   * Marks a field as being a subdocument
-   * @param propertyName The name of the property of the subdocument
-   * @param type Type of the model of the subdocument
-   */
-  public addSubDocument<T>(propertyName: string, type: Type<T>): void {
-    this.getOrCreatePropertyMetadata(propertyName).subDocument = { type: type }
-  }
-
-  /**
    * Adds a ToOne relationship
    * 
    * @template T_target_model Type of the target of the relationship
@@ -104,6 +90,7 @@ export class FirestormMetadata<T_model> {
     targetType: Type<T_target_model>,
     location: RelationshipLocation
   ) {
+
     const md = this.getOrCreatePropertyMetadata(propertyName)
     md.setToOneRelationship(targetType, location)
 
@@ -128,6 +115,34 @@ export class FirestormMetadata<T_model> {
     md.setToManyRelationship(targetType, location)
 
   }
+
+  /**
+   * Marks a field as being an other document
+   * @param propertyName The name of the property of the subdocument
+   * @param targetType Type of the model of the subdocument
+   */
+  public addDocumentRelationship<T_target_model extends FirestormModel>(
+    propertyName: string, 
+    targetType: Type<T_target_model>,
+    documentId: string
+  ): void {
+    const md = this.getOrCreatePropertyMetadata(propertyName)
+    md.setToDocumentRelationship(targetType, documentId)
+  }
+  
+  /**
+   * Marks a field as being a collection
+   * @param propertyName The name of the property of the subcollection
+   * @param targetType Type of the model of the subcollection
+   */
+  public addCollectionRelationship<T_target_model extends FirestormModel>(
+    propertyName: string, 
+    targetType: Type<T_target_model>
+  ): void {
+    const md = this.getOrCreatePropertyMetadata(propertyName)
+    md.setToCollectionRelationship(targetType)
+  }
+
   
   /**
    * Adds a converter for a property from the model to the document

@@ -2,7 +2,7 @@ import { ToOneRelationship, ToManyRelationship  } from "../decorators"
 import { FirestoreDocumentField, isStringArrayField } from "./firestore-document"
 import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { logWarn } from "./logging"
-import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata, ToManyRelationshipMetadata } from "./relationship"
+import { RelationshipLocation, RelationshipMetadata, ToOneRelationshipMetadata, ToManyRelationshipMetadata, ToDocumentRelationshipMetadata, ToCollectionRelationshipMetadata } from "./relationship"
 import { pascalToSnakeCase } from "./string-manipulation"
 import { Type } from "./type"
 
@@ -55,16 +55,6 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
   /** Overrides the default field name of the document */
   mappedTo?: string
-
-  /**
-   * Metadatas about the subcollection if it's mapped to one
-   */
-  subCollection?: SubCollectionMetadatas<T_property_type>
-
-  /**
-   * Metadatas about the subdocument if it's mapped to one
-   */
-  subDocument?: SubDocumentMetadatas<T_property_type>
 
   /** 
    * Field in the document mapped to this property 
@@ -123,7 +113,7 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
   }
 
-    /**
+  /**
    * Sets this field as being a ToMany relationship
    * 
    * @template T_target_model Type of the target model
@@ -168,7 +158,49 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
   }
 
-  
+  /**
+   * Sets this field as being a Document relationship
+   * 
+   * @template T_target_model Type of the target model
+   * 
+   * @param targetType Type of the target
+   * @param location Location of target
+   */
+  public setToDocumentRelationship<T_target_model extends FirestormModel>(
+    targetType: Type<T_target_model>,
+    documentId: string
+  ) {
+
+    const toDocumentRel: ToDocumentRelationshipMetadata<T_target_model> = {
+      targetType: targetType,
+      kind: 'document',
+      documentId: documentId
+    }
+
+    this.relationship = toDocumentRel
+
+  }
+
+  /**
+   * Sets this field as being a Collection relationship
+   * 
+   * @template T_target_model Type of the target model
+   * 
+   * @param targetType Type of the target
+   */
+  public setToCollectionRelationship<T_target_model extends FirestormModel>(
+    targetType: Type<T_target_model>
+  ) {
+
+    const toCollectionRel: ToCollectionRelationshipMetadata<T_target_model> = {
+      targetType: targetType,
+      kind: 'collection'
+    }
+
+    this.relationship = toCollectionRel
+
+  }
+
   /**
    * Sets the conversion from model to document
    * @param value Converter to set
