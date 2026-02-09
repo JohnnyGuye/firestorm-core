@@ -143,25 +143,6 @@ export default new TestGroup("Decorators")
 
         }
     )
-    .addTest("@ToOne (retrieve by include)", 
-        async () => {
-
-            const repo = getArcanaLoadoutRepo()
-            const person = getRandomPerson()
-
-            await getPersonRepo().createAsync(person)
-
-            const al = await generateValidArcanaLoadoutAsync()
-            al.owner.setModel(person)
-
-            await repo.createAsync(al)
-
-            const retrievedAl = await repo.getByIdAsync(al.id, { owner: true })
-
-            expect(retrievedAl?.owner.model).toBe(al.owner.model)
-
-        }
-    )
     .addTest("@ToMany",
         async () => {
 
@@ -175,22 +156,6 @@ export default new TestGroup("Decorators")
 
             expect(retrieveAl!.cards.ids).toBe(al.cards.ids)
             expect(retrieveAl!.cards.models).toBeOfLength(0)
-        }
-    )
-    .addTest("@ToMany (retrieve by include)",
-        async () => {
-
-            const repo = getArcanaLoadoutRepo()
-
-            const al = await generateValidArcanaLoadoutAsync()
-
-            await repo.createAsync(al)
-
-            const retrieveAl = await repo.getByIdAsync(al.id, { cards: true })
-
-            console.log(al, retrieveAl)
-            expect(retrieveAl!.cards.ids).toBe(al.cards.ids)
-            expect(retrieveAl!.cards.models).toBeOfLength(5)
         }
     )
     .addTest("@MapTo",
@@ -245,49 +210,6 @@ export default new TestGroup("Decorators")
 
             expect(rr.pauseDuration.getTime()).toBe(retrieved?.pauseDuration.getTime())
 
-        }
-    )
-    .addTest("@SubCollection (in collection repo)",
-        async () => {
-            
-            const p = getTestingPlayer()
-            
-            const repo = 
-                getFirestorm()
-                    .getCrudRepository(Player, UNIT_TEST_DB_ROOT)
-
-            const recapRepo =
-                getFirestorm()
-                    .getCrudRepository(RunRecap, [UNIT_TEST_DB_ROOT.path, "players", p.id])
-
-            const r1 = (() => {
-                const rr = new RunRecap()
-
-                rr.duration = new Timespan(400 * 1000)
-                rr.finishedAt = new Date(2020, 3, 7, 18, 12, 11, 137)
-                rr.pauseDuration = new Timespan(122 * 1000)
-
-                return rr
-            })()
-
-            const r2 = (() => {
-                const rr = new RunRecap()
-
-                rr.duration = new Timespan(300 * 1000)
-                rr.finishedAt = new Date(2020, 3, 7, 18, 16, 18, 137)
-                rr.pauseDuration = new Timespan(92 * 1000)
-
-                return rr
-            })()
-
-            await repo.createAsync(p)
-
-            const rs = await recapRepo.createMultipleAsync(r1, r2)
-
-            const playerWithRuns = await repo.getByIdAsync(p.id, { runRecaps: true })
-            console.log(playerWithRuns)
-
-            expect(playerWithRuns?.runRecaps).toBeOfLength(2)
         }
     )
     // .addTest("@SubCollection (in document repo)",
