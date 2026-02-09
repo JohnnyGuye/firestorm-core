@@ -24,7 +24,8 @@
     "pub": "npm run pub:firestorm",
     "link:firestorm": "npm link --workspace=packages/firestorm && npm link @jiway/firestorm-core --workspace=packages/showcase",
     "unlink:firestorm": "npm uninstall --global @jiway/firestorm-core && npm unlink @jiway/firestorm-core && npm uninstall @jiway/firestorm-core && npm rm @jiway/firestorm-core",
-    "vercel:showcase": "npm run build:firestorm && npm run link:firestorm && npm run build:showcase"
+    "vercel:showcase": "npm run build:firestorm && npm run link:firestorm && npm run build:showcase",
+    "emulators": "firebase emulators:start"
   },
   "repository": {
     "type": "git",
