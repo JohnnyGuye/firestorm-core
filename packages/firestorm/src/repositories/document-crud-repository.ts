@@ -5,7 +5,7 @@ import { createDocumentObservable, DocumentObservable } from "../realtime-listen
 import { PathLike } from "../core";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { DocumentRepository } from "./document-repository";
-import { includeResolver } from "./toolkit";
+import { IncludeResolver } from "./toolkit";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
@@ -87,7 +87,9 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
 
     if (!includes) return model
 
-    await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
+    const includeResolver = new IncludeResolver(this.type)
+    includeResolver.includeFor({ model: model, path: this.collectionPath})
+    await includeResolver.resolveAsync(includes)
 
     return model
   }

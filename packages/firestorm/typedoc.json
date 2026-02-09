@@ -49,7 +49,7 @@
   "validation": {
     "notDocumented": true,
     "invalidLink": false,
-    "unusedMergeModuleWith": true,
+    "unusedMergeModuleWith": false,
     "notExported": true
   }
 }

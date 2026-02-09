@@ -74,6 +74,15 @@ export class Path {
         return this.isCollection && !this.isRoot
     }
 
+    get lastSegment() {
+        if (this.isEmpty) return ""
+        return this._segments[this._segments.length - 1]
+    }
+
+    get segments(): Readonly<string[]> {
+        return this._segments
+    }
+
     /** 
      * Rebuilds the path from the individual segments
      */

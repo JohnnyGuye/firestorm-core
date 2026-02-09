@@ -20,7 +20,7 @@ import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-mod
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
 import { PathLike } from "../core";
-import { includeResolver } from "./toolkit";
+import { IncludeResolver } from "./toolkit";
 import { CollectionRepository } from "./collection-repository";
 
 /**
@@ -124,7 +124,9 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         
         if (!includes) return model
 
-        await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
+        const includeResolver = new IncludeResolver(this.type)
+        includeResolver.includeFor({ model: model, path: this.collectionPath})
+        await includeResolver.resolveAsync(includes)
 
         return model
     }
@@ -156,9 +158,9 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
 
         if (!includes) return models
 
-        for (let model of models) {
-            await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
-        }
+        const includeResolver = new IncludeResolver(this.type)
+        includeResolver.includeFor(models.map(model => { return { model: model, path: this.collectionPath}}))
+        await includeResolver.resolveAsync(includes)
 
         return models
     }
@@ -280,10 +282,10 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         
         if (!includes) return models
 
-        for (let model of models) {
-            await Promise.all(includeResolver(includes, model, this.typeMetadata, this))
-        }
-
+        const includeResolver = new IncludeResolver(this.type)
+        includeResolver.includeFor(models.map(model => { return { model: model, path: this.collectionPath}}))
+        await includeResolver.resolveAsync(includes)
+        
         return models
 
     }
