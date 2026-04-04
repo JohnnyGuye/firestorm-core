@@ -11,7 +11,7 @@ export type FirestormId = string
  */
 export interface IFirestormModel {
 
-    /** Unique if of the document in this collection */
+    /** Unique ID of the document in this collection */
     id: FirestormId | null
     
 }

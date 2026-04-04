@@ -14,7 +14,8 @@ export const SpecialSegments = Object.freeze({
 })
 
 /**
- * Holds a more details version of a path information
+ * Holds a more details version of a path information.
+ * This object is readonly
  * 
  * Some segments have special meanings listed in {@link SpecialSegments}
  */
@@ -36,14 +37,21 @@ export class Path {
      * If there is no path
      */
     get isEmpty() {
-        return this._segments.length === 0
+        return this.depth === 0
     }
 
     /**
      * The amount of full collection-document in the path
      */
     get documentDepth() {
-        return this._segments.length >> 1
+        return this.depth >> 1
+    }
+
+    /**
+     * The amount of segments composing the path
+     */
+    get depth() {
+        return this._segments.length
     }
 
     /**
@@ -57,14 +65,14 @@ export class Path {
      * If the path would land on a collection
      */
     get isCollection() {
-        return (this._segments.length % 2) === 1
+        return (this.depth % 2) === 1
     }
 
     /**
      * If the path would land on a document
      */
     get isDocument() {
-        return ((this._segments.length % 2) === 0) && !this.isRoot
+        return ((this.depth % 2) === 0) && !this.isRoot
     }
 
     /**
@@ -74,11 +82,17 @@ export class Path {
         return this.isCollection && !this.isRoot
     }
 
+    /**
+     * Gets the last segment of the path
+     */
     get lastSegment() {
         if (this.isEmpty) return ""
         return this._segments[this._segments.length - 1]
     }
 
+    /**
+     * Gets all the segments in the path
+     */
     get segments(): Readonly<string[]> {
         return this._segments
     }

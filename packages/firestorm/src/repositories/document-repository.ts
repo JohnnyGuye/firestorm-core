@@ -3,6 +3,7 @@ import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
 import { createCollectionCrudRepositoryInstantiator } from "./collection-crud-repository";
+import type { Firestorm } from "../firestorm";
 
 /**
  * Creates a repository that acts as an anchor.
@@ -18,16 +19,16 @@ export class DocumentRepository<T_model extends IFirestormModel> extends Reposit
   /**
    * Creates a new {@link DocumentRepository} on a model
    * @param type Type on which the repository operates
-   * @param firestore The instance of firestore this repository connects to
+   * @param firestorm The instance of firestORM this repository connects to
    * @param path The optional path to the collection of the document. If not provided, it default to root.
    */
   constructor(
+    firestorm: Firestorm,
     type: Type<T_model>,
-    firestore: Firestore,
     path?: PathLike
     ) {
     
-    super(type, firestore, path)
+    super(firestorm, type, path)
   }
 
   /**
@@ -72,11 +73,11 @@ export class DocumentRepository<T_model extends IFirestormModel> extends Reposit
  */
 export function createDocumentRepositoryInstantiator<T extends IFirestormModel>(documentId: string): RepositoryInstantiator<DocumentRepository<T>, T> {
   return (
-      firestore: Firestore, 
+      firestorm: Firestorm,
       type: Type<T>, 
       path?: PathLike
   ) => {
-      const repo = new DocumentRepository(type, firestore, path)
+      const repo = new DocumentRepository(firestorm, type, path)
       repo.documentId = documentId
       return repo
   }

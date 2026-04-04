@@ -120,6 +120,7 @@ export class FirestormMetadata<T_model> {
    * Marks a field as being an other document
    * @param propertyName The name of the property of the subdocument
    * @param targetType Type of the model of the subdocument
+   * @param documentId The id of the document
    */
   public addDocumentRelationship<T_target_model extends FirestormModel>(
     propertyName: string, 

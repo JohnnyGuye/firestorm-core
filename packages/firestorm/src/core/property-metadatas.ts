@@ -164,7 +164,7 @@ export class FirestormPropertyMetadata<T_property_type = any> {
    * @template T_target_model Type of the target model
    * 
    * @param targetType Type of the target
-   * @param location Location of target
+   * @param documentId The id of the document to link
    */
   public setToDocumentRelationship<T_target_model extends FirestormModel>(
     targetType: Type<T_target_model>,

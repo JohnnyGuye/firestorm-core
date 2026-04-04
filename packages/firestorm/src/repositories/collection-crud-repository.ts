@@ -19,9 +19,11 @@ import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregation
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { PathLike } from "../core";
+import { Path, PathLike } from "../core";
 import { IncludeResolver } from "./toolkit";
 import { CollectionRepository } from "./collection-repository";
+import { IncludeFor } from "./toolkit/include-resolver/include-for";
+import type { Firestorm } from "../firestorm";
 
 /**
  * Repository with a basic CRUD implementation.
@@ -30,16 +32,16 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
 
     /**
      * Creates a new {@link CollectionCrudRepository} on a model
+     * @param firestorm The instance of firestORM this repository connects to
      * @param type Type on which the repository operates
-     * @param firestore The instance of firestore this repository connects to
      * @param path The optional parent collections for repositories of subcollections
      */
     constructor(
+        firestorm: Firestorm, 
         type: Type<T_model>, 
-        firestore: Firestore, 
         path?: PathLike
         ) {
-        super(type, firestore, path)
+        super(firestorm, type, path)
     }
     
     //#region Basic CRUD
@@ -124,8 +126,10 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         
         if (!includes) return model
 
+        this.firestore
+
         const includeResolver = new IncludeResolver(this.type)
-        includeResolver.includeFor({ model: model, path: this.collectionPath})
+        includeResolver.includeFor(new IncludeFor(model,this.collectionPath))
         await includeResolver.resolveAsync(includes)
 
         return model
@@ -159,7 +163,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         if (!includes) return models
 
         const includeResolver = new IncludeResolver(this.type)
-        includeResolver.includeFor(models.map(model => { return { model: model, path: this.collectionPath}}))
+        includeResolver.includeFor(models.map(model => new IncludeFor(model, this.collectionPath)))
         await includeResolver.resolveAsync(includes)
 
         return models
@@ -283,7 +287,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         if (!includes) return models
 
         const includeResolver = new IncludeResolver(this.type)
-        includeResolver.includeFor(models.map(model => { return { model: model, path: this.collectionPath}}))
+        includeResolver.includeFor(models.map(model => new IncludeFor(model, this.collectionPath)))
         await includeResolver.resolveAsync(includes)
         
         return models
@@ -380,10 +384,10 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
  */
 export function createCollectionCrudRepositoryInstantiator<T_Model extends IFirestormModel>(): RepositoryInstantiator<CollectionCrudRepository<T_Model>, T_Model> {
     return (
-        firestore: Firestore, 
+        firestorm: Firestorm, 
         type: Type<T_Model>, 
         path?: PathLike
     ) => {
-        return new CollectionCrudRepository(type, firestore, path)
+        return new CollectionCrudRepository(firestorm, type, path)
     }
 }

@@ -2,6 +2,7 @@ import { Firestore } from "firebase/firestore";
 import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../core";
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
+import type { Firestorm } from "../firestorm";
 
 /**
  * Base repository for a collection
@@ -12,16 +13,16 @@ export class CollectionRepository<T_model extends IFirestormModel> extends Repos
     /**
      * Creates a new {@link CollectionRepository} on a model
      * @param type Type on which the repository operates
-     * @param firestore The instance of firestore this repository connects to
+     * @param firestorm The instance of firestORM this repository connects to
      * @param path The optional path to the collection of the document. If not provided, it default to root.
      */
     constructor(
+        firestorm: Firestorm, 
         type: Type<T_model>, 
-        firestore: Firestore, 
         path?: PathLike
         ) {
 
-        super(type, firestore, path)
+        super(firestorm, type, path)
 
     }
 
@@ -39,10 +40,10 @@ export class CollectionRepository<T_model extends IFirestormModel> extends Repos
  */
 export function createCollectionRepositoryInstantiator<T extends IFirestormModel>(): RepositoryInstantiator<CollectionRepository<T>, T> {
     return (
-        firestore: Firestore, 
+        firestorm: Firestorm,
         type: Type<T>, 
         path?: PathLike
     ) => {
-        return new CollectionRepository(type, firestore, path)
+        return new CollectionRepository(firestorm, type, path)
     }
 }

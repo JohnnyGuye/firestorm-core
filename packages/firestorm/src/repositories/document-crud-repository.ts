@@ -1,3 +1,4 @@
+import type { Firestorm } from "../firestorm";
 import { DocumentReference, DocumentSnapshot, Firestore, SnapshotListenOptions, deleteDoc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { IFirestormModel } from "../core/firestorm-model";
 import { Type } from "../core/type";
@@ -6,6 +7,7 @@ import { PathLike } from "../core";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { DocumentRepository } from "./document-repository";
 import { IncludeResolver } from "./toolkit";
+import { IncludeFor } from "./toolkit/include-resolver/include-for";
 
 /**
  * Repository with a basic CRUD implemention for collections of one named document.
@@ -14,17 +16,17 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
   
   /**
    * Creates a new {@link DocumentCrudRepository} on a model
+   * @param firestorm The instance of firestORM this repository connects to
    * @param type Type on which the repository operates
-   * @param firestore The instance of firestore this repository connects to
    * @param path The optional parent collections for repositories of subcollections
    */
   constructor(
+    firestorm: Firestorm,
     type: Type<T_model>,
-    firestore: Firestore,
     path?: PathLike
     ) {
     
-    super(type, firestore, path)
+    super(firestorm, type, path)
   }
 
   /**
@@ -88,7 +90,7 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
     if (!includes) return model
 
     const includeResolver = new IncludeResolver(this.type)
-    includeResolver.includeFor({ model: model, path: this.collectionPath})
+    includeResolver.includeFor(new IncludeFor( model, this.collectionPath ))
     await includeResolver.resolveAsync(includes)
 
     return model
@@ -138,11 +140,11 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
  */
 export function createDocumentCrudRepositoryInstantiator<T extends IFirestormModel>(documentId: string): RepositoryInstantiator<DocumentCrudRepository<T>, T> {
   return (
-      firestore: Firestore, 
+      firestorm: Firestorm,
       type: Type<T>, 
       path?: PathLike
   ) => {
-      const repo = new DocumentCrudRepository(type, firestore, path)
+      const repo = new DocumentCrudRepository(firestorm, type, path)
       repo.documentId = documentId
       return repo
   }

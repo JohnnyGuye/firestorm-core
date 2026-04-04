@@ -65,14 +65,19 @@ export interface ToManyRelationshipMetadata<T extends FirestormModel> extends Re
 
 export interface ToDocumentRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
 
+  /** @inheritdoc */
   kind: 'document'
 
+  /**
+   * Id of the document
+   */
   documentId: string
 
 }
 
 export interface ToCollectionRelationshipMetadata<T extends FirestormModel> extends RelationshipMetadata<T> {
   
+  /** @inheritdoc */
   kind: 'collection'
 
 }

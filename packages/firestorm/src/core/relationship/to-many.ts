@@ -12,6 +12,11 @@ export class ToManyRelationship<T_target extends FirestormModel> {
     private _ids: string[] = []
     private _models = new Map<FirestormId, T_target>()
 
+    /**
+     * Creates a new {@link ToManyRelationship}
+     * 
+     * @param type The type of models this relationship holds.
+     */
     constructor(public readonly type: Type<T_target>) {}
 
     /**

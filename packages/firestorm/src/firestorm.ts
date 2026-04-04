@@ -158,7 +158,7 @@ export class Firestorm {
         type: Type<T>,
         path?: PathLike
     ) {
-        return generator(this.firestore, type, path)
+        return generator(this, type, path)
     }
 
     //#endregion

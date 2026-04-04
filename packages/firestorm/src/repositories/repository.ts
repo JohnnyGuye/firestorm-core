@@ -5,6 +5,7 @@ import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
 import { RepositoryInstantiator } from "./common"
+import type { Firestorm } from "../firestorm";
 
 /**
  * A repository is a typed access to a specific collection
@@ -19,24 +20,31 @@ export abstract class Repository<T_model extends IFirestormModel> {
     protected path: Path
     
     /**
+     * Instance of firestORM this repository uses to reach the DB
+     */
+    protected readonly firestorm: Firestorm
+
+    /**
      * Instance of firestore this repository uses to reach the DB
      */
-    protected readonly firestore: Firestore
+    protected get firestore(): Firestore {
+        return this.firestorm.firestore
+    }
     
     /**
      * Creates a new repository on a model
      * @param type Type on which the repository operates
-     * @param firestore The instance of firestore this repository connects to
+     * @param firestorm The instance of firestORM this repository connects to
      * @param path The optional parent collections for repositories of subcollections
      */
     constructor(
+        firestorm: Firestorm,
         type: Type<T_model>,
-        firestore: Firestore,
         path?: PathLike
         ) {
         
         this._type = type
-        this.firestore = firestore
+        this.firestorm = firestorm
         this.path = resolveToPath(path)
     }
 
@@ -242,7 +250,7 @@ export abstract class Repository<T_model extends IFirestormModel> {
         type: Type<T_linked_model>,
         location: RelationshipLocation
     ): R {
-        return generator(this.firestore, type, this.resolveRelationshipLocation(location))
+        return generator(this.firestorm, type, this.resolveRelationshipLocation(location))
     }
 
     /**
