@@ -49,7 +49,12 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
     protected requests: Request<any>[] = []
 
 
-    constructor(type: Type<P>) {
+    /**
+     * Creates an {@link IncludeResolver}
+     * @param firestorm FirestORM instance used to access the DB
+     * @param type Type of model
+     */
+    constructor(protected readonly firestorm: Firestorm, type: Type<P>) {
         this.targetType = type
     }
 
@@ -73,7 +78,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
 
     /**
      * Resolves the includes for the includes
-     * @param includes 
+     * @param includes Includes to resolve
      */
     async resolveAsync(includes: RelationshipIncludes<T_model>) {
         

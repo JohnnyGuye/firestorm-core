@@ -6,11 +6,20 @@ import { Path, PathLike, Type } from "../../../core"
  */
 export enum RequestType {
 
+    /**
+     * Indicates that the full collection is requested
+     */
     FullCollection = 1,
+    /**
+     * Indicates that only one document is requested
+     */
     Document = 2
 
 }
 
+/**
+ * Request for documents in the DB
+ */
 export interface Request<T> {
 
     /**
@@ -29,24 +38,45 @@ export interface Request<T> {
     readonly type: Type<T>
 }
 
+/**
+ * Request for a full collection from the DB
+ */
 export class CollectionRequest<T>  implements Request<T> {
 
+    /** @inheritdoc */
     public readonly requestType = RequestType.FullCollection
 
+    
+    /** @inheritdoc */
     public readonly path: Path
 
+    /**
+     * Creates a {@link CollectionRequest}
+     * @param basePath The base path which is the path to the document initiating the request
+     * @param relativePath A path relative to the basepath which is the location of the requested collection
+     */
     constructor(public type: Type<T>, basePath: Path, relativePath?: PathLike) {
         this.path = Path.merge(basePath, relativePath || "")
     }
 
 }
 
+/**
+ * Request for a single document from the DB
+ */
 export class DocumentRequest<T>  implements Request<T> {
 
+    /** @inheritdoc */
     public readonly requestType = RequestType.Document
 
+    /** @inheritdoc */
     public readonly path: Path
 
+    /**
+     * Creates a {@link DocumentRequest}
+     * @param basePath The base path which is the path to the document initiating the request
+     * @param relativePath A path relative to the basepath which is the location of the requested collection
+     */
     constructor(public type: Type<T>, basePath: Path, relativePath?: PathLike) {
         this.path = Path.merge(basePath, relativePath || "")
     }

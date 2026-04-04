@@ -87,12 +87,10 @@ export class DocumentCrudRepository<T_model extends IFirestormModel> extends Doc
     
     const model = this.firestoreDocumentSnapshotToModel(documentSnapshot)
 
-    if (!includes) return model
-
-    const includeResolver = new IncludeResolver(this.type)
-    includeResolver.includeFor(new IncludeFor( model, this.collectionPath ))
-    await includeResolver.resolveAsync(includes)
-
+    if (includes) {
+        await this.resolveIncludesAsync(includes, model)
+    }
+    
     return model
   }
 

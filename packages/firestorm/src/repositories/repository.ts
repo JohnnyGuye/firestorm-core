@@ -4,8 +4,9 @@ import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, bu
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
-import { RepositoryInstantiator } from "./common"
+import { RelationshipIncludes, RepositoryInstantiator } from "./common"
 import type { Firestorm } from "../firestorm";
+import { IncludeFor, IncludeResolver } from "./toolkit"
 
 /**
  * A repository is a typed access to a specific collection
@@ -234,6 +235,33 @@ export abstract class Repository<T_model extends IFirestormModel> {
      * @param location Location of the other resource relative to this.
      */
     protected abstract resolveRelationshipLocation(location: RelationshipLocation): Path;
+    
+    /**
+     * Creates an includer that can be resolved later
+     * @param models Models to resolve
+     * @returns The resolver created
+     */
+    protected createIncluder(...models: T_model[]): IncludeResolver<IFirestormModel, T_model> {
+        const ir = new IncludeResolver(this.firestorm, this.type)
+
+        const ifs = models.map(m => new IncludeFor(m, this.collectionPath) )
+        ir.includeFor(ifs)
+
+        return ir
+    }
+
+    /**
+     * Creates an includer that is resolved immediately.
+     * It can still be reused.
+     * @param includes Includes for the model
+     * @param models Models to resolve
+     * @returns 
+     */
+    protected async resolveIncludesAsync(includes: RelationshipIncludes<T_model>, ...models: T_model[]): Promise<IncludeResolver<IFirestormModel, T_model>> {
+        const includeResolver = this.createIncluder(...models)
+        await includeResolver.resolveAsync(includes)
+        return includeResolver
+    }
 
     /**
      * Creates a repository using a generator function

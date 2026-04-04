@@ -124,14 +124,10 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
         
         const model = this.firestoreDocumentSnapshotToModel(documentSnapshot)
         
-        if (!includes) return model
-
-        this.firestore
-
-        const includeResolver = new IncludeResolver(this.type)
-        includeResolver.includeFor(new IncludeFor(model,this.collectionPath))
-        await includeResolver.resolveAsync(includes)
-
+        if (includes) {
+            await this.resolveIncludesAsync(includes, model)
+        }
+        
         return model
     }
 
@@ -160,12 +156,10 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
             return this.firestoreDocumentSnapshotToModel(docSnapshot)
         })
 
-        if (!includes) return models
-
-        const includeResolver = new IncludeResolver(this.type)
-        includeResolver.includeFor(models.map(model => new IncludeFor(model, this.collectionPath)))
-        await includeResolver.resolveAsync(includes)
-
+        if (includes) {
+            await this.resolveIncludesAsync(includes, ...models)
+        }
+        
         return models
     }
 
@@ -283,15 +277,11 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
             return this.firestoreDocumentSnapshotToModel(docSnapshot)
         })
 
-        
-        if (!includes) return models
-
-        const includeResolver = new IncludeResolver(this.type)
-        includeResolver.includeFor(models.map(model => new IncludeFor(model, this.collectionPath)))
-        await includeResolver.resolveAsync(includes)
+        if (includes) {
+            await this.resolveIncludesAsync(includes, ...models)
+        }
         
         return models
-
     }
 
     /**

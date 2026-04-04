@@ -1,4 +1,5 @@
 export * from "./repository"
+export * from "./toolkit"
 export * from "./document-repository"
 export * from "./collection-repository"
 export * from "./document-crud-repository"
