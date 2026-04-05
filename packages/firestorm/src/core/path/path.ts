@@ -1,4 +1,5 @@
 import { PathLike } from "."
+import { logWarn } from "../logging"
 import { buildPath, toSegments } from "./path-as-string"
 
 /**
@@ -22,6 +23,7 @@ export const SpecialSegments = Object.freeze({
 export class Path {
 
     private _path: string = ""
+    private _pathToDeepestCollection: string | undefined
     private _segments: string[] = []
 
     private constructor() {}
@@ -95,6 +97,24 @@ export class Path {
      */
     get segments(): Readonly<string[]> {
         return this._segments
+    }
+
+    /**
+     * Gets the path to the deepest collection this path can reach
+     */
+    get pathToDeepestCollection() {
+        if (this._pathToDeepestCollection === undefined) {
+            if (this.isEmpty) {
+                this._pathToDeepestCollection = ""
+                logWarn("This path has no collection level because it's empty.")
+            }
+            else if (this.isCollection) {
+                this._pathToDeepestCollection = this._path
+            } else {
+                this._pathToDeepestCollection = Path.merge(this, "..").path
+            }
+        }
+        return this._pathToDeepestCollection
     }
 
     /** 

@@ -11,5 +11,5 @@ export class Player {
 
     @SubCollection({ type: RunRecap })
     runRecaps: RunRecap[] = []
-    
+
 }

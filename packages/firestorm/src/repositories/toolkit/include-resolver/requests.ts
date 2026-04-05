@@ -52,6 +52,7 @@ export class CollectionRequest<T>  implements Request<T> {
 
     /**
      * Creates a {@link CollectionRequest}
+     * @param type Type of the ressource
      * @param basePath The base path which is the path to the document initiating the request
      * @param relativePath A path relative to the basepath which is the location of the requested collection
      */
@@ -74,6 +75,7 @@ export class DocumentRequest<T>  implements Request<T> {
 
     /**
      * Creates a {@link DocumentRequest}
+     * @param type Type of the ressource
      * @param basePath The base path which is the path to the document initiating the request
      * @param relativePath A path relative to the basepath which is the location of the requested collection
      */

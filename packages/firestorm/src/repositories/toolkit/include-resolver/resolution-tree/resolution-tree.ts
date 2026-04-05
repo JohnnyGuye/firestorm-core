@@ -1,154 +1,7 @@
-import { FirestormModel, Path, PathLike, Type } from "../../../core"
-
-/**
- * Node for the resolution tree
- */
-export interface IResolutionNode {
-
-    /**
-     * Segment of the path directly reaching this node
-     */
-    readonly segment: string
-
-    /**
-     * Whether or not this node has child nodes
-     */
-    readonly isLeaf: boolean
-
-    /**
-     * Gets the child node accessed with the segment given.
-     * @param segment Segment to reach the child node
-     * @return The child node if it exists or null.
-     */
-    getChild(segment: string): IResolutionNode | null;
-
-    /**
-     * Gets the child node accessed with the segment given or creates it if missing.
-     * @param segment Segment to reach the child node
-     * @return The child node
-     */
-    getOrCreateChild(segment: string): IResolutionNode;
-
-}
-
-/**
- * Document node for the resolution tree
- */
-export class ResolutionDocumentNode implements IResolutionNode {
-
-    private _children = new Map<string, ResolutionCollectionNode>()
-    
-    private _model: FirestormModel | null = null
-
-    constructor(public readonly segment: string) {}
-
-    /** @inheritdoc */
-    get isLeaf() { 
-        return this._children.size == 0
-    }
-
-    /**
-     * Gets the child {@link ResolutionCollectionNode} accessed with the segment given.
-     * @param segment Segment to reach the child node
-     * @returns The child {@link ResolutionCollectionNode} or null if it doesn't exist.
-     */
-    getChild(segment: string): ResolutionCollectionNode | null {
-        return this._children.get(segment) || null
-    }
-
-    /**
-     * Gets the child {@link ResolutionCollectionNode} accessed with the segment given. 
-     * It creates it if it doesn't exist.
-     * @param segment Segment to reach the child node
-     * @returns The child {@link ResolutionCollectionNode}
-     */
-    getOrCreateChild(segment: string): ResolutionCollectionNode {
-        
-        let childNode = this.getChild(segment)
-
-        if (childNode) return childNode
-
-        childNode = new ResolutionCollectionNode(segment)
-        this._children.set(segment, childNode)
-
-        return childNode
-    }
-
-    /**
-     * Sets the model corresponding to this level.
-     * @param model 
-     */
-    set model(model: FirestormModel) {
-        this._model = model
-    }
-
-    /**
-     * Gets the model corresponding to this level if any
-     */
-    get model(): FirestormModel | null {
-        return this._model
-    }
-
-    /**
-     * Whether or not this level has a model
-     */
-    get hasModel() {
-        return this._model != null
-    }
-
-}
-
-/**
- * Collection node for the resolution tree
- */
-export class ResolutionCollectionNode implements IResolutionNode {
-
-    private _children = new Map<string, ResolutionDocumentNode>()
-
-    constructor(public readonly segment: string) {}
-
-    /**
-     * Whether or not this collection node has all the direct children document available in the DB
-     */
-    isFull: boolean = false
-
-    /** @inheritdoc */
-    get isLeaf() {
-        return this._children.size == 0
-    }
-
-    /**
-     * Gets the child {@link ResolutionDocumentNode} accessed with the segment given.
-     * @param segment Segment to reach the child node
-     * @returns The child {@link ResolutionDocumentNode} or null if it doesn't exist.
-     */
-    getChild(segment: string): ResolutionDocumentNode | null {
-        return this._children.get(segment) || null
-    }
-
-    /**
-     * Gets the child {@link ResolutionDocumentNode} accessed with the segment given. 
-     * It creates it if it doesn't exist.
-     * @param segment Segment to reach the child node
-     * @returns The child {@link ResolutionDocumentNode}
-     */
-    getOrCreateChild(segment: string): ResolutionDocumentNode {
-
-        let childNode = this._children.get(segment)
-
-        if (childNode) return childNode
-
-        childNode = new ResolutionDocumentNode(segment)
-        this._children.set(segment, childNode)
-
-        return childNode
-    }
-
-    get models() {
-        return [...this._children.values()].map(n => n.model).filter(Boolean) as FirestormModel[]
-    }
-
-}
+import { FirestormModel, Path, PathLike, Type } from "../../../../core"
+import { ResolutionCollectionNode } from "./resolution-collection-node"
+import { ResolutionDocumentNode } from "./resolution-document-node"
+import { IResolutionNode } from "./resolution-node.interface"
 
 /**
  * Resolution tree
@@ -157,6 +10,9 @@ export class ResolutionTree {
 
     private _rootNode = new ResolutionDocumentNode("")
 
+    /**
+     * Creates a {@link ResolutionTree}
+     */
     constructor() {}
 
     /**
@@ -192,6 +48,22 @@ export class ResolutionTree {
 
             documentNode.model = model
 
+        }
+
+    }
+
+    /**
+     * Adds multiple documents to the resolution tree
+     * @param collectionPath Full path to the collection this document belongs to
+     * @param models Models to add
+     */
+    addDocuments<T extends FirestormModel>(collectionPath: PathLike, models: T[]) : void {
+
+        collectionPath = Path.fromPathLike(collectionPath).pathToDeepestCollection
+        
+        for (let model of models) {
+
+            this.addDocument(collectionPath, model)
         }
 
     }
@@ -250,10 +122,12 @@ export class ResolutionTree {
 
     /**
      * Gets a typed document in the resolution tree
+     * @template T Type of the document
      * @param pathLike Path to the document
+     * @param type Type of the document
      * @returns The document if it exists AND is of the type provided or null if it doesn't
      */
-    getTypeDocument<T extends FirestormModel>(pathLike: PathLike, type: Type<T>): T | null {
+    getTypedDocument<T extends FirestormModel>(pathLike: PathLike, type: Type<T>): T | null {
         
         const d = this.getDocument(pathLike)
         if (!d) return null
@@ -271,32 +145,54 @@ export class ResolutionTree {
      * @param pathLike Path to the collection
      * @param ignoreFullness If false (default), only gets the documents if the collection node has all the documents of the DB. 
      * If true, gets all the documents in the collection even if it may not be all the documents in the DB
-     * @returns Gets all the document of the collection or null if the collection isn't full and {@link ignoreFullness} is not raised.
-     */
-    getAllDocuments(pathLike: PathLike, ignoreFullness: boolean = false): FirestormModel[] | null {
-
-        const p = Path.fromPathLike(pathLike)
-
-        if (p.isDocument) {
-            throw new Error(`The path '${p.path}' targets a document`)
+     * @returns Gets all the document of the collection or null if the collection isn't full and ignoreFullness is not raised.
+    */
+   getAllDocuments(pathLike: PathLike, ignoreFullness: boolean = false): FirestormModel[] | null {
+       
+       const p = Path.fromPathLike(pathLike)
+       
+       if (p.isDocument) {
+           throw new Error(`The path '${p.path}' targets a document`)
         }
-
+        
         const node = this.getNodeAt(p.segments)
         if (!node) return null
-
+        
         if (!(node instanceof ResolutionCollectionNode)) return null
-
+        
         if (!node.isFull && !ignoreFullness) {
             return null
         }
-
+        
         return node.models
+    }
+    
+    /**
+     * Gets all documents of a collection in the resolution tree with the type requested
+     * @param T Type of the document
+     * @param pathLike Path to the collection
+     * @param type Type of the document
+     * @param ignoreFullness If false (default), only gets the documents if the collection node has all the documents of the DB. 
+     * If true, gets all the documents in the collection even if it may not be all the documents in the DB
+     * @returns Gets all the document of the collection or null if the collection isn't full and ignoreFullness is not raised.
+     */
+    getAllTypedDocuments<T extends FirestormModel>(pathLike: PathLike, type: Type<T>, ignoreFullness: boolean = false): T[] | null {
+        const untypedDocuments = this.getAllDocuments(pathLike, ignoreFullness)
+        if (!untypedDocuments) return null
+
+        const typedDocuments = untypedDocuments.filter((d) => d instanceof type) as T[]
+
+        if (typedDocuments.length != untypedDocuments.length) {
+            console.warn(`Some documents under ${pathLike} are registered with a different type than the one requested.`)
+        }
+
+        return typedDocuments
     }
 
     /**
      * Gets or create the node at the given path
-     * @param path 
-     * @returns 
+     * @param path Path to the node
+     * @returns The node found or created on the fly
      */
     private getOrCreateNodeAt(path: Readonly<string[]>): IResolutionNode {
 
@@ -316,8 +212,8 @@ export class ResolutionTree {
 
     /**
      * Gets the node at the given path
-     * @param path 
-     * @returns 
+     * @param path Path to the node
+     * @returns A node if found or null if not
      */
     private getNodeAt(path: Readonly<string[]>): IResolutionNode | null {
 
