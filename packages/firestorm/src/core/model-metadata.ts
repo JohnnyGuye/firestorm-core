@@ -1,5 +1,5 @@
 import { FirestoreDocument } from "./firestore-document"
-import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
+import { DocumentToModelFieldConverter, FirestormId, FirestormModel, ModelToDocumentFieldConverter } from "./firestorm-model"
 import { isIn, Type } from "./type"
 import { FirestormPropertyMetadata, FirestormPropertyMetadataWithRelationship } from "./property-metadatas"
 import { RelationshipLocation } from "./relationship"
@@ -117,34 +117,44 @@ export class FirestormMetadata<T_model> {
   }
 
   /**
-   * Marks a field as being an other document
-   * @param propertyName The name of the property of the subdocument
-   * @param targetType Type of the model of the subdocument
-   * @param documentId The id of the document
+   * Adds a ToCollection relationship
+   * 
+   * @template T_target_model Type of the target of the relationship
+   * 
+   * @param propertyName The name of the property that has a relationship
+   * @param targetType Type of the target of the relationship
+   * @param location Location of the relationship
    */
-  public addDocumentRelationship<T_target_model extends FirestormModel>(
-    propertyName: string, 
+  public addToCollectionRelationship<T_target_model extends FirestormModel>(
+    propertyName: string,
     targetType: Type<T_target_model>,
-    documentId: string
-  ): void {
+    location: RelationshipLocation
+  ) {
     const md = this.getOrCreatePropertyMetadata(propertyName)
-    md.setToDocumentRelationship(targetType, documentId)
-  }
-  
-  /**
-   * Marks a field as being a collection
-   * @param propertyName The name of the property of the subcollection
-   * @param targetType Type of the model of the subcollection
-   */
-  public addCollectionRelationship<T_target_model extends FirestormModel>(
-    propertyName: string, 
-    targetType: Type<T_target_model>
-  ): void {
-    const md = this.getOrCreatePropertyMetadata(propertyName)
-    md.setToCollectionRelationship(targetType)
+    md.setToCollectionRelationship(targetType, location)
   }
 
-  
+  /**
+   * Adds a ToDocument relationship
+   * 
+   * @template T_target_model Type of the target of the relationship
+   * 
+   * @param propertyName The name of the property that has a relationship
+   * @param targetType Type of the target of the relationship
+   * @param location Location of the relationship
+   * @param documentId Id of the document
+   */
+  public addToDocumentRelationship<T_target_model extends FirestormModel>(
+    propertyName: string,
+    targetType: Type<T_target_model>,
+    location: RelationshipLocation,
+    documentId: FirestormId
+  ) {
+
+    const md = this.getOrCreatePropertyMetadata(propertyName)
+    md.setToDocumentRelationship(targetType, location, documentId)
+  }
+
   /**
    * Adds a converter for a property from the model to the document
    * @param propertyName The name of the property in the model

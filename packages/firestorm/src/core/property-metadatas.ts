@@ -97,9 +97,9 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
     const toOneRel: ToOneRelationshipMetadata<T_target_model> = 
       { 
+        kind: 'to-one',
         targetType: targetType, 
-        location: location, 
-        kind: 'to-one' 
+        location: location
       }
     this.relationship = toOneRel
 
@@ -128,9 +128,9 @@ export class FirestormPropertyMetadata<T_property_type = any> {
 
     const toManyRel: ToManyRelationshipMetadata<T_target_model> = 
       { 
+        kind: 'to-many',
         targetType: targetType, 
-        location: location, 
-        kind: 'to-many' 
+        location: location
       }
 
     this.relationship = toManyRel
@@ -164,16 +164,19 @@ export class FirestormPropertyMetadata<T_property_type = any> {
    * @template T_target_model Type of the target model
    * 
    * @param targetType Type of the target
+   * @param location Location of target
    * @param documentId The id of the document to link
    */
   public setToDocumentRelationship<T_target_model extends FirestormModel>(
     targetType: Type<T_target_model>,
+    location: RelationshipLocation,
     documentId: string
   ) {
 
     const toDocumentRel: ToDocumentRelationshipMetadata<T_target_model> = {
-      targetType: targetType,
       kind: 'document',
+      targetType: targetType,
+      location: location,
       documentId: documentId
     }
 
@@ -187,14 +190,17 @@ export class FirestormPropertyMetadata<T_property_type = any> {
    * @template T_target_model Type of the target model
    * 
    * @param targetType Type of the target
+   * @param location Location of target
    */
   public setToCollectionRelationship<T_target_model extends FirestormModel>(
-    targetType: Type<T_target_model>
+    targetType: Type<T_target_model>,
+    location: RelationshipLocation
   ) {
 
     const toCollectionRel: ToCollectionRelationshipMetadata<T_target_model> = {
       targetType: targetType,
-      kind: 'collection'
+      kind: 'collection',
+      location: location
     }
 
     this.relationship = toCollectionRel

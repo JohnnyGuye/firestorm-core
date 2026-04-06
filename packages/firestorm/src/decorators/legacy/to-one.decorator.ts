@@ -1,6 +1,6 @@
 import { FirestormMetadataStore, FirestormModel, Type } from "../../core"
 import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
-import { ToOneOptions } from "../common/relationship"
+import { ToOneOptions, typeResolutionDispatcher } from "../common/options"
 
 import { ToOneRelationship } from "../../core/relationship"
 export { ToOneRelationship } from "../../core/relationship"
@@ -20,16 +20,20 @@ export function ToOne
   >(
     options: ToOneOptions<T_target_model>
   ) {
-  
-  const targetType = options.target
-  const location = options.location
 
-  return (object: T_model, propertyName: K) => {
+    return (object: T_model, propertyName: K) => {
+        
+        typeResolutionDispatcher(
+            options,
+            (targetType: Type<T_target_model>) => {
 
-    const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
-    const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
-    md.addToOneRelationship(propertyName, targetType, location)
+                const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
+                const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
+                md.addToOneRelationship(propertyName, targetType, options.location)
 
-  }
+            }
+        )
+
+    }
 
 }

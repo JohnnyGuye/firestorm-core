@@ -69,6 +69,11 @@ export interface ToDocumentRelationshipMetadata<T extends FirestormModel> extend
   kind: 'document'
 
   /**
+   * Location of the relationship relative to the current document
+   */
+  location: RelationshipLocation
+
+  /**
    * Id of the document
    */
   documentId: string
@@ -79,7 +84,12 @@ export interface ToCollectionRelationshipMetadata<T extends FirestormModel> exte
   
   /** @inheritdoc */
   kind: 'collection'
-
+  
+  /**
+   * Location of the relationship relative to the current document
+   */
+  location: RelationshipLocation
+  
 }
 
 /**

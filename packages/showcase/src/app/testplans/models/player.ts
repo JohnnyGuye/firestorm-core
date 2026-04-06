@@ -12,4 +12,7 @@ export class Player {
     @SubCollection({ type: RunRecap })
     runRecaps: RunRecap[] = []
 
+    @ToCollection({ type: RunRecap })
+    runRecapsWithToCollectionDecorator = new Map<FirestormId, RunRecap>()
+
 }

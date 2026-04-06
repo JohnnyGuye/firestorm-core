@@ -1,6 +1,6 @@
-import { FirestormMetadataStore, FirestormModel, Type } from "../../core"
 import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
-import { ToManyOptions } from "../common/relationship"
+import { FirestormMetadataStore, FirestormModel, Type } from "../../core"
+import { ToManyOptions, typeResolutionDispatcher } from "../common/options"
 
 import { ToManyRelationship } from "../../core/relationship/to-many";
 export { ToManyRelationship } from "../../core/relationship/to-many";
@@ -19,14 +19,18 @@ export function ToMany
         options: ToManyOptions<T_target_model>
     ) {
 
-    const targetType = options.target
-    const location = options.location
-
     return (object: T_model, propertyName: K) => {
+        
+        typeResolutionDispatcher(
+            options,
+            (targetType: Type<T_target_model>) => {
 
-        const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
-        const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
-        md.addToManyRelationship(propertyName, targetType, location)
+                const storage: FirestormMetadataStore = FIRESTORM_METADATA_STORAGE
+                const md = storage.getOrCreateMetadatas(object.constructor as Type<T_model>)
+                md.addToManyRelationship(propertyName, targetType, options.location)
+
+            }
+        )
 
     }
 
