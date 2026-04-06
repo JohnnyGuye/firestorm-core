@@ -1,4 +1,4 @@
-import { Collection, Ignore, SubCollection } from "@jiway/firestorm-core";
+import { Collection, FirestormId, Ignore, ToSubCollection } from "@jiway/firestorm-core";
 import { UserAchievement } from "./user-achievement";
 
 console.log("Read user")
@@ -19,8 +19,8 @@ export class User {
      * Achievements of the user
      */
     @Ignore()
-    @SubCollection({ collection: 'achievements', forwardRef: () => UserAchievement  })
-    public achievements: UserAchievement[] = []
+    @ToSubCollection({ targetTypeForwardRef: () => UserAchievement  })
+    public achievements = new Map<FirestormId, UserAchievement>()
  
 }
 

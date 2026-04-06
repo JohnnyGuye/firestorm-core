@@ -15,7 +15,7 @@ export class UserAchievement {
     // @ToOne({ target: User, location: 'root' })
     public userId: string = ""
 
-    @ToOne({ target: Achievement, location: 'root' })
+    @ToOne({ targetType: Achievement, location: 'root' })
     public achievementId = new ToOneRelationship(Achievement)
     
 }

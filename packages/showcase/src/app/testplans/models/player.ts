@@ -1,4 +1,4 @@
-import { Collection, FirestormId, Ignore, SubCollection } from "@jiway/firestorm-core";
+import { Collection, FirestormId, Ignore, ToSubCollection, ToCollection } from "@jiway/firestorm-core";
 import { RunRecap } from "./run-recap";
 
 @Collection("players")
@@ -9,10 +9,10 @@ export class Player {
 
     pseudo: string = ""
 
-    @SubCollection({ type: RunRecap })
-    runRecaps: RunRecap[] = []
+    @ToSubCollection({ targetType: RunRecap })
+    runRecaps = new Map<FirestormId, RunRecap>()
 
-    @ToCollection({ type: RunRecap })
+    @ToCollection({ targetType: RunRecap, location: "." })
     runRecapsWithToCollectionDecorator = new Map<FirestormId, RunRecap>()
 
 }
