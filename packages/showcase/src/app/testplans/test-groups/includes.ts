@@ -40,7 +40,9 @@ export default new TestGroup("Includes")
     .addTest("@ToOne (retrieve by include)", 
         async () => {
 
-            const repo = getArcanaLoadoutRepo()
+            // Setup DB
+
+            const arcanaRepo = getArcanaLoadoutRepo()
             const person = getRandomPerson()
 
             await getPersonRepo().createAsync(person)
@@ -48,9 +50,13 @@ export default new TestGroup("Includes")
             const al = await generateValidArcanaLoadoutAsync()
             al.owner.setModel(person)
 
-            await repo.createAsync(al)
+            await arcanaRepo.createAsync(al)
 
-            const retrievedAl = await repo.getByIdAsync(al.id, { owner: true })
+            // Act
+            debugger
+            const retrievedAl = await arcanaRepo.getByIdAsync(al.id, { owner: true })
+
+            // Check
 
             expect(retrievedAl?.owner.model).toBe(al.owner.model)
 

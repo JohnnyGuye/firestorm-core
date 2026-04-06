@@ -1,6 +1,6 @@
 import { collection, doc, DocumentReference, DocumentSnapshot, Firestore, Query as FirestoreQuery, query, runTransaction, TransactionOptions } from "firebase/firestore"
 
-import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, RelationshipLocation, PathLike, resolveToPath, Path } from "../core"
+import { TransactionFnc, FirestoreDocument, IFirestormModel, resolveId, Type, buildPath, RelationshipLocation, PathLike, coerceToPath, Path } from "../core"
 import { FIRESTORM_METADATA_STORAGE } from "../metadata-storage"
 import { MissingIdentifierError } from "../errors"
 import { IQueryBuildBlock, Query } from "../query"
@@ -46,7 +46,7 @@ export abstract class Repository<T_model extends IFirestormModel> {
         
         this._type = type
         this.firestorm = firestorm
-        this.path = resolveToPath(path)
+        this.path = coerceToPath(path)
     }
 
     /**

@@ -1,6 +1,14 @@
-import { PathLike } from "."
 import { logWarn } from "../logging"
 import { buildPath, toSegments } from "./path-as-string"
+
+/**
+ * Objects that can represent a path
+ */
+export type PathLike 
+    = string 
+    | string[]
+    | Path
+
 
 /**
  * Special path segments
@@ -11,7 +19,9 @@ export const SpecialSegments = Object.freeze({
     /** signifies 'same level' */
     sibling: '.',
     /** signifies 'parent level' */
-    parent: '..'
+    parent: '..',
+    /** Signifies 'grand parent level', shorthand for "../.." */
+    grandParent: '...'
 })
 
 /**
@@ -189,27 +199,41 @@ export class Path {
 
         for (let s of segments) {
 
-            switch (s) {
-                case SpecialSegments.root:
-                    normalizedSegments.length = 0
-                    break;
-                case SpecialSegments.sibling:
-                    break;
-                case SpecialSegments.parent:
-                    if (normalizedSegments.length > 0 && normalizedSegments[normalizedSegments.length - 1] != SpecialSegments.parent) {
-                        normalizedSegments.pop()
-                    } else {
-                        normalizedSegments.push(s)
-                    }
-                    break;
-                default:
-                    normalizedSegments.push(s)
-            }
-
+            this.handleSegmentMerging(s, normalizedSegments)
 
         }
 
         return Path.fromSegments(normalizedSegments)
+    }
+
+    /**
+     * Handles the addition of a segment to a normalized segmented path
+     * @param segment Segment to add
+     * @param normalizedSegments Normalized segmented path in which the segment will be added
+     */
+    private static handleSegmentMerging(segment: string, normalizedSegments: string[]) {
+        
+        switch (segment) {
+            case SpecialSegments.root:
+                normalizedSegments.length = 0
+                break;
+            case SpecialSegments.sibling:
+                break;
+            case SpecialSegments.parent:
+                if (normalizedSegments.length > 0 && normalizedSegments[normalizedSegments.length - 1] != SpecialSegments.parent) {
+                    normalizedSegments.pop()
+                } else {
+                    normalizedSegments.push(segment)
+                }
+                break;
+            case SpecialSegments.grandParent:
+                this.handleSegmentMerging(SpecialSegments.parent, normalizedSegments)
+                this.handleSegmentMerging(SpecialSegments.parent, normalizedSegments)
+                break;
+            default:
+                normalizedSegments.push(segment)
+        }
+
     }
 
 }

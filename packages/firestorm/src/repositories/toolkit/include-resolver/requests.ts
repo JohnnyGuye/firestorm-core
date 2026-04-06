@@ -77,10 +77,10 @@ export class DocumentRequest<T>  implements Request<T> {
      * Creates a {@link DocumentRequest}
      * @param type Type of the ressource
      * @param basePath The base path which is the path to the document initiating the request
-     * @param relativePath A path relative to the basepath which is the location of the requested collection
+     * @param relativePaths Additionnal parts of the paths
      */
-    constructor(public type: Type<T>, basePath: Path, relativePath?: PathLike) {
-        this.path = Path.merge(basePath, relativePath || "")
+    constructor(public type: Type<T>, basePath: Path, ...relativePaths: PathLike[]) {
+        this.path = Path.merge(basePath, ...relativePaths)
     }
 
 }

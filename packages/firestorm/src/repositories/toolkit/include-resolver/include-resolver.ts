@@ -24,7 +24,6 @@ import { CollectionRequest, DocumentRequest, priorityComparer, Request, RequestT
 import { IncludeFor } from "./include-for";
 import { Query } from "../../../query";
 
-
 /**
  * Gets the value of the property decorated with a {@link ToOne} decorator
  * @param model Model that holds the property 
@@ -153,15 +152,20 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
 
         const rel = propertyMetadata.relationship
         const relMd = this.fmStorage.getOrCreateMetadatas(rel.targetType)
-        const relPath = relMd.collection
+        const relCol = relMd.collection || "."
 
         if (isCollectionRelationshipMetadata(rel)) {
-            const request = new CollectionRequest(rel.targetType, includer.documentPath, relPath)
+            const request = new CollectionRequest(rel.targetType, includer.documentPath, relCol)
             return [request]
         }
 
         if (isDocumentRelationshipMetadata(rel)) {
-            const request = new DocumentRequest(rel.targetType, includer.documentPath, relPath)
+            const request = new DocumentRequest(
+                rel.targetType, 
+                includer.documentPath, 
+                relCol,
+                rel.documentId
+            )
             return [request]
         }
 
@@ -172,7 +176,13 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
 
             return prop.ids
                 .filter(Boolean)
-                .map(id => new DocumentRequest(rel.targetType, includer.documentPath, rel.location))
+                .map(id => new DocumentRequest(
+                    rel.targetType, 
+                    includer.documentPath, 
+                    rel.location,
+                    relCol,
+                    id
+                ))
         }
         
         if (isToOneRelationshipMetadata(rel)) {
@@ -180,7 +190,13 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
             const prop = getToOneRelationshipProperty(includer.model, propertyMetadata.name)
             if (!prop || !prop.id) return [];
 
-            const request = new DocumentRequest(rel.targetType, includer.documentPath, rel.location)
+            const request = new DocumentRequest(
+                rel.targetType, 
+                includer.documentPath, 
+                rel.location,
+                relCol,
+                prop.id
+            )
             return [request]
         }
 
@@ -241,7 +257,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
 
         if (isDocumentRelationshipMetadata(rel)) {
 
-            const pathToDocument = Path.merge(includer.documentPath, relPath)
+            const pathToDocument = Path.merge(includer.documentPath, relPath, rel.documentId)
 
             const document = tree.getTypedDocument(pathToDocument.path, rel.targetType)
 
@@ -257,13 +273,24 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
             const documents = 
                 prop.ids
                     .map(id => {
-                        const pathToDocument = Path.merge(includer.documentPath, id)
+                        const pathToDocument = Path.merge(includer.documentPath, rel.location, id)
                         return tree.getTypedDocument(pathToDocument, rel.targetType)
                     })
 
             prop.assignModels(documents)
 
         }
+
+        if (isToOneRelationshipMetadata(rel)) {
+
+            const prop = getToOneRelationshipProperty(includer.model, propertyMetadata.name)
+            if (!prop || !prop.id) return
+
+            const pathToDocument = Path.merge(includer.documentPath, rel.location, prop.id)
+            prop.setModel(tree.getTypedDocument(pathToDocument.path, rel.targetType))
+
+        }
+
     }
 
     /**

@@ -42,7 +42,7 @@ export interface ToOneRelationshipMetadata<T extends FirestormModel> extends Rel
   kind: 'to-one'
 
   /**
-   * Location of the relationship
+   * Location of the relationship relative to the current document
    */
   location: RelationshipLocation
 
@@ -57,7 +57,7 @@ export interface ToManyRelationshipMetadata<T extends FirestormModel> extends Re
   kind: 'to-many'
 
   /**
-   * Location of the relationship
+   * Location of the relationship relative to the current document
    */
   location: RelationshipLocation
 
