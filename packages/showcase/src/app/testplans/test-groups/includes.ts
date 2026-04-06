@@ -37,6 +37,29 @@ async function generateValidArcanaLoadoutAsync() {
 }
 
 export default new TestGroup("Includes")
+    .addBeforeEachTest(
+        async () => {
+            await getArcanaLoadoutRepo().deleteAllAsync()
+            await getPersonRepo().deleteAllAsync()
+            
+        }
+    )
+    .addBeforeEachTest(
+        async () => {
+            const p = getTestingPlayer()
+            const repo = 
+                getFirestorm()
+                    .getCrudRepository(Player, UNIT_TEST_DB_ROOT)
+        
+            const recapRepo =
+                getFirestorm()
+                    .getCrudRepository(RunRecap, [UNIT_TEST_DB_ROOT.path, "players", p.id])
+
+            await recapRepo.deleteAllAsync()
+            await repo.deleteAsync(p)
+
+        }
+    )
     .addTest("@ToOne (retrieve by include)", 
         async () => {
 
@@ -53,7 +76,6 @@ export default new TestGroup("Includes")
             await arcanaRepo.createAsync(al)
 
             // Act
-            debugger
             const retrievedAl = await arcanaRepo.getByIdAsync(al.id, { owner: true })
 
             // Check

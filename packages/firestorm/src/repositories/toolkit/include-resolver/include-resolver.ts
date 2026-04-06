@@ -242,12 +242,12 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
         
         const rel = propertyMetadata.relationship
         const relMd = this.fmStorage.getOrCreateMetadatas(rel.targetType)
-        const relPath = relMd.collection || ""
+        const relCol = relMd.collection || ""
         const pName = propertyMetadata.name
 
         if (isCollectionRelationshipMetadata(rel)) {
 
-            const pathToCollection = Path.merge(includer.documentPath, relPath)
+            const pathToCollection = Path.merge(includer.documentPath, relCol)
 
             const documents = tree.getAllTypedDocuments(pathToCollection.path, rel.targetType)
 
@@ -257,7 +257,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
 
         if (isDocumentRelationshipMetadata(rel)) {
 
-            const pathToDocument = Path.merge(includer.documentPath, relPath, rel.documentId)
+            const pathToDocument = Path.merge(includer.documentPath, relCol, rel.documentId)
 
             const document = tree.getTypedDocument(pathToDocument.path, rel.targetType)
 
@@ -273,7 +273,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
             const documents = 
                 prop.ids
                     .map(id => {
-                        const pathToDocument = Path.merge(includer.documentPath, rel.location, id)
+                        const pathToDocument = Path.merge(includer.documentPath, rel.location, relCol, id)
                         return tree.getTypedDocument(pathToDocument, rel.targetType)
                     })
 
@@ -286,7 +286,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
             const prop = getToOneRelationshipProperty(includer.model, propertyMetadata.name)
             if (!prop || !prop.id) return
 
-            const pathToDocument = Path.merge(includer.documentPath, rel.location, prop.id)
+            const pathToDocument = Path.merge(includer.documentPath, rel.location, relCol, prop.id)
             prop.setModel(tree.getTypedDocument(pathToDocument.path, rel.targetType))
 
         }
@@ -309,8 +309,10 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
         
         for (let [colPath, requestsInGroup] of requestGroups) {
             
+            const pathToParentDocument = Path.merge(colPath, "..")
+
             const reqType = requestsInGroup[0].type
-            const repo = firestorm.getCrudRepository(reqType, colPath)
+            const repo = firestorm.getCrudRepository(reqType, pathToParentDocument.path)
 
             const requestByType = groupBy(requestsInGroup, (r) => r.requestType)
 
@@ -331,7 +333,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
             
             for (let batch of splitInBatches(unresolvedSingleDocumentRequests.map(usdr => usdr.path.lastSegment), OR_QUERIES_MAXIMUM_DISJONCTIONS)) {
 
-                const documents = await repo.queryAsync(new Query().where("id", "in", batch))
+                const documents = await repo.queryAsync(new Query().where("__name__", "in", batch))
                 resolutionTree.addDocuments(colPath, documents)
 
             }
