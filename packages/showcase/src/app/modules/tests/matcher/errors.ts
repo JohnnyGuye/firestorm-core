@@ -44,10 +44,32 @@ export class NotAnArrayError extends TestError {
 
 }
 
+export class NotAMapError extends TestError {
+    
+    constructor(source: any) {
+        super(source, "The object was expected to be a map and isn't.")
+    }
+
+}
+
+export class NeitherMapOrArray extends TestError {
+
+    constructor(source: any) {
+        super(source, "The object was expected to be an array or map and isn't.")
+    }
+}
+
 export class IncorrectArrayLengthError extends TestError {
 
     constructor(source: Array<any>, public readonly expectedLength: number) {
         super(source, `The array was expected to be of length ${expectedLength} but is of length ${source.length} `)
+    }
+}
+
+export class IncorrectMapSizeError extends TestError {
+
+    constructor(source: Map<any, any>, public readonly expectedSize: number) {
+        super(source, `The map was expected to be of size ${expectedSize} but is of length ${source.size} `)
     }
 }
 

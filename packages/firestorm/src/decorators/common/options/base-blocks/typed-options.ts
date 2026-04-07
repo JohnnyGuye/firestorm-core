@@ -46,8 +46,11 @@ export function typeResolutionDispatcher<T extends FirestormModel>(options: ITyp
     const storage = FIRESTORM_METADATA_STORAGE
     storage.registerForwardRef(options.targetTypeForwardRef, onTypeResolved)
 
+  } else {
+
+    throw new Error("The options doesn't have targeted type.")
+    
   }
 
-  throw new Error("The options doesn't have targeted type.")
 
 }

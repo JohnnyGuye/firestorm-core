@@ -32,7 +32,7 @@ export interface SubDocumentMetadatas<T> {
  */
 export class FirestormPropertyMetadata<T_property_type = any> {
 
-  private _relationship?: RelationshipMetadata<any>
+  private _relationship?: RelationshipMetadata<FirestormModel>
   private _toDocConverter?: ModelToDocumentFieldConverter<T_property_type>
   private _toModelConverter?: DocumentToModelFieldConverter<T_property_type>
 
@@ -75,7 +75,7 @@ export class FirestormPropertyMetadata<T_property_type = any> {
    * Sets the relationship this field covers
    * @param value New value of the relationship
    */
-  private set relationship(value: RelationshipMetadata<any> | undefined) {
+  private set relationship(value: RelationshipMetadata<FirestormModel> | undefined) {
     if (this._relationship) {
       logWarn(`You replaced a previous ${this._relationship.kind} relationship on the field ${this.name} for a ${value?.kind}`)
     }
@@ -272,9 +272,9 @@ export class FirestormPropertyMetadata<T_property_type = any> {
  * Specialized type of FirestormPropertyMetadata that has a relationship 
  */
 export type FirestormPropertyMetadataWithRelationship
-            <
-              T_property_type = any, 
-              T_relationship extends FirestormModel = any
-            >
+  <
+    T_property_type = unknown, 
+    T_relationship extends FirestormModel = FirestormModel
+  >
   = FirestormPropertyMetadata<T_property_type> 
   & Record<'relationship', RelationshipMetadata<T_relationship>>

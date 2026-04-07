@@ -1,4 +1,4 @@
-import { DifferentError, DifferentReferenceError, DisimilarObjectsError, IncorrectArrayLengthError, NotAnArrayError, NotNullError, NullError, SimilarObjectsError } from "./errors"
+import { DifferentError, DifferentReferenceError, DisimilarObjectsError, IncorrectArrayLengthError, IncorrectMapSizeError, NeitherMapOrArray, NotAnArrayError, NotNullError, NullError, SimilarObjectsError } from "./errors"
 
 class Expect {
 
@@ -36,8 +36,16 @@ class Expect {
 
             return 
         }
+
+        if (this.object instanceof Map) {
+            if (this.object.size != length) {
+                throw new IncorrectMapSizeError(this.object, length)
+            }
+
+            return
+        }
         
-        throw new NotAnArrayError(this.object)
+        throw new NeitherMapOrArray(this.object)
     }
 
     toBe(oth: unknown) {

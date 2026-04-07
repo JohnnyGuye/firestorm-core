@@ -1,6 +1,6 @@
 import { generateName, getRandomsInArray } from "@modules/random";
 import { TestGroup } from "@modules/tests";
-import { ArcanaCard, Player } from "@testplans/models";
+import { ArcanaCard, Player, PREDEFINED_ARCANAS } from "@testplans/models";
 import { ArcanaLoadout } from "@testplans/models/arcana-loadout";
 import { expect } from "@modules/tests/matcher"
 import { RunRecap } from "@testplans/models/run-recap";
@@ -37,6 +37,13 @@ async function generateValidArcanaLoadoutAsync() {
 }
 
 export default new TestGroup("Includes")
+    .addBeforeAllTest(
+        async () => {
+            const arcanaRepo = getFirestorm().getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+            await arcanaRepo.deleteAllAsync()
+            await arcanaRepo.createMultipleAsync(...PREDEFINED_ARCANAS)
+        }   
+    )
     .addBeforeEachTest(
         async () => {
             await getArcanaLoadoutRepo().deleteAllAsync()
@@ -95,12 +102,11 @@ export default new TestGroup("Includes")
 
             const retrieveAl = await repo.getByIdAsync(al.id, { cards: true })
 
-            console.log(al, retrieveAl)
             expect(retrieveAl!.cards.ids).toBe(al.cards.ids)
             expect(retrieveAl!.cards.models).toBeOfLength(5)
         }
     )
-    .addTest("@SubCollection (in collection repo)",
+    .addTest("@ToCollection & ToSubCollection (retrieve directly below)",
         async () => {
             
             const p = getTestingPlayer()
@@ -137,9 +143,18 @@ export default new TestGroup("Includes")
 
             const rs = await recapRepo.createMultipleAsync(r1, r2)
 
-            const playerWithRuns = await repo.getByIdAsync(p.id, { runRecaps: true })
-            console.log(playerWithRuns)
+            const playerWithRuns = await repo.getByIdAsync(p.id, { runRecaps: true, runRecapsWithToCollectionDecorator: true })            
 
+            expect(playerWithRuns).toNotBeNull()
             expect(playerWithRuns?.runRecaps).toBeOfLength(2)
+            expect(playerWithRuns?.runRecapsWithToCollectionDecorator).toBeOfLength(2)
+
+
+            const playerWithoutRuns = await repo.getByIdAsync(p.id)
+
+            expect(playerWithoutRuns).toNotBeNull()
+            expect(playerWithoutRuns?.runRecaps).toBeOfLength(0)
+            expect(playerWithoutRuns?.runRecapsWithToCollectionDecorator).toBeOfLength(0)
+
         }
     )

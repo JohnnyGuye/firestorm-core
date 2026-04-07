@@ -75,6 +75,7 @@ export type IdModelDictionary<T extends FirestormModel> = Map<string, T>
 
 /**
  * Type of a conversion function from a FirestormModel to a firestore document data object
+ * @template T Type of the real object
  * @param model The model to convert
  * @returns The correspoding document to the model
  */
@@ -82,6 +83,7 @@ export type ModelToDocumentConverter<T> = (model: T) => FirestoreDocument
 
 /**
  * Type of a conversion function from a FirestormModel to a firestore document data object
+ * @template T Type of the real object
  * @param model The model to convert
  * @returns The correspoding document to the model
  */
@@ -89,6 +91,7 @@ export type ModelToDocumentFieldConverter<T> = (model: T) => FirestoreDocumentFi
 
 /**
  * Type of a conversion function from a firestore document data object to a FirestormModel
+ * @template T Type of the real object
  * @param documentData The document to convert
  * @return The model corresponding to the document
  */
@@ -96,7 +99,19 @@ export type DocumentToModelConverter<T> = (documentData: FirestoreDocument) => T
 
 /**
  * Type of a conversion function from a firestore document data object to a FirestormModel
+ * @template T Type of the real object
  * @param documentData The document to convert
  * @return The model corresponding to the document
  */
 export type DocumentToModelFieldConverter<T> = (documentData: FirestoreDocumentField) => T
+
+/**
+ * Converts a list of models with ids into a IdModelDictionary of these models
+ * @template T Type of the model
+ * @param models Array of models to convert
+ * @returns 
+ */
+export function modelListToIdModelDictionary<T extends MandatoryFirestormModel>(models: T[]): IdModelDictionary<T> {
+    const iterable = models.map(m => { return [m.id, m] as [FirestormId, T] })
+    return new Map<FirestormId, T>(iterable)
+}

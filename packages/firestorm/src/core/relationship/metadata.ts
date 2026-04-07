@@ -17,7 +17,8 @@ export type RelationshipKind
   | 'collection' 
 
 /**
- * Relationship metadata
+ * Relationship metadata.
+ * A relationship is a link from the current document to other documents.
  */
 export interface RelationshipMetadata<T_model extends FirestormModel> {
 

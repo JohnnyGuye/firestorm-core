@@ -1,4 +1,4 @@
-import { FirestormModel, Path, PathLike, Type } from "../../../../core"
+import { FirestormModel, MandatoryFirestormModel, Path, PathLike, Type } from "../../../../core"
 import { ResolutionCollectionNode } from "./resolution-collection-node"
 import { ResolutionDocumentNode } from "./resolution-document-node"
 import { IResolutionNode } from "./resolution-node.interface"
@@ -176,11 +176,16 @@ export class ResolutionTree {
      * If true, gets all the documents in the collection even if it may not be all the documents in the DB
      * @returns Gets all the document of the collection or null if the collection isn't full and ignoreFullness is not raised.
      */
-    getAllTypedDocuments<T extends FirestormModel>(pathLike: PathLike, type: Type<T>, ignoreFullness: boolean = false): T[] | null {
+    getAllTypedDocuments<T extends FirestormModel>(
+            pathLike: PathLike, 
+            type: Type<T>, 
+            ignoreFullness: boolean = false
+        ): T & MandatoryFirestormModel[] | null {
+
         const untypedDocuments = this.getAllDocuments(pathLike, ignoreFullness)
         if (!untypedDocuments) return null
 
-        const typedDocuments = untypedDocuments.filter((d) => d instanceof type) as T[]
+        const typedDocuments = untypedDocuments.filter((d) => d instanceof type && d.id) as T & MandatoryFirestormModel[]
 
         if (typedDocuments.length != untypedDocuments.length) {
             console.warn(`Some documents under ${pathLike} are registered with a different type than the one requested.`)

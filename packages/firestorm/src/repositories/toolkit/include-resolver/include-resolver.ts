@@ -15,7 +15,8 @@ import {
     distinctWithKey,
     splitInBatches,
     OR_QUERIES_MAXIMUM_DISJONCTIONS,
-    Path
+    Path,
+    modelListToIdModelDictionary
 } from "../../../core";
 import { Firestorm } from "../../../firestorm";
 import { RelationshipIncludes } from "../../common";
@@ -249,9 +250,9 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
 
             const pathToCollection = Path.merge(includer.documentPath, relCol)
 
-            const documents = tree.getAllTypedDocuments(pathToCollection.path, rel.targetType)
+            const documents = tree.getAllTypedDocuments(pathToCollection.path, rel.targetType) || []
 
-            ;(includer.model as any)[pName] = documents || []
+            ;(includer.model as any)[pName] = modelListToIdModelDictionary(documents)
 
         }
 
@@ -276,6 +277,7 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
                         const pathToDocument = Path.merge(includer.documentPath, rel.location, relCol, id)
                         return tree.getTypedDocument(pathToDocument, rel.targetType)
                     })
+                    .filter(Boolean) as FirestormModel[]
 
             prop.assignModels(documents)
 
@@ -287,7 +289,10 @@ export class IncludeResolver<T_model extends FirestormModel, P extends Partial<T
             if (!prop || !prop.id) return
 
             const pathToDocument = Path.merge(includer.documentPath, rel.location, relCol, prop.id)
-            prop.setModel(tree.getTypedDocument(pathToDocument.path, rel.targetType))
+            const document = tree.getTypedDocument(pathToDocument.path, rel.targetType)
+            if (document) {
+                prop.setModel(document)
+            }
 
         }
 
