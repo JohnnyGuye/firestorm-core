@@ -1,9 +1,9 @@
-import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
-import { FirestormMetadataStore, FirestormModel, Type } from "../../core"
-import { ToManyOptions, typeResolutionDispatcher } from "../common/options"
+import { FIRESTORM_METADATA_STORAGE } from "../../../metadata-storage"
+import { FirestormMetadataStore, FirestormModel, Type } from "../../../core"
+import { ToManyOptions, typeResolutionDispatcher } from "../../common/options"
 
-import { ToManyRelationship } from "../../core/relationship/to-many";
-export { ToManyRelationship } from "../../core/relationship/to-many";
+import { ToManyRelationship } from "../../../core/relationship/to-many";
+export { ToManyRelationship } from "../../../core/relationship/to-many";
 
 /**
  * Decorator for properties or field taht reference multiple documents

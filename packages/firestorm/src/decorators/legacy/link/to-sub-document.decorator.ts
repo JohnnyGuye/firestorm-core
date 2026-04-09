@@ -1,5 +1,5 @@
-import { FirestormModel, SpecialSegments, ToDocumentRelationship } from "../../core";
-import { ToSubDocumentOptions } from "../common/options";
+import { FirestormModel, SpecialSegments, ToDocumentRelationship } from "../../../core";
+import { ToSubDocumentOptions } from "../../common/options";
 import { ToDocument } from "./to-document.decorator";
 
 /**

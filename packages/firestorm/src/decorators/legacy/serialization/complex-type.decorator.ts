@@ -1,9 +1,5 @@
-import { Type } from "../../core/type"
-import { FirestormMetadataStore } from "../../core/firestorm-metadata-store"
-import { DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter } from "../../core/firestorm-model"
-import { FIRESTORM_METADATA_STORAGE } from "../../metadata-storage"
-import { FirestoreDocument, FirestoreDocumentField } from "../../core/firestore-document"
-import { logError } from "../../core/logging"
+import { FirestoreDocument, FirestoreDocumentField, DocumentToModelFieldConverter, FirestormModel, ModelToDocumentFieldConverter, FirestormMetadataStore, Type, logError } from "../../../core"
+import { FIRESTORM_METADATA_STORAGE } from "../../../metadata-storage"
 
 export type ContainerOption = 'array'
 

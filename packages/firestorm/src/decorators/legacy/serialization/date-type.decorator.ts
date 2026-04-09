@@ -1,5 +1,4 @@
-import { FirestoreDocumentField, isFirestoreDate } from "../../core/firestore-document";
-import { FirestormModel } from "../../core/firestorm-model"
+import { FirestoreDocumentField, isFirestoreDate, FirestormModel } from "../../../core";
 import { ComplexType } from "./complex-type.decorator";
 
 // Timestamp.fromDate()
