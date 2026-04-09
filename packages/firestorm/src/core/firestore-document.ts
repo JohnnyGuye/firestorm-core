@@ -32,6 +32,15 @@ export function isFirestoreDate(value: unknown): value is FirestoreDate {
 }
 
 /**
+ * Converts a firestore date to a JS date
+ * @param firestoreDate Firestore date to convert
+ * @returns The equivalent date in JS
+ */
+export function dateFromFirestoreDate(firestoreDate: FirestoreDate) {
+  return new Date(firestoreDate.seconds * 1000 + Math.floor(firestoreDate.nanoseconds / 1_000_000))
+}
+
+/**
  * Base field types in a firestore document
  */
 export type FirestoreFieldBaseType 
