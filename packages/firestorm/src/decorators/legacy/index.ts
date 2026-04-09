@@ -1,4 +1,4 @@
-export * from "./collection.decorator"
+export * from "./model.decorator"
 export * from "./ignore.decorator"
 export * from "./map-to.decorator"
 export * from "./decorator-utilities"

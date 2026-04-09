@@ -1,6 +1,6 @@
-import { Collection, DateType, IFirestormModel, Ignore } from "../../src";
+import { Model, DateType, IFirestormModel, Ignore } from "../../src";
 
-@Collection({ collection: "conversations" })
+@Model({ collection: "conversations" })
 export class Conversation implements IFirestormModel {
 
     id: string = ""
@@ -19,7 +19,7 @@ export class Conversation implements IFirestormModel {
     
 }
 
-@Collection({ collection: "people" })
+@Model({ collection: "people" })
 export class Person implements IFirestormModel {
 
     id: string = ""
