@@ -1,6 +1,6 @@
-import { Collection, Ignore } from "@jiway/firestorm-core";
+import { Model, Ignore } from "@jiway/firestorm-core";
 
-@Collection("configurations")
+@Model("configurations")
 export class PackageInfosEntity {
 
     @Ignore()

@@ -1,7 +1,7 @@
-import { Collection, ComplexType, DateType, Ignore } from "@jiway/firestorm-core";
+import { Model, ComplexType, DateType, Ignore } from "@jiway/firestorm-core";
 import { Timespan, TimespanType } from "./time-span";
 
-@Collection("run_recaps")
+@Model("run_recaps")
 export class RunRecap {
 
     @Ignore()

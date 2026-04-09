@@ -1,7 +1,7 @@
-import { Collection, FirestormId, Ignore } from "@jiway/firestorm-core";
+import { Model, FirestormId, Ignore } from "@jiway/firestorm-core";
 import { Privilege, UserRole } from "./roles";
 
-@Collection({ collection: 'persons' })
+@Model({ collection: 'persons' })
 export class Person {
 
     @Ignore()

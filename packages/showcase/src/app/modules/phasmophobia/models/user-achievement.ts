@@ -1,9 +1,7 @@
-import { Collection, DateType, Ignore, ToOne, ToOneRelationship } from "@jiway/firestorm-core"
+import { Model, DateType, Ignore, ToOne, ToOneRelationship } from "@jiway/firestorm-core"
 import { Achievement } from "./_internal"
 
-console.log("Read user-a")
-
-@Collection({ collection: 'achievements' })
+@Model({ collection: 'achievements' })
 export class UserAchievement {
 
     @Ignore()

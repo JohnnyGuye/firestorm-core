@@ -175,6 +175,7 @@ export default new TestGroup("Includes")
             playerConfigSource.numericParams.set("screenposx", 100)
             playerConfigSource.numericParams.set("screenposy", 300)
 
+            await playerRepo.writeAsync(p)
             await playerConfigRepo.writeAsync(playerConfigSource)
             
             const retrievedPlayer = await playerRepo.getAsync({ mainConfig: true, mainConfigFromSubDocument: true })
@@ -182,8 +183,8 @@ export default new TestGroup("Includes")
             expect(retrievedPlayer?.mainConfig).toNotBeNull()
             expect(retrievedPlayer?.mainConfigFromSubDocument).toNotBeNull()
 
-            expect(retrievedPlayer?.mainConfig).toEqual(playerConfigSource)
-            expect(retrievedPlayer?.mainConfigFromSubDocument).toEqual(playerConfigSource)
+            expect(retrievedPlayer?.mainConfig).toBe(playerConfigSource)
+            expect(retrievedPlayer?.mainConfigFromSubDocument).toBe(playerConfigSource)
 
         }
     )

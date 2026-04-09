@@ -1,8 +1,8 @@
-import { Collection, DateType, Ignore, MapTo, ToMany, ToManyRelationship, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
+import { Model, DateType, Ignore, MapTo, ToMany, ToManyRelationship, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
 import { Person } from "./person";
 import { ArcanaCard } from "./arcana-card";
 
-@Collection("arcana_loadouts")
+@Model("arcana_loadouts")
 export class ArcanaLoadout {
 
     @Ignore()

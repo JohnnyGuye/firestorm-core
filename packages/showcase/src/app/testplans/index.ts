@@ -1,7 +1,7 @@
 import { TestPlan } from "@modules/tests"
 import { CRUD_COLLECTION_REPO_TESTS, CRUD_DOCUMENT_REPO_TESTS, DECORATORS_TESTS, DERIVED_REPO_TESTS, INCLUDES_TESTS } from "./test-groups"
 
-const ignor = true
+const ignor = false
 
 export const MAIN_TEST_PLAN = new TestPlan(
     [

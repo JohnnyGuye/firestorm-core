@@ -1,6 +1,6 @@
 import { TestGroup } from "@modules/tests";
 import { ArcanaCard, Person } from "@testplans/models";
-import { getFirestorm, getRunrecapRepoOfTestingPerson, getTestingPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities";
+import { getFirestorm, getTestingPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities";
 import { expect } from "@modules/tests/matcher"
 import { createCollectionCrudRepositoryInstantiator } from "@jiway/firestorm-core";
 import { RunRecap } from "@testplans/models/run-recap";

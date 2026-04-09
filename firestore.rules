@@ -61,6 +61,11 @@ service cloud.firestore {
 
         }
 
+        match /player_configs/{pc_id}  {
+          allow read: if true;
+          allow write: if true;
+        }
+
       }
 
       match /arcana_cards/{person_id} {

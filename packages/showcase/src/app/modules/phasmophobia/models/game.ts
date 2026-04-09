@@ -1,7 +1,7 @@
-import { Collection, DateType, Ignore, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
+import { Model, DateType, Ignore, ToOne, ToOneRelationship } from "@jiway/firestorm-core";
 import { PhasmoEntity } from "./entity";
 
-@Collection({ collection: 'games' })
+@Model({ collection: 'games' })
 export class PhasmoGame {
 
   @Ignore()

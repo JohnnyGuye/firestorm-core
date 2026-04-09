@@ -1,8 +1,7 @@
-import { Collection, FirestormId, Ignore, ToSubCollection } from "@jiway/firestorm-core";
+import { Model, FirestormId, Ignore, ToSubCollection } from "@jiway/firestorm-core";
 import { UserAchievement } from "./user-achievement";
 
-console.log("Read user")
-@Collection({ collection: 'users' })
+@Model({ collection: 'users' })
 export class User {
     
     /**

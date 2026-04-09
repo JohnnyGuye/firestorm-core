@@ -1,6 +1,6 @@
-import { Collection } from "@jiway/firestorm-core";
+import { Model } from "@jiway/firestorm-core";
 
-@Collection({ collection: 'achievements' })
+@Model({ collection: 'achievements' })
 export class Achievement {
 
     public id: string = ""

@@ -1,4 +1,4 @@
-import { Collection } from "@jiway/firestorm-core";
+import { Model } from "@jiway/firestorm-core";
 
 export const EVIDENCES = ['ghost_orb', 'emf_5', 'freezing', 'uv', 'writing', 'dots', 'spirit_box'] as const
 export type Evidences = typeof EVIDENCES[number]
@@ -6,7 +6,7 @@ export type Evidences = typeof EVIDENCES[number]
 /**
  * Represents the blueprint for a ghost entity in phasmophobia
  */
-@Collection({ collection: 'entities' })
+@Model({ collection: 'entities' })
 export class PhasmoEntity {
 
   /**

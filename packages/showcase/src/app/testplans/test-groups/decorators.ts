@@ -7,18 +7,6 @@ import { expect } from "@modules/tests/matcher"
 import { RunRecap } from "@testplans/models/run-recap";
 import { Timespan } from "@testplans/models/time-span";
 
-/*
-✔️ collection
-✔️ ignore
-✔️ tomany
-✔️ toone
-✔️ mapto
-✔️ datetype
-✔️ complexetype
-subcollection
-subdocument
-*/
-
 function getArcanaRepo() {
     return getFirestorm().getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
 }

@@ -1,20 +1,20 @@
-import { Collection, FirestormId, Ignore, ToSubCollection, ToCollection, ToDocument, ToSubDocument } from "@jiway/firestorm-core";
+import { Model, FirestormId, Ignore, ToSubCollection, ToCollection, ToDocument, ToSubDocument, MapType } from "@jiway/firestorm-core";
 import { RunRecap } from "./run-recap";
 
 export const MAIN_CONFIG_DOCUMENT_ID = "main_config"
 
-@Collection("player_configs")
+@Model("player_configs")
 export class PlayerConfig {
 
     @Ignore()
     id: FirestormId = ""
 
-    
+    @MapType()
     numericParams = new Map<string, number>()
     
 }
 
-@Collection("players")
+@Model("players")
 export class Player {
 
     @Ignore()

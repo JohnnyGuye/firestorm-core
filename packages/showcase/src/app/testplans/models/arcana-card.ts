@@ -1,6 +1,6 @@
-import { Collection, FirestormId } from "@jiway/firestorm-core";
+import { Model, FirestormId } from "@jiway/firestorm-core";
 
-@Collection("arcana_cards")
+@Model("arcana_cards")
 export class ArcanaCard {
 
     id: FirestormId = ""
