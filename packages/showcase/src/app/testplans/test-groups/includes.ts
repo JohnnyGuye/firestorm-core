@@ -1,11 +1,12 @@
 import { generateName, getRandomsInArray } from "@modules/random";
 import { TestGroup } from "@modules/tests";
-import { ArcanaCard, Player, PREDEFINED_ARCANAS } from "@testplans/models";
+import { ArcanaCard, MAIN_CONFIG_DOCUMENT_ID, Player, PlayerConfig, PREDEFINED_ARCANAS } from "@testplans/models";
 import { ArcanaLoadout } from "@testplans/models/arcana-loadout";
 import { expect } from "@modules/tests/matcher"
 import { RunRecap } from "@testplans/models/run-recap";
 import { Timespan } from "@testplans/models/time-span";
 import { getFirestorm, getPersonRepo, getRandomPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities";
+import { createDocumentCrudRepositoryInstantiator } from "@jiway/firestorm-core";
 
 function getArcanaRepo() {
     return getFirestorm().getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
@@ -155,6 +156,34 @@ export default new TestGroup("Includes")
             expect(playerWithoutRuns).toNotBeNull()
             expect(playerWithoutRuns?.runRecaps).toBeOfLength(0)
             expect(playerWithoutRuns?.runRecapsWithToCollectionDecorator).toBeOfLength(0)
+
+        }
+    )
+    .addTest("@ToDocument & ToSubDocument (retrieve directly below)",
+        async () => {
+
+            const p = getTestingPlayer()
+            const playerRepo = 
+                getFirestorm()
+                    .getSingleDocumentCrudRepository(Player, p.id, UNIT_TEST_DB_ROOT)
+
+            const playerConfigRepo = playerRepo.getRepositoryFromFunction(
+                createDocumentCrudRepositoryInstantiator(MAIN_CONFIG_DOCUMENT_ID), PlayerConfig, "."
+            )
+
+            const playerConfigSource = new PlayerConfig()
+            playerConfigSource.numericParams.set("screenposx", 100)
+            playerConfigSource.numericParams.set("screenposy", 300)
+
+            await playerConfigRepo.writeAsync(playerConfigSource)
+            
+            const retrievedPlayer = await playerRepo.getAsync({ mainConfig: true, mainConfigFromSubDocument: true })
+            
+            expect(retrievedPlayer?.mainConfig).toNotBeNull()
+            expect(retrievedPlayer?.mainConfigFromSubDocument).toNotBeNull()
+
+            expect(retrievedPlayer?.mainConfig).toEqual(playerConfigSource)
+            expect(retrievedPlayer?.mainConfigFromSubDocument).toEqual(playerConfigSource)
 
         }
     )
