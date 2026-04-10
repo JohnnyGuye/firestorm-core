@@ -1,5 +1,4 @@
 import { 
-    Firestore, 
     collection, 
     doc, 
     getDoc, 
@@ -19,11 +18,17 @@ import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregation
 import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { Path, PathLike } from "../core";
-import { IncludeResolver } from "./toolkit";
+import { PathLike } from "../core";
 import { CollectionRepository } from "./collection-repository";
-import { IncludeFor } from "./toolkit/include-resolver/include-for";
 import type { Firestorm } from "../firestorm";
+
+
+/**
+ * Randomness algorithm
+ */
+export type RandomAlgorithm 
+    = "amount_of_query"
+    | "quality"
 
 /**
  * Repository with a basic CRUD implementation.
@@ -228,7 +233,22 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
     }
 
     /**
-     * Gets a random item in the whole collection.
+     * @summary Gets a random item in the whole collection.
+     * 
+     * @param optimization Picks the randomness selection method.
+     * @returns A random element of the collection or null if no elements.
+     */
+    async getRandomAsync(optimization: RandomAlgorithm = "quality"): Promise<T_model | null> {
+        
+        switch (optimization) {
+            case "amount_of_query": return await this.getRandomQueryAmountOptimizedAsync();
+            case "quality":         return await this.getRandomQualityOptimizedAsync()
+        }
+        
+    }
+
+    /**
+     * @summary Gets a random item in the whole collection, optimizing the amount of query required.
      * 
      * It relies on the presence of the field "id" in the document so it won't work if that is not the case.
      * 
@@ -236,7 +256,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * 
      * @returns A random element of the collection or null if no elements.
      */
-    async getRandomAsync(): Promise<T_model | null> {
+    async getRandomQueryAmountOptimizedAsync(): Promise<T_model | null> {
         
         const documentRef = doc(collection(this.firestore, this.collectionPath))
         const baseId = documentRef.id
@@ -252,11 +272,35 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
 
         res = await this.queryAsync(
             new Query()
-                .where("id", "<", baseId)
+                .where("__name__", "<", baseId)
                 .orderBy("id", 'descending')
                 .limit(1)
             )
 
+        if (res.length == 1) return res[0]
+
+        return null
+    }
+
+    /**
+     * @summary Gets a random item in the whole collection, optimizing the quality of the randomness.
+     * 
+     * @returns A random element of the collection or null if no elements.
+     */
+    async getRandomQualityOptimizedAsync(): Promise<T_model | null> {
+
+        const {amount} = await this.aggregateAsync({
+            amount: { verb: 'count' }
+        })
+
+        const value = Math.floor(Math.random() * amount)
+
+        const res = await this.queryAsync(
+            new Query()
+                .orderBy("__name__", "ascending")
+                .paginate(1, value)
+            )
+        
         if (res.length == 1) return res[0]
 
         return null

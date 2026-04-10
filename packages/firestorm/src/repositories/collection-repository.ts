@@ -1,4 +1,3 @@
-import { Firestore } from "firebase/firestore";
 import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../core";
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";

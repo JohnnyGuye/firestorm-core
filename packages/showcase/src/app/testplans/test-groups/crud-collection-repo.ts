@@ -432,7 +432,7 @@ export default new TestGroup("CRUD Collection repo")
             expect(arcanaCount / 3).toBeLesserThan(pullsRecords.size)
             
         },
-        { ignore: true }
+        { ignore: false }
     )
     .addTest("Randomizer quality check",
         async () => {
@@ -472,7 +472,7 @@ export default new TestGroup("CRUD Collection repo")
             console.warn(expectedMeanPullCount, meanOfSquaredPulls, variance, misses, pullsRecords)
             expect(variance).toBeLesserThan(10000)
         },
-        { ignore: true }
+        { ignore: false }
     )
     .addTest("Query equality",
         async () => {
