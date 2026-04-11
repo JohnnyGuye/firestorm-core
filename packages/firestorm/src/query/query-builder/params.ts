@@ -1,4 +1,5 @@
 import { WhereFilterOp } from "firebase/firestore"
+import { FirestoreFieldBaseType } from "../../core"
 
 /**
  * Field name of the query clause
@@ -41,11 +42,11 @@ export type LimitClauseLimit = number
 export type LimitClauseDirection = 'start' | 'end'
 
 /**
- * Start for the Start-at Clause (1-indexed)
+ * Start for the Start-at Clause
  */
-export type StartAtClauseStart = number
+export type StartAtClauseStart = FirestoreFieldBaseType[] | FirestoreFieldBaseType
 
 /**
- * End for the End-at Clause (1-indexed)
+ * End for the End-at Clause
  */
-export type EndAtClauseEnd = number
+export type EndAtClauseEnd = FirestoreFieldBaseType[] | FirestoreFieldBaseType
