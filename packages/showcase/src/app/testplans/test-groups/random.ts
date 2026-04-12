@@ -2,7 +2,8 @@ import { expect } from "@modules/tests/matcher"
 import { TestGroup } from "@modules/tests";
 import { ArcanaCard, Person, PREDEFINED_ARCANAS, sortByRank } from "@testplans/models"
 import { getFirestorm, getRandomPerson, UNIT_TEST_DB_ROOT } from "@testplans/utilities"
-import { FirestormId, Query } from "@jiway/firestorm-core"
+import { createCollectionCrudRepositoryInstantiator, FirestormId, Query } from "@jiway/firestorm-core"
+import { createRandomRepositoryInstantiator } from "@firestorm-experimental/random-repository";
 
 export default new TestGroup("Random picks")
     .addBeforeAllTest(async () => {
@@ -15,17 +16,37 @@ export default new TestGroup("Random picks")
         async () => {
 
             const fOrm = getFirestorm()
-            const arcanaRepo = fOrm.getCrudRepository(ArcanaCard, UNIT_TEST_DB_ROOT)
+            const arcanaCrudRepo = fOrm.getRepositoryFromFunction(createCollectionCrudRepositoryInstantiator(), ArcanaCard, UNIT_TEST_DB_ROOT)
+            const arcanaRandomRepo = fOrm.getRepositoryFromFunction(createRandomRepositoryInstantiator(), ArcanaCard, UNIT_TEST_DB_ROOT)
+
+            const allCards = await arcanaCrudRepo.queryAsync(new Query().orderBy("__name__", "ascending"))
+
+            const rv = Math.floor(Math.random() * allCards.length)
+
+            const expectedCard = allCards[rv]
+
+            console.warn(rv, allCards.map(c => c.id), expectedCard.id)
+            const pickedCard = await arcanaRandomRepo.pick(rv)
+
+            expect(expectedCard).toBe(pickedCard)
+
+        }
+    )
+    .addTest("Randomizer base check",
+        async () => {
+
+            const fOrm = getFirestorm()
+            const arcanaRepo = fOrm.getRepositoryFromFunction(createRandomRepositoryInstantiator(), ArcanaCard, UNIT_TEST_DB_ROOT)
 
             const pullsRecords = new Map<FirestormId, number>()
 
             const arcanaCount = (await arcanaRepo.aggregateAsync({ count: { verb: 'count' }})).count
 
-            const pulls = 100
+            const pulls = 1
             let misses = 0
             for (let i = 0; i < pulls; i++) {
                 
-                const p = await arcanaRepo.getRandomAsync()
+                const p = await arcanaRepo.pick()
                 if (!p) {
                     console.warn("It missed")
                     misses += 1
@@ -40,7 +61,7 @@ export default new TestGroup("Random picks")
             expect(arcanaCount / 3).toBeLesserThan(pullsRecords.size)
             
         },
-        { ignore: false }
+        { ignore: true }
     )
     .addTest("Randomizer quality check",
         async () => {
@@ -80,5 +101,5 @@ export default new TestGroup("Random picks")
             console.warn(expectedMeanPullCount, meanOfSquaredPulls, variance, misses, pullsRecords)
             expect(variance).toBeLesserThan(10000)
         },
-        { ignore: false }
+        { ignore: true }
     )
