@@ -215,7 +215,7 @@ export class Base {
 export class FirestoreIdBase extends Base {
   
   constructor() {
-    super("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_")
+    super("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz")
   }
 
 }
