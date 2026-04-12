@@ -1,7 +1,7 @@
 /**
  * Converter of integers in different bases
  */
-class Base {
+export class Base {
 
   private readonly _base: string
   private readonly _baseToValueMap: Map<string, number>
@@ -144,7 +144,7 @@ class Base {
   public stringToValue(str: string): bigint {
     
     const bigBl = BigInt(this.radix)
-    let value = 0n;
+    let value = BigInt(0);
     for (let i = 0; i < str.length; i++) {
       value *= bigBl
       const cv = this.charToValue(str[i])
@@ -165,7 +165,7 @@ class Base {
     let bigValue: bigint = typeof value === "bigint" ? value : BigInt(value)
     let res = ""
 
-    while(bigValue > 0n) {
+    while(bigValue > BigInt(0)) {
       const v = bigValue % bigBl
       res = this.valueToChar(Number(v)) + res
       bigValue -= v
@@ -212,7 +212,7 @@ class Base {
 /**
  * Converter of firestorm ids to integers
  */
-class FirestoreIdBase extends Base {
+export class FirestoreIdBase extends Base {
   
   constructor() {
     super("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_")

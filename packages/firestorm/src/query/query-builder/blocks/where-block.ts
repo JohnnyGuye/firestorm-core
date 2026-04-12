@@ -55,8 +55,8 @@ export class WhereBlock
   }
   
   /** @inheritdoc */
-  endAt(end: EndAtClauseEnd): EndAtBlock {
-    return this.next = new EndAtBlock(end)
+  endAt(end: EndAtClauseEnd, included: boolean = false): EndAtBlock {
+    return this.next = new EndAtBlock(end, included)
   }
 
   /** @inheritdoc */

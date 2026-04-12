@@ -1,16 +1,15 @@
 import { startAfter, startAt } from "firebase/firestore"
 import { QueryBuildBlock } from "./query-build-block"
-import { LimitClauseDirection, LimitClauseLimit, StartAtClauseStart } from "../params";
+import { EndAtClauseEnd, LimitClauseDirection, LimitClauseLimit, StartAtClauseStart } from "../params";
 import { ICanPrecedeLimit, LimitBlock } from "./limit-block";
+import { EndAtBlock, ICanPrecedeEndAt } from "./end-at-block";
 
 /**
  * Start-at query block that gives a starting document index for the query
- * 
- * Mutually exclusive with {@link EndAtBlock}
  */
 export class StartAtBlock 
   extends QueryBuildBlock
-  implements ICanPrecedeLimit {
+  implements ICanPrecedeLimit, ICanPrecedeEndAt {
 
   /**
    * Start-at query block that gives a starting document index for the query
@@ -23,6 +22,11 @@ export class StartAtBlock
     public readonly included: boolean = true
   ) {
     super()
+  }
+
+  /** @inheritdoc */
+  endAt(end: EndAtClauseEnd, included: boolean = false): EndAtBlock {
+    return this.next = new EndAtBlock(end, included)
   }
 
   /** @inheritdoc */

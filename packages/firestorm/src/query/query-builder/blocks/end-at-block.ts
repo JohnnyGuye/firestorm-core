@@ -5,8 +5,6 @@ import { ICanPrecedeLimit, LimitBlock } from "./limit-block";
 
 /**
  * End-at query block that gives an ending document index for the query
- * 
- * Mutually exclusive with {@link StartAtBlock}
  */
 export class EndAtBlock 
   extends QueryBuildBlock
@@ -45,7 +43,8 @@ export interface ICanPrecedeEndAt {
   /**
    * Appends an end-at clause to the query
    * @param end Index of the document in the global query from which to start
+   * @param included Whether or not to include the document matching the clause
    */
-  endAt(end: EndAtClauseEnd): EndAtBlock;
+  endAt(end: EndAtClauseEnd, included: boolean): EndAtBlock;
 
 }

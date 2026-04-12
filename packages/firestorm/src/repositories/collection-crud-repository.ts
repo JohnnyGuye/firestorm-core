@@ -15,10 +15,10 @@ import {
 } from "firebase/firestore";
 import { Type } from "../core/type";
 import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
-import { IFirestormModel, IMandatoryFirestormModel } from "../core/firestorm-model";
+import { FirestormId, IFirestormModel, IMandatoryFirestormModel, MandatoryFirestormModel } from "../core/firestorm-model";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { PathLike } from "../core";
+import { FirestoreIdBase, PathLike } from "../core";
 import { CollectionRepository } from "./collection-repository";
 import type { Firestorm } from "../firestorm";
 
@@ -152,14 +152,14 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * @param includes Optional params for querying linked documents.
      * @returns A promise on the items that are results of the query
      */
-    async queryAsync(firestormQuery: Query | IQueryBuildBlock, includes?: RelationshipIncludes<T_model>): Promise<T_model[]>{
+    async queryAsync(firestormQuery: Query | IQueryBuildBlock, includes?: RelationshipIncludes<T_model>): Promise<(T_model & MandatoryFirestormModel)[]>{
 
         const querySnapshot: QuerySnapshot = await getDocs(this.toFirestoreQuery(firestormQuery))
         if (querySnapshot.empty) return []
 
         const models = querySnapshot.docs.map(docSnapshot => {
             return this.firestoreDocumentSnapshotToModel(docSnapshot)
-        })
+        }) as (T_model & MandatoryFirestormModel)[]
 
         if (includes) {
             await this.resolveIncludesAsync(includes, ...models)
@@ -285,25 +285,70 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
     /**
      * @summary Gets a random item in the whole collection, optimizing the quality of the randomness.
      * 
+     * It uses a dichotomic approach so the algorithm scales in O(log(n)) in number of queries with n the amount of documents.
+     * 
      * @returns A random element of the collection or null if no elements.
      */
     async getRandomQualityOptimizedAsync(): Promise<T_model | null> {
 
-        const {amount} = await this.aggregateAsync({
-            amount: { verb: 'count' }
-        })
 
-        const value = Math.floor(Math.random() * amount)
+        // Init
+        const baseAscendingQuery    = new Query().orderBy("__name__", "ascending")
+        const singAscQuery          = new Query().orderBy("__name__", "ascending").limit(1, "start")
+        const singleDescQuery       = new Query().orderBy("__name__", "ascending").limit(1, "end")
 
-        const res = await this.queryAsync(
-            new Query()
-                .orderBy("__name__", "ascending")
-                .paginate(1, value)
+        const {amount: total} = await this.aggregateAsync({ amount: { verb: 'count' }}, baseAscendingQuery )
+
+        const rankingOfTheElementToFetch = Math.floor(Math.random() * total)
+
+        const idFromSingleQuery = async (query: IQueryBuildBlock) => (await this.queryAsync(query))[0].id
+
+        const startId = await idFromSingleQuery(singAscQuery)
+        const endId =   await idFromSingleQuery(singleDescQuery)
+
+        const markings = {
+            startId: startId,
+            endId: endId,
+            randomIndex: rankingOfTheElementToFetch,
+            fullRangeSize: total,
+            localStartId: startId,
+            localEndId: endId,
+            localStartIndex: 0,
+            localRangeSize: total
+        }
+
+        const base = new FirestoreIdBase()
+
+        // Dichotomy
+
+        while (markings.localRangeSize > 1) {
+
+            // Pivot
+            const pivotId = base.lerp(markings.localStartId, markings.localEndId, 1, 2)
+
+            // Count from start to pivot
+            const {startToPivotAmount} = await this.aggregateAsync(
+                { startToPivotAmount: { verb: 'count' }},
+                baseAscendingQuery.startAt(markings.localStartId).endAt(markings.localEndId)
             )
-        
-        if (res.length == 1) return res[0]
 
-        return null
+            // Update the markings
+            if (markings.localStartIndex + startToPivotAmount < markings.randomIndex) {
+                markings.localEndId = pivotId
+            } else {
+                markings.localStartId = pivotId
+                markings.localStartIndex += startToPivotAmount
+            }
+
+            markings.localRangeSize = startToPivotAmount
+            
+
+        }
+
+        const lastQueryResult = await this.queryAsync(baseAscendingQuery.startAt(markings.localStartId).limit(markings.localRangeSize))
+        const res = lastQueryResult[markings.randomIndex - markings.localStartIndex]
+        
+        return res
     }
 
     /**
