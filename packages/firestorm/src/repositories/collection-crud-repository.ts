@@ -169,28 +169,6 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
     }
 
     /**
-     * Runs an aggregation query on the collection.
-     * 
-     * @param aggQuery The aggregations to perform
-     * @param query A narrowing query to aggregate only on a portion of the collection.
-     * @returns The aggregation result
-     */
-    async aggregateAsync<A_Query extends ExplicitAggregationQuery>(
-        aggQuery: A_Query, 
-        query?: Query | IQueryBuildBlock
-        ): Promise<AggregationResult<A_Query>> {
-
-
-        const agg = aggregationQueryToAggregateSpec(aggQuery)
-        const snapshot = await getAggregateFromServer(
-            query ? this.toFirestoreQuery(query) : this.collectionRef,
-            agg
-        )
-
-        return snapshot.data() as AggregationResult<A_Query>
-    }
-
-    /**
      * Listens to the changes of the full collection.
      * @returns An observable on the changes of any document in the collection
      */

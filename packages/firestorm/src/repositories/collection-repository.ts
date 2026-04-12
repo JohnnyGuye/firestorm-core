@@ -2,6 +2,8 @@ import { IFirestormModel, Path, PathLike, RelationshipLocation, Type } from "../
 import { Repository } from "./repository";
 import { RepositoryInstantiator } from "./common";
 import type { Firestorm } from "../firestorm";
+import { Query, aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock } from "../query";
+import { getAggregateFromServer } from "firebase/firestore";
 
 /**
  * Base repository for a collection
@@ -23,6 +25,28 @@ export class CollectionRepository<T_model extends IFirestormModel> extends Repos
 
         super(firestorm, type, path)
 
+    }
+
+    /**
+     * Runs an aggregation query on the collection.
+     * 
+     * @param aggQuery The aggregations to perform
+     * @param query A narrowing query to aggregate only on a portion of the collection.
+     * @returns The aggregation result
+     */
+    async aggregateAsync<A_Query extends ExplicitAggregationQuery>(
+        aggQuery: A_Query, 
+        query?: Query | IQueryBuildBlock
+        ): Promise<AggregationResult<A_Query>> {
+
+
+        const agg = aggregationQueryToAggregateSpec(aggQuery)
+        const snapshot = await getAggregateFromServer(
+            query ? this.toFirestoreQuery(query) : this.collectionRef,
+            agg
+        )
+
+        return snapshot.data() as AggregationResult<A_Query>
     }
 
     /** @inheritdoc */
