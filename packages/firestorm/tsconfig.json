@@ -16,10 +16,10 @@
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
     "target": "esnext",
-    "baseUrl": ".",
+    "rootDir": "./src",
     "paths": {
-      "@firestorm": ["index"],
-      "@firestorm/*": ["*"]
+      "@firestorm": ["./index"],
+      "@firestorm/*": ["./*"]
     }
   }
 }
