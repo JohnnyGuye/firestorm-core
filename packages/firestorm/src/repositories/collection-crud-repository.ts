@@ -10,18 +10,107 @@ import {
     DocumentReference, 
     DocumentSnapshot,
     writeBatch,
-    getAggregateFromServer,
     SnapshotListenOptions
 } from "firebase/firestore";
 import { Type } from "../core/type";
-import { aggregationQueryToAggregateSpec, AggregationResult, ExplicitAggregationQuery, IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
-import { FirestormId, IFirestormModel, IMandatoryFirestormModel, MandatoryFirestormModel } from "../core/firestorm-model";
+import { IQueryBuildBlock, isQueryBuildBlock, Query } from "../query";
+import { IFirestormModel, IMandatoryFirestormModel, MandatoryFirestormModel } from "../core/firestorm-model";
 import { RelationshipIncludes, RepositoryInstantiator } from "./common";
 import { CollectionObservable, DocumentObservable, createCollectionObservable, createDocumentObservable, createQueryObservable } from "../realtime-listener";
-import { FirestoreIdBase, PathLike } from "../core";
+import { FirestoreIdBase, logError, logWarn, PathLike } from "../core";
 import { CollectionRepository } from "./collection-repository";
 import type { Firestorm } from "../firestorm";
+import { modulo } from "../core/arithmetics";
 
+interface DichotomyCursor<T = string> {
+
+    value: T
+
+    index: number
+
+}
+
+class DichotomicResearch {
+
+    private _base = new FirestoreIdBase()
+
+    public readonly fullRange: number
+
+    public readonly aimIndex: number
+
+    public startCursor: DichotomyCursor
+
+    public endCursor: DichotomyCursor
+
+    constructor(fullRange: number, aimIndex: number) {
+
+        this.fullRange = fullRange
+        this.aimIndex = aimIndex
+
+        this.startCursor = {
+            value: "".padEnd(20, this._base.valueToChar(0)),
+            index: 0
+        }
+
+        this.endCursor = {
+            value: "".padEnd(20, this._base.valueToChar(this._base.radix - 1)),
+            index: this.fullRange
+        }
+
+    }
+
+    advance(pivotValue: string, startToPivotCount: number) {
+        
+        let lowIndex = this.startCursor.index
+        let medianIndex = this.startCursor.index + startToPivotCount
+        let endIndex = this.startCursor.index + this.cursorRange
+
+        // In the lower part
+        if (lowIndex <= this.aimIndex && this.aimIndex <= medianIndex) {
+
+            this.endCursor.value = pivotValue
+            this.endCursor.index = medianIndex
+
+        } 
+        // In the higher part
+        else if (medianIndex < this.aimIndex && this.aimIndex <= endIndex) {
+
+            this.startCursor.value = pivotValue
+            this.startCursor.index = medianIndex
+
+        } else {
+
+            logError("Not suppsoed to happen", pivotValue, startToPivotCount)
+
+        }
+
+    }
+
+    get pivotValue() {
+        return this._base.lerp(this.startCursor.value, this.endCursor.value, 1, 2)
+    }
+
+    get cursorRange() {
+        return this.endCursor.index - this.startCursor.index
+    }
+
+    get aimIndexRelativeToStartCursor() {
+        return this.aimIndex - this.startCursor.index
+    }
+
+    snapshot() {
+        return {
+            aimIndex: this.aimIndex,
+            fullRange: this.fullRange,
+            fromIdx: this.startCursor.index,
+            toIdx: this.endCursor.index,
+            localRange: this.cursorRange,
+            from: this.startCursor.value,
+            to: this.endCursor.value
+        }
+    }
+
+}
 
 /**
  * Randomness algorithm
@@ -250,7 +339,7 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
 
         res = await this.queryAsync(
             new Query()
-                .where("__name__", "<", baseId)
+                .where("id", "<", baseId)
                 .orderBy("id", 'descending')
                 .limit(1)
             )
@@ -267,67 +356,58 @@ export class CollectionCrudRepository<T_model extends IFirestormModel> extends C
      * 
      * @returns A random element of the collection or null if no elements.
      */
-    async getRandomQualityOptimizedAsync(): Promise<T_model | null> {
+    async getRandomQualityOptimizedAsync(): Promise<T_model | null>;
+    /**
+     * @deprecated It's only available for testing purposes.
+     * @summary Gets a random item in the whole collection, optimizing the quality of the randomness.
+     * 
+     * It uses a dichotomic approach so the algorithm scales in O(log(n)) in number of queries with n the amount of documents.
+     * @param randomIndex A precomputed random value
+     * @returns A random element of the collection or null if no elements.
+     */
+    async getRandomQualityOptimizedAsync(randomIndex: number): Promise<T_model | null>;
+    async getRandomQualityOptimizedAsync(randomIndex?: number): Promise<T_model | null> {
 
+        const {amount: fullRange} = await this.aggregateAsync({ amount: { verb : 'count' }}, new Query().orderBy("__name__", "ascending"))
 
-        // Init
-        const baseAscendingQuery    = new Query().orderBy("__name__", "ascending")
-        const singAscQuery          = new Query().orderBy("__name__", "ascending").limit(1, "start")
-        const singleDescQuery       = new Query().orderBy("__name__", "ascending").limit(1, "end")
-
-        const {amount: total} = await this.aggregateAsync({ amount: { verb: 'count' }}, baseAscendingQuery )
-
-        const rankingOfTheElementToFetch = Math.floor(Math.random() * total)
-
-        const idFromSingleQuery = async (query: IQueryBuildBlock) => (await this.queryAsync(query))[0].id
-
-        const startId = await idFromSingleQuery(singAscQuery)
-        const endId =   await idFromSingleQuery(singleDescQuery)
-
-        const markings = {
-            startId: startId,
-            endId: endId,
-            randomIndex: rankingOfTheElementToFetch,
-            fullRangeSize: total,
-            localStartId: startId,
-            localEndId: endId,
-            localStartIndex: 0,
-            localRangeSize: total
+        if (randomIndex === undefined) {
+            randomIndex = Math.floor(Math.random() * fullRange)
         }
 
-        const base = new FirestoreIdBase()
+        if (randomIndex < 0 || randomIndex >= fullRange) {
+            randomIndex = modulo(randomIndex, fullRange)
+            logWarn(`The random index must be in the range [0;collection_size[ but found ${randomIndex}`)
+        }
 
-        // Dichotomy
+        const dr = new DichotomicResearch(fullRange, randomIndex)
 
-        while (markings.localRangeSize > 1) {
+        dr.startCursor.value = (await this.queryAsync(new Query().orderBy("__name__", "ascending").limit(1)))[0].id
 
-            // Pivot
-            const pivotId = base.lerp(markings.localStartId, markings.localEndId, 1, 2)
+        let depthRemaining = 10
 
-            // Count from start to pivot
-            const {startToPivotAmount} = await this.aggregateAsync(
-                { startToPivotAmount: { verb: 'count' }},
-                baseAscendingQuery.startAt(markings.localStartId).endAt(markings.localEndId)
+        while(depthRemaining-- > 0 && dr.cursorRange > 1) {
+
+            const pivot = dr.pivotValue
+
+            const {count} = await this.aggregateAsync(
+                { count: { verb: 'count' }}, 
+                new Query().orderBy("__name__", "ascending").startAt(dr.startCursor.value).endAt(pivot)
             )
 
-            // Update the markings
-            if (markings.localStartIndex + startToPivotAmount < markings.randomIndex) {
-                markings.localEndId = pivotId
-            } else {
-                markings.localStartId = pivotId
-                markings.localStartIndex += startToPivotAmount
-            }
-
-            markings.localRangeSize = startToPivotAmount
-            
+            dr.advance(pivot, count)
 
         }
 
-        const lastQueryResult = await this.queryAsync(baseAscendingQuery.startAt(markings.localStartId).limit(markings.localRangeSize))
-        const res = lastQueryResult[markings.randomIndex - markings.localStartIndex]
+        const lastQueryResult = await this.queryAsync(
+            new Query()
+                .orderBy("__name__", "ascending")
+                .startAt(dr.startCursor.value)
+                .limit(dr.aimIndexRelativeToStartCursor + 1)
+        )
         
-        return res
+        return lastQueryResult[dr.aimIndexRelativeToStartCursor]
     }
+
 
     /**
      * Gets all the items of a collection

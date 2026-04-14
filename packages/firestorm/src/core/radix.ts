@@ -214,6 +214,9 @@ export class Base {
  */
 export class FirestoreIdBase extends Base {
   
+  /**
+   * Creates a new instance of {@link FirestoreIdBase}
+   */
   constructor() {
     super("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz")
   }
