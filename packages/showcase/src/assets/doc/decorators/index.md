@@ -4,7 +4,7 @@ Most decorators in this library are tools to specify how to translate a model in
 
 ____
 
-## @Collection
+## @Model
 
 It has to be added on a class that is meant to be a model.
 It also enables you to specify the default direct collection path.
@@ -14,7 +14,7 @@ It also enables you to specify the default direct collection path.
 You must add it on the property of the model that you don't want in the document or don't want to parse from the document.
 
 ```ts
-@Collection({ collection: "tracks" })
+@Model({ collection: "tracks" })
 class Track {
 
   @Ignore()
@@ -54,7 +54,7 @@ The document matching this model will be of the form below:
 Maps the model's property to a data with an other key in the document.
 
 ```ts
-@Collection({ collection: "tracks" })
+@Model({ collection: "tracks" })
 class Track {
 
   id: string

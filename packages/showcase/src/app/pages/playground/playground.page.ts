@@ -80,7 +80,7 @@ export type Evidences = typeof EVIDENCES[number]
 /**
  * Represents the blueprint for a ghost entity in phasmophobia
  */
-@Collection({ collection: 'playgrounds/phasmophobia/entities' })
+@Model({ collection: 'playgrounds/phasmophobia/entities' })
 export class PhasmoEntity {
 
   /**

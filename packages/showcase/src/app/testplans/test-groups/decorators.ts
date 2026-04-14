@@ -69,7 +69,7 @@ export default new TestGroup("Decorators")
         const recapRepo = fOrm.getCrudRepository(RunRecap, [UNIT_TEST_DB_ROOT.path, "players", p.id])
         await recapRepo.deleteAllAsync()
     })
-    .addTest("@Collection",
+    .addTest("@Model",
         async () => {
             // Automatically passed if any other test passed 
         }

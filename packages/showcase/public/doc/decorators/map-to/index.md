@@ -6,7 +6,7 @@ So a name like `myField` becomes `my_field`.
 You can change that by using the MapTo decorator.
 
 ```ts
-@Collection({ collection: "smthg" })
+@Model({ collection: "smthg" })
 class Something {
 
   id: string = "arandomid"

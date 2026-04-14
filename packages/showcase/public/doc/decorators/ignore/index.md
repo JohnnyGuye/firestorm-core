@@ -7,7 +7,7 @@ It can, and should be added to model properties that you don't want in the docum
 ```ts
 const FIVE_MINUTES = 5 * 60 * 1000
 
-@Collection({ collection: "tracks" })
+@Model({ collection: "tracks" })
 class Track {
 
   id: string
@@ -34,7 +34,7 @@ class Track {
 It can be also used to remove the id from the document. It is always fed to the model and is used to store the document but you can remove it from the document.
 
 ```ts
-@Collection({ collection: "no-id" })
+@Model({ collection: "no-id" })
 class NoId {
 
   @Ignore()

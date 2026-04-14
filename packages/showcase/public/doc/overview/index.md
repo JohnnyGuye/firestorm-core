@@ -13,7 +13,7 @@ You need two things:
 Id is a special property because you always need it and it will always be filled based on the id of the document you get BUT you it doesn't have to be in the document. More of this in the [decorators page](/doc/decorators)
 
 ```ts
-@Collection({ collection: "tracks" })
+@Model({ collection: "tracks" })
 class Track {
 
     id: string
