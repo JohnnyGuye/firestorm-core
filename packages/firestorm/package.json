@@ -1,6 +1,6 @@
 {
   "name": "@jiway/firestorm-core",
-  "version": "1.0.0-alpha.4",
+  "version": "1.1.0",
   "description": "FirestORM is an ORM around built to manipulate Firestore.",
   "scripts": {
     "lint": "npx eslint",
@@ -64,7 +64,6 @@
     "dist/esm/**/!(*.tsbuildinfo)",
     "dist/esm5/**/!(*.tsbuildinfo)",
     "dist/types/**/!(*.tsbuildinfo)",
-    "src",
     "package.json",
     "README.md",
     "tsconfig.json"
