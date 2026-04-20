@@ -74,6 +74,12 @@ export function resolveInstance<T extends IFirestormModel>(
 export type IdModelDictionary<T extends FirestormModel> = Map<string, T>
 
 /**
+ * Type that is representing a collection of multiple models
+ */
+export type CollectionOfModels<T extends FirestormModel>
+    = IdModelDictionary<T> | Array<T>
+
+/**
  * Type of a conversion function from a FirestormModel to a firestore document data object
  * @template T Type of the real object
  * @param model The model to convert
@@ -114,4 +120,21 @@ export type DocumentToModelFieldConverter<T> = (documentData: FirestoreDocumentF
 export function modelListToIdModelDictionary<T extends MandatoryFirestormModel>(models: T[]): IdModelDictionary<T> {
     const iterable = models.map(m => { return [m.id, m] as [FirestormId, T] })
     return new Map<FirestormId, T>(iterable)
+}
+
+/**
+ * Coerces a collection of models into being a list of models
+ * 
+ * A coercion is not a conversion meaning that it can be return the same object as given in input as long as it can be treated as an Array.
+ * 
+ * @param models Collection of models to convert
+ * @returns The collection of models but as an array.
+ */
+export function coerceToListOfModels<T extends FirestormModel>(
+    models: CollectionOfModels<T> | T
+): T[] {
+
+    if (models instanceof Map)      return [...models.values()]
+    if (models instanceof Array)    return models
+    return [models]
 }
